@@ -56,7 +56,7 @@ public class LimitedMemoryBFGS extends FunctionMinimizer {
 		if (x0 != null)
 			for (int i = 0; i < f.xdim(); ++i)
 				this.x[i] = x0.get(i);
-		this.dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).raw();
+		this.dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
 		this.lineSearcher = lineSearcher != null ? lineSearcher : new BacktrackingLineSearcher();
 		this.updateHistoryLimit = updateHistoryLimit;
 	}
@@ -121,7 +121,7 @@ public class LimitedMemoryBFGS extends FunctionMinimizer {
 
 		// update dfx
 		final double[] dfxOld = dfx;
-		dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).raw();
+		dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
 		final double[] y = ArrayVector.subNew(dfx, dfxOld); // y = dfx - dfxOld
 
 		// store result for last m values at maximum

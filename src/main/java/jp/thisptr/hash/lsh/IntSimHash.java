@@ -1,8 +1,11 @@
 package jp.thisptr.hash.lsh;
 
+import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
+
 import java.util.Map;
 
 import jp.thisptr.hash.IntMurmurHash;
+import jp.thisptr.math.vector.d.SparseMapVector;
 import jp.thisptr.math.vector.d.SparseVector;
 
 public class IntSimHash {
@@ -35,8 +38,8 @@ public class IntSimHash {
 	
 	public int hash(final SparseVector vector) {
 		final double[] v = new double[SIZE];
-		for (SparseVector.IndexedValue value : vector.values())
-			update(v, IntMurmurHash.hash(value.getIndex()), value.getValue());
+		for (final Int2DoubleMap.Entry value : ((SparseMapVector) vector).rawMap().int2DoubleEntrySet())
+			update(v, IntMurmurHash.hash(value.getIntKey()), value.getDoubleValue());
 		return finalize(v);
 	}
 }

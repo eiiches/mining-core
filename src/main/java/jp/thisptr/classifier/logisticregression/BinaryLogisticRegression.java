@@ -1,64 +1,68 @@
 package jp.thisptr.classifier.logisticregression;
 
+import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
+
 import java.util.List;
 
+import jp.thisptr.classifier.BatchLearner;
 import jp.thisptr.core.tuple.Pair;
 import jp.thisptr.math.optimizer.Function;
 import jp.thisptr.math.optimizer.FunctionMinimizer;
 import jp.thisptr.math.optimizer.gradient.L1RegularizedLBFGS;
 import jp.thisptr.math.vector.d.ArrayVector;
 import jp.thisptr.math.vector.d.DenseArrayVector;
+import jp.thisptr.math.vector.d.SparseMapVector;
 import jp.thisptr.math.vector.d.SparseVector;
-import jp.thisptr.math.vector.d.SparseVector.IndexedValue;
 import jp.thisptr.math.vector.d.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BinaryLogisticRegression {
+public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, Boolean> {
 	private final Logger log = LoggerFactory.getLogger(BinaryLogisticRegression.class);
 	
-	private Vector w;
-	private int dim;
+	private static final int DEFAULT_MAX_ITERATION = 1000;
+	private static final double DEFAULT_L1REGULARIZER = 0.1;
+	private static final double DEFAULT_CONVERGENCE_CRITERIA = 0.00001;
 	
 	private double l1Regularizer;
 	private double convergenceCriteria;
-	private int maxIteration = 1000;
+	private int maxIteration;
 	
-	/**
-	 * Class learning ratio.
-	 */
-//	private double c = 0.5;
+	private Vector w;
+	private int dim;
 
 	public BinaryLogisticRegression() {
-		this(0.1);
+		this(DEFAULT_L1REGULARIZER);
 	}
 	
 	public BinaryLogisticRegression(final double l1Regularizer) {
-		this(l1Regularizer, 0.00001);
+		this(l1Regularizer, DEFAULT_CONVERGENCE_CRITERIA);
 	}
 
 	public BinaryLogisticRegression(final double l1Regularizer, final double convergenceCriteria) {
 		this.l1Regularizer = l1Regularizer;
 		this.convergenceCriteria = convergenceCriteria;
+		this.maxIteration = DEFAULT_MAX_ITERATION;
 	}
-	
-	private static double calcPy1(final Vector x, final Vector w) {
-		final double[] ww = ((DenseArrayVector) w).raw();
+
+	private static double calcPy1(final SparseMapVector x, final DenseArrayVector w) {
+		final double[] ww = w.rawArray();
 		double wx = ww[0];
-		for (final IndexedValue v : ((SparseVector) x).values()) {
+		for (final Int2DoubleMap.Entry v : x.rawMap().int2DoubleEntrySet()) {
 			// Run boundary check because when we have unseed data x,
 			// the dimension of x can (almost always) be larger than the learning data.
-			if (ww.length > v.getIndex() + 1)
-				wx += v.getValue() * ww[v.getIndex() + 1];
+			if (ww.length > v.getIntKey() + 1)
+				wx += v.getDoubleValue() * ww[v.getIntKey() + 1];
 		}
-		return Math.pow(1 + Math.exp(-wx), -1);
+		return 1.0 / (1 + Math.exp(-wx));
 	}
 	
-	public void learn(final List<Pair<Vector, Boolean>> dataset) {
+	@Override
+	public void learn(final List<Pair<SparseMapVector, Boolean>> dataset) {
 		int dim_ = 0;
-		for (Pair<Vector, Boolean> d : dataset)
-			dim_ = Math.max(d.getFirst().dim(), dim_);
+		for (Pair<SparseMapVector, Boolean> d : dataset)
+			dim_ = Math.max(d.getFirst().size(), dim_);
 		dim = dim_;
 		
 		final Function f = new Function() {
@@ -69,11 +73,12 @@ public class BinaryLogisticRegression {
 	
 			@Override
 			public double f(final Vector w) {
+				final DenseArrayVector ww = (DenseArrayVector) w;
 				double sum = 0.0;
-				for (final Pair<Vector, Boolean> d : dataset) {
+				for (final Pair<SparseMapVector, Boolean> d : dataset) {
 					final boolean y = d.getSecond();
-					final Vector x = d.getFirst();
-					final double p = calcPy1(x, w);
+					final SparseMapVector x = d.getFirst();
+					final double p = calcPy1(x, ww);
 					if (y) {
 						sum += Math.log(p);
 					} else {
@@ -86,16 +91,17 @@ public class BinaryLogisticRegression {
 	
 			@Override
 			public Vector df(final Vector w) {
+				final DenseArrayVector ww = (DenseArrayVector) w;
 				final double[] result = new double[dim + 1];
-				for (final Pair<Vector, Boolean> d : dataset) {
+				for (final Pair<SparseMapVector, Boolean> d : dataset) {
 					final double y = d.getSecond() ? 1.0 : 0.0;
-					final Vector x = d.getFirst();
-					final double p = calcPy1(x, w);
+					final SparseMapVector x = d.getFirst();
+					final double p = calcPy1(x, ww);
 					result[0] += y - p;
 //					for (int i = 0; i < dim; ++i)
 //						result[i + 1] += (y - p) * x.get(i);
-					for (final IndexedValue v : ((SparseVector) x).values())
-						result[v.getIndex() + 1] += (y - p) * v.getValue();
+					for (final Int2DoubleMap.Entry v : x.rawMap().int2DoubleEntrySet())
+						result[v.getIntKey() + 1] += (y - p) * v.getDoubleValue();
 //						result[v.getIndex() + 1] += -2 * (2 * c * y - c - y + 1) * p * v.getValue() + 2 * c * y * v.getValue();
 				}
 				return DenseArrayVector.wrap(ArrayVector.negate(result));
@@ -134,13 +140,14 @@ public class BinaryLogisticRegression {
 		}
 		
 		log.debug(String.format("Converged: f(x) = %.2f", minimizer.function().f(w)));
-		log.debug(String.format("# of non-zero elements in w: %d (c = %.2f)", ArrayVector.nonzero(((DenseArrayVector) w).raw(), 1.0e-10), l1Regularizer));
+		log.debug(String.format("# of non-zero elements in w: %d (c = %.2f)", ArrayVector.nonzero(((DenseArrayVector) w).rawArray(), 1.0e-10), l1Regularizer));
 	}
 	
-	public Boolean predict(final Vector x) {
+	@Override
+	public Boolean classify(final SparseMapVector x) {
 		if (w == null)
 			throw new IllegalStateException("The model must be learned first.");
-		return calcPy1(x, w) > 0.5;
+		return calcPy1(x, (DenseArrayVector) w) > 0.5;
 	}
 
 	public Vector getWeights() {

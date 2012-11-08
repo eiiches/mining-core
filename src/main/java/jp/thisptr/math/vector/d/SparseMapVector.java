@@ -1,56 +1,35 @@
 package jp.thisptr.math.vector.d;
 
-import java.util.HashMap;
+import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
+import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+
 import java.util.Map;
 
 import jp.thisptr.core.util.CollectionUtils;
 
-public class SparseMapVector extends SparseVector {
-	private final Map<Integer, Double> map;
-	private transient IndexedValue[] _valuesCache = null;
+public class SparseMapVector extends SparseVector implements Vector.Modifiable, Vector.MapAccessible {
+	private final Int2DoubleMap map;
 	
 	public SparseMapVector() {
-		map = new HashMap<Integer, Double>();
+		map = new Int2DoubleOpenHashMap();
 	}
 
 	@Override
 	public double get(final int index) {
-		Double value = map.get(index);
-		if (value == null)
-			return 0.0;
-		return value;
+		return map.get(index);
 	}
 
 	@Override
 	public void set(final int index, final double value) {
-		_valuesCache = null;
 		if (value == 0.0) {
 			map.remove(index);
 			return;
 		}
 		map.put(index, value);
 	}
-
-	/**
-	 * The returned values must not be changed.
-	 */
-	@Override
-	public IndexedValue[] values() {
-		if (_valuesCache != null)
-			return _valuesCache;
-		
-		final IndexedValue[] result = new IndexedValue[map.size()];
-		
-		int i = 0;
-		for (final Map.Entry<Integer, Double> v : map.entrySet())
-			result[i++] = new IndexedValue(v.getKey(), v.getValue());
-		
-		_valuesCache = result;
-		return result;
-	}
 	
 	@Override
-	public int dim() {
+	public int size() {
 		Integer result = CollectionUtils.max(map.keySet());
 		return result != null ? result + 1 : 0;
 	}
@@ -58,5 +37,10 @@ public class SparseMapVector extends SparseVector {
 	@Override
 	public int capacity() {
 		return Integer.MAX_VALUE;
+	}
+	
+	@Override
+	public Int2DoubleMap rawMap() {
+		return map;
 	}
 }

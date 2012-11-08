@@ -33,7 +33,7 @@ public class SteepestDescent extends FunctionMinimizer {
 		if (x0 != null)
 			for (int i = 0; i < f.xdim(); ++i)
 				this.x[i] = x0.get(i);
-		this.dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).raw();
+		this.dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
 		this.lineSearcher = lineSearcher != null ? lineSearcher : new BacktrackingLineSearcher();
 	}
 
@@ -44,7 +44,7 @@ public class SteepestDescent extends FunctionMinimizer {
 		double stepsize = lineSearcher.search(f, x, dfx, d, 1.0);
 		
 		ArrayVector.addScaled(x, stepsize, d);
-		dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).raw();
+		dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
 	}
 	
 	@Override

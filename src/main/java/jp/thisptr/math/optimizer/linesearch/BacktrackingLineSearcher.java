@@ -49,7 +49,7 @@ public class BacktrackingLineSearcher extends LineSearcher {
 				continue;
 			}
 			
-			final double[] dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).raw();
+			final double[] dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
 			final double gradInSearchDir = ArrayVector.dot(dfx, dir);
 			if (gradInSearchDir < wolfe * gradInSearchDir0) {
 				delta *= increaseRate;

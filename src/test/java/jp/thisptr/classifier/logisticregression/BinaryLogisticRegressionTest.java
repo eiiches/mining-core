@@ -33,7 +33,7 @@ public class BinaryLogisticRegressionTest {
 		
 		int error = 0;
 		for (final Pair<Vector, Boolean> d : dataset) {
-			final boolean predicted = classifier.predict(d.getFirst());
+			final boolean predicted = classifier.classify(d.getFirst());
 			if (predicted ^ d.getSecond())
 				++error;
 		}

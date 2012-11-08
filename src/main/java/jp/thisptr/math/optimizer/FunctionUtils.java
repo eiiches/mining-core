@@ -20,7 +20,7 @@ public final class FunctionUtils {
 			@Override
 			public Vector df(final Vector x) {
 				final DenseArrayVector v = (DenseArrayVector) f.df(x);
-				ArrayVector.negate(v.raw());
+				ArrayVector.negate(v.rawArray());
 				return v;
 			}
 		};

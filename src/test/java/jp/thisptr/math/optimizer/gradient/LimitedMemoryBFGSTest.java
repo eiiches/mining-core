@@ -223,7 +223,7 @@ public class LimitedMemoryBFGSTest {
 		final Function target = FunctionUtils.negate(new Function() {
 			public double p(final Vector w, final Vector x) {
 				double dot = 0.0;
-				for (int i = 0; i < w.dim(); ++i)
+				for (int i = 0; i < w.size(); ++i)
 					dot += w.get(i) * x.get(i);
 				return dot / (dot + 1);
 			}
