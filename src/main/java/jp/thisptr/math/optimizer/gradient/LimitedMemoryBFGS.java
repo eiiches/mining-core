@@ -113,6 +113,8 @@ public class LimitedMemoryBFGS extends FunctionMinimizer {
 		updateSearchDirection(dir);
 
 		// The stepsize, which is a negative value, is decided using line search algorithm.
+		// TODO: If we use the initial step size from the previous step, or multiple of the previous step,
+		// won't it reduce the computation drastically?
 		final double stepsize = doLineSearch(dir, 1.0);
 
 		// update x
