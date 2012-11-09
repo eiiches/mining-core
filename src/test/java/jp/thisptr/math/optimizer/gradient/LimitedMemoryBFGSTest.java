@@ -14,7 +14,7 @@ import jp.thisptr.math.vector.d.Vector;
 import org.junit.Test;
 
 public class LimitedMemoryBFGSTest {
-	
+
 	private void runOptimization(final String name, final FunctionMinimizer optimizer, final Function target, final double[] expected, final int maxStep) {
 		System.out.printf("(%s) Initial: f(%s) = %.2f, f'(x) = %s%n", name, optimizer.current(), target.f(optimizer.current()), target.df(optimizer.current()));
 		{ int i = 1; while (!optimizer.converged()) {
@@ -25,23 +25,23 @@ public class LimitedMemoryBFGSTest {
 			++i;
 		}}
 		System.out.printf("(%s) Converged%n", name);
-		assertArrayEquals(expected, ((DenseArrayVector) optimizer.current()).raw(), 0.001);
+		assertArrayEquals(expected, ((DenseArrayVector) optimizer.current()).rawArray(), 0.001);
 	}
-	
+
 	@Test
 	public void testSimpleLibBFGSSample() {
 		final int n = 100;
-	
+
 		final double[] expected = new double[n];
 		for (int i = 0; i < n; ++i)
 			expected[i] = 1.0;
-		
+
 		final double[] x0 = new double[n];
 		for (int i = 0; i < n; i += 2) {
 			x0[i] = -1.2;
 			x0[i + 1] = 1.0;
 		}
-		
+
 		final Function target = new Function() {
 			public double f(final Vector x) {
 				double result = 0.0;
@@ -66,11 +66,11 @@ public class LimitedMemoryBFGSTest {
 				return n;
 			}
 		};
-	
+
 		final FunctionMinimizer optimizer = new LimitedMemoryBFGS(target, DenseArrayVector.wrap(x0), new BacktrackingLineSearcher());
 		runOptimization("LibBFGSSample", optimizer, target, expected, 10000);
 	}
-	
+
 	@Test
 	public void testSimpleEllipticParaboloid() { for (int loop = 0; loop < 3; ++loop) {
 		final double[] expected = new UniformDistribution(-100, 100).sample(100);
@@ -94,15 +94,15 @@ public class LimitedMemoryBFGSTest {
 				return expected.length;
 			}
 		};
-		
+
 		final FunctionMinimizer optimizer = new LimitedMemoryBFGS(target);
 		runOptimization("Paraboloid", optimizer, target, expected, 1000);
 	}}
-	
+
 	@Test
 	public void testWoods() {
 		final double[] expected = new double[] { 1.0, 1.0, 1.0, 1.0 };
-		
+
 		final Function target = new Function() {
 			@Override
 			public int xdim() {
@@ -138,18 +138,18 @@ public class LimitedMemoryBFGSTest {
 				);
 			}
 		};
-		
+
 		assertEquals(19192, target.f(new DenseArrayVector(-3.0, -1.0, -3.0, -1.0)), 0.0001);
 		assertEquals(0, target.f(new DenseArrayVector(1.0, 1.0, 1.0, 1.0)), 0.0001);
-		
+
 		final FunctionMinimizer optimizer = new LimitedMemoryBFGS(target, new DenseArrayVector(-3, -1, -3, -1), new BacktrackingLineSearcher(0.5, 2.1, 0.0, 1.0, 1000), 100);
 		runOptimization("Woods", optimizer, target, expected, 1000);
 	}
-	
+
 	@Test
 	public void testFletcherAndPowellHelicalValley() {
 		final double[] expected = new double[] { 1.0, 0.0, 0.0 };
-		
+
 		final Function target = new Function() {
 			public int xdim() {
 				return expected.length;
@@ -198,7 +198,7 @@ public class LimitedMemoryBFGSTest {
 		final FunctionMinimizer optimizer = new LimitedMemoryBFGS(target, new DenseArrayVector(-1.0, 0.0, 0.0), new BacktrackingLineSearcher());
 		runOptimization("HelicalValley", optimizer, target, expected, 1000);
 	}
-	
+
 	private static class Instance {
 		public final double y;
 		public final Vector x;
@@ -207,7 +207,7 @@ public class LimitedMemoryBFGSTest {
 			this.y = y;
 		}
 	}
-	
+
 	@Test
 	public void testL2RegularizedLogLinearModel() {
 		final double[] expected = new double[] { 0.1, 0.40, -0.07, 0.05, -0.20 };
@@ -219,7 +219,7 @@ public class LimitedMemoryBFGSTest {
 				new Instance(new DenseArrayVector(1, 0, 1, 0, 1), 0.00000000001),
 				new Instance(new DenseArrayVector(1, 0, 1, 1, 0), 0.00000000001),
 		};
-	
+
 		final Function target = FunctionUtils.negate(new Function() {
 			public double p(final Vector w, final Vector x) {
 				double dot = 0.0;
@@ -238,7 +238,7 @@ public class LimitedMemoryBFGSTest {
 			public Vector df(final Vector w) {
 				final double[] result = new double[expected.length];
 				for (final Instance instance : instances)
-					ArrayVector.addScaled(result, instance.y - p(w, instance.x), ((DenseArrayVector) instance.x).raw());
+					ArrayVector.addScaled(result, instance.y - p(w, instance.x), ((DenseArrayVector) instance.x).rawArray());
 				return DenseArrayVector.wrap(result); // TODO: add regularization term
 			}
 			@Override
@@ -246,7 +246,7 @@ public class LimitedMemoryBFGSTest {
 				return expected.length;
 			}
 		});
-		
+
 		final FunctionMinimizer optimizer = new LimitedMemoryBFGS(target, new DenseArrayVector(expected.length), new BacktrackingLineSearcher());
 		runOptimization("L2LogLinear", optimizer, target, expected, 200);
 	}
