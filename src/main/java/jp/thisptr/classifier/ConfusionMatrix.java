@@ -16,32 +16,32 @@ public class ConfusionMatrix<CategoryType> {
 		matrix = new HashMap<CategoryType, Map<CategoryType, Integer>>();
 	}
 	
-	public void add(final CategoryType expected, final CategoryType predicted) {
-		add(expected, predicted, 1);
+	public void add(final CategoryType actualClass, final CategoryType predictedClass) {
+		add(actualClass, predictedClass, 1);
 	}
 	
-	public void add(final CategoryType expected, final CategoryType predicted, final int inc) {
-		categories.add(expected);
-		categories.add(predicted);
+	public void add(final CategoryType actualClass, final CategoryType predictedClass, final int inc) {
+		categories.add(actualClass);
+		categories.add(predictedClass);
 		
-		Map<CategoryType, Integer> inner = matrix.get(expected);
+		Map<CategoryType, Integer> inner = matrix.get(actualClass);
 		if (inner == null) {
 			inner = new HashMap<CategoryType, Integer>();
-			matrix.put(expected, inner);
+			matrix.put(actualClass, inner);
 		}
 		
-		Integer count = inner.get(predicted);
+		Integer count = inner.get(predictedClass);
 		if (count == null) {
 			count = Integer.valueOf(0);
 		}
-		inner.put(predicted, count + inc);
+		inner.put(predictedClass, count + inc);
 	}
 	
-	public int getCount(final CategoryType actual, final CategoryType predicted) {
-		Map<CategoryType, Integer> inner = matrix.get(actual);
+	public int getCount(final CategoryType actualClass, final CategoryType predictedClass) {
+		Map<CategoryType, Integer> inner = matrix.get(actualClass);
 		if (inner == null)
 			return 0;
-		Integer value = inner.get(predicted);
+		Integer value = inner.get(predictedClass);
 		if (value == null)
 			return 0;
 		return value;
@@ -69,16 +69,24 @@ public class ConfusionMatrix<CategoryType> {
 	}
 	
 	public double getPrecision(final CategoryType category) {
-		return getCount(category, category) / (double) getCountPredicted(category);
+		final int denom = getCountPredicted(category);
+		if (denom == 0)
+			return 0.0;
+		return getCount(category, category) / (double) denom;
 	}
 	
 	public double getRecall(final CategoryType category) {
-		return getCount(category, category) / (double) getCountActual(category);
+		final int denom = getCountActual(category);
+		if (denom == 0)
+			return 0.0;
+		return getCount(category, category) / (double) denom;
 	}
 	
 	public double getFMeasure(final CategoryType category) {
-		double precision = getPrecision(category);
-		double recall = getRecall(category);
+		final double precision = getPrecision(category);
+		final double recall = getRecall(category);
+		if (precision == 0.0 || recall == 0.0)
+			return 0.0;
 		return 2 * precision * recall / (precision + recall);
 	}
 
@@ -92,6 +100,8 @@ public class ConfusionMatrix<CategoryType> {
 				all += innerEntry.getValue();
 			}
 		}
+		if (all == 0)
+			return 0.0;
 		return correct / (double) all;
 	}
 	

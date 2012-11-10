@@ -1,7 +1,7 @@
 package jp.thisptr.classifier;
 
-import jp.thisptr.core.tuple.Pair;
+import jp.thisptr.classifier.instance.Instance;
 
 public interface OnlineLearner<VectorType, ClassType> extends Learner<VectorType, ClassType> {
-	void learn(final Pair<VectorType, ClassType> data);
+	void learn(final Instance<VectorType, ClassType> instance);
 }

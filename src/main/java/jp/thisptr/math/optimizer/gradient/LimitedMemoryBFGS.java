@@ -37,6 +37,7 @@ public class LimitedMemoryBFGS extends FunctionMinimizer {
 	protected final int updateHistoryLimit;
 	protected double[] x;
 	protected double[] dfx;
+	protected double stepsize;
 	
 	public LimitedMemoryBFGS(final Function f) {
 		this(f, null);
@@ -59,6 +60,7 @@ public class LimitedMemoryBFGS extends FunctionMinimizer {
 		this.dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
 		this.lineSearcher = lineSearcher != null ? lineSearcher : new BacktrackingLineSearcher();
 		this.updateHistoryLimit = updateHistoryLimit;
+		this.stepsize = 1.0;
 	}
 	
 	protected double[] getSearchDirection0() {
@@ -113,9 +115,9 @@ public class LimitedMemoryBFGS extends FunctionMinimizer {
 		updateSearchDirection(dir);
 
 		// The stepsize, which is a negative value, is decided using line search algorithm.
-		// TODO: If we use the initial step size from the previous step, or multiple of the previous step,
+		// TODO: If we use the initial step size from the previous step, or some multiple of the previous step,
 		// won't it reduce the computation drastically?
-		final double stepsize = doLineSearch(dir, 1.0);
+		stepsize = doLineSearch(dir, 1.0);
 
 		// update x
 		final double[] s = ArrayVector.mulNew(dir, stepsize); // s = stepsize * r
