@@ -5,29 +5,15 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import jp.thisptr.core.lambda.Lambda0;
-import jp.thisptr.core.lambda.util.Lambdas;
-
-public class DefaultMap<K, V> implements Map<K, V>, Serializable {
-	
+public abstract class DefaultMap<K, V> implements Map<K, V>, Serializable {
 	private static final long serialVersionUID = -3659724972952089349L;
 	
 	private Map<K, V> map;
-	private Lambda0<V> defaultValue;
 	
-	public DefaultMap(final Map<K, V> map, final V defaultValue) {
-		this.map = map;
-		this.defaultValue = Lambdas.<V>constant(defaultValue);
-	}
+	public abstract V defaultValue();
 	
-	public DefaultMap(final Map<K, V> map, final Lambda0<V> defaultValue) {
+	public DefaultMap(final Map<K, V> map) {
 		this.map = map;
-		this.defaultValue = defaultValue;
-	}
-	
-	public DefaultMap(final Map<K, V> map, final Class<V> defaultValue, final Object... args) {
-		this.map = map;
-		this.defaultValue = Lambdas.<V>constructor(defaultValue, args);
 	}
 
 	@Override
@@ -59,7 +45,7 @@ public class DefaultMap<K, V> implements Map<K, V>, Serializable {
 	public V get(final Object key) {
 		V value = map.get(key);
 		if (value == null) {
-			value = defaultValue.invoke();
+			value = defaultValue();
 			map.put((K) key, value);
 		}
 		return value;
