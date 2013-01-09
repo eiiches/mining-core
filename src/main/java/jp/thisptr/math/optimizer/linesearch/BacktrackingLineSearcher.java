@@ -1,10 +1,20 @@
 package jp.thisptr.math.optimizer.linesearch;
 
 import jp.thisptr.math.optimizer.Function;
-import jp.thisptr.math.vector.d.ArrayVector;
-import jp.thisptr.math.vector.d.DenseArrayVector;
+import jp.thisptr.math.structure.operation.ArrayOp;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BacktrackingLineSearcher extends LineSearcher {
+	private static Logger log = LoggerFactory.getLogger(BacktrackingLineSearcher.class);
+	
+	public static final double DEFAULT_DECREASE_RATE = 0.5;
+	public static final double DEFAULT_INCREASE_RATE = 2.1;
+	public static final double DEFAULT_ALPHA = 0.0001;
+	public static final double DEFAULT_WOLFE = 0.9;
+	public static final int DEFAULT_MAX_ITERATION = 1000;
+	
 	private final double decreaseRate;
 	private final double increaseRate;
 	
@@ -18,7 +28,7 @@ public class BacktrackingLineSearcher extends LineSearcher {
 	private final int maxIteration;
 	
 	public BacktrackingLineSearcher() {
-		this(0.5, 2.1, /* alpha = */ 0.0001, /* wolfe = */ 0.9, 1000);
+		this(DEFAULT_DECREASE_RATE, DEFAULT_INCREASE_RATE, DEFAULT_ALPHA, DEFAULT_WOLFE, DEFAULT_MAX_ITERATION);
 	}
 	
 	public BacktrackingLineSearcher(final double decreaseRate, final double increaseRate, final double alpha, final double wolfe, final int maxIteration) {
@@ -30,27 +40,33 @@ public class BacktrackingLineSearcher extends LineSearcher {
 	}
 	
 	@Override
-	public double search(final Function f, final double[] x0, final double[] dfx0, final double[] dir, final double delta0) {
+	public double search(final Function f, final double[] x0, final double fx0, final double[] dfx0, final double[] dir, final double delta0) {
 		double delta = delta0;
+		double decreaseDelta = 0.0;
 		
-		final double fx0 = f.f(DenseArrayVector.wrap(x0));
-	
-		final double gradInSearchDir0 = ArrayVector.dot(dfx0, dir);
+		final double gradInSearchDir0 = ArrayOp.dot(dfx0, dir);
 		if (gradInSearchDir0 > 0.0)
 			throw new RuntimeException("Incorrect search direction.");
 
 		final double[] x = new double[x0.length];
 		for (int i = 0; i < maxIteration; ++i) {
-			ArrayVector.addScaled(x, x0, delta, dir);
-			final double fx = f.f(DenseArrayVector.wrap(x));
+			ArrayOp.addScaled(x, x0, delta, dir);
+			final double fx = f.f(x);
+			if (Double.isInfinite(fx)) {
+				delta *= decreaseRate;
+				continue;
+			}
 	
 			if (fx > fx0 + alpha * delta * gradInSearchDir0) {
 				delta *= decreaseRate;
 				continue;
 			}
 			
-			final double[] dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
-			final double gradInSearchDir = ArrayVector.dot(dfx, dir);
+			if (delta > decreaseDelta)
+				decreaseDelta = delta;
+			
+			final double[] dfx = f.df(x);
+			final double gradInSearchDir = ArrayOp.dot(dfx, dir);
 			if (gradInSearchDir < wolfe * gradInSearchDir0) {
 				delta *= increaseRate;
 				continue;
@@ -62,6 +78,11 @@ public class BacktrackingLineSearcher extends LineSearcher {
 			}
 			
 			return delta;
+		}
+		
+		if (decreaseDelta != 0.0) {
+			//log.info("Wolfe condition (condition on gradient) not met, but the better than throwing all away with the exception.");
+			return decreaseDelta;
 		}
 		
 		throw new RuntimeException("Backtracking line search could not find solution.");

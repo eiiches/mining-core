@@ -2,8 +2,8 @@ package jp.thisptr.math.optimizer.gradient;
 
 import jp.thisptr.math.optimizer.Function;
 import jp.thisptr.math.optimizer.FunctionMinimizer;
-import jp.thisptr.math.vector.d.DenseArrayVector;
-import jp.thisptr.math.vector.d.Vector;
+import jp.thisptr.math.structure.vector.DenseArrayVector;
+import jp.thisptr.math.structure.vector.Vector;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;

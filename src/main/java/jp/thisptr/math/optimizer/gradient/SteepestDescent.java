@@ -4,9 +4,8 @@ import jp.thisptr.math.optimizer.Function;
 import jp.thisptr.math.optimizer.FunctionMinimizer;
 import jp.thisptr.math.optimizer.linesearch.BacktrackingLineSearcher;
 import jp.thisptr.math.optimizer.linesearch.LineSearcher;
-import jp.thisptr.math.vector.d.ArrayVector;
-import jp.thisptr.math.vector.d.DenseArrayVector;
-import jp.thisptr.math.vector.d.Vector;
+import jp.thisptr.math.structure.operation.ArrayOp;
+import jp.thisptr.math.structure.vector.Vector;
 
 public class SteepestDescent extends FunctionMinimizer {
 	private final Function f;
@@ -33,33 +32,28 @@ public class SteepestDescent extends FunctionMinimizer {
 		if (x0 != null)
 			for (int i = 0; i < f.xdim(); ++i)
 				this.x[i] = x0.get(i);
-		this.dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
+		this.dfx = f.df(x);
 		this.lineSearcher = lineSearcher != null ? lineSearcher : new BacktrackingLineSearcher();
 	}
 
 	@Override
 	public void step() {
-		final double[] d = dfx.clone();
-		ArrayVector.negate(d);
-		double stepsize = lineSearcher.search(f, x, dfx, d, 1.0);
+		final double[] dir = ArrayOp.negateNew(dfx);
+		final double fx0 = f.f(x);
+		final double stepsize = lineSearcher.search(f, x, fx0, dfx, dir, 1.0);
 		
-		ArrayVector.addScaled(x, stepsize, d);
-		dfx = ((DenseArrayVector) f.df(DenseArrayVector.wrap(x))).rawArray();
-	}
-	
-	@Override
-	public boolean converged() {
-		return converged(0.00001);
+		ArrayOp.addScaled(x, stepsize, dir);
+		dfx = f.df(x);
 	}
 
 	@Override
 	public boolean converged(final double epsilon) {
-		return ArrayVector.l2norm(dfx) < epsilon;
+		return ArrayOp.l2norm(dfx) < epsilon;
 	}
 
 	@Override
-	public Vector current() {
-		return new DenseArrayVector(x);
+	public double[] current() {
+		return x.clone();
 	}
 	
 	@Override

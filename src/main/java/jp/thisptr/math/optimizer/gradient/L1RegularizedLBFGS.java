@@ -2,13 +2,11 @@ package jp.thisptr.math.optimizer.gradient;
 
 import jp.thisptr.math.optimizer.Function;
 import jp.thisptr.math.optimizer.linesearch.LineSearcher;
-import jp.thisptr.math.vector.d.ArrayVector;
-import jp.thisptr.math.vector.d.DenseArrayVector;
-import jp.thisptr.math.vector.d.Vector;
+import jp.thisptr.math.structure.operation.ArrayOp;
 
 abstract class OrthantWiseLineSearcher extends LineSearcher {
 	@Override
-	public double search(final Function f, final double[] x, final double[] dfx, final double[] dir, final double delta0) {
+	public double search(final Function f, final double[] x0, final double fx0, final double[] dfx0, final double[] dir, final double delta0) {
 		throw new UnsupportedOperationException();
 	}
 	public abstract double search(final Function f, final double c, final boolean[] doRegularize, final double[] x0, final double[] pdfx0, final double[] dir, final double delta0);
@@ -35,7 +33,7 @@ class OrthantWiseBacktrackingLineSearcher extends OrthantWiseLineSearcher {
 	}
 	
 	private static double regularizedFunction(final Function f, final double c, final boolean[] doRegularize, final double[] x) {
-		return f.f(DenseArrayVector.wrap(x)) + c * ArrayVector.l1norm(x, doRegularize);
+		return f.f(x) + c * ArrayOp.l1norm(x, doRegularize);
 	}
 	
 	private static void projectOntoOrthant(final double[] x, final double[] orthant, final boolean[] mask) {
@@ -59,7 +57,7 @@ class OrthantWiseBacktrackingLineSearcher extends OrthantWiseLineSearcher {
 	
 		final double[] x = new double[x0.length];	
 		for (int loop = 0; loop < maxIteration; ++loop) {
-			ArrayVector.addScaled(x, x0, delta, dir);
+			ArrayOp.addScaled(x, x0, delta, dir);
 			projectOntoOrthant(x, xi0, doRegularize);
 			
 			final double fx = regularizedFunction(f, c, doRegularize, x);
@@ -97,15 +95,15 @@ public class L1RegularizedLBFGS extends LimitedMemoryBFGS {
 		this(f, c, null);
 	}
 	
-	public L1RegularizedLBFGS(final Function f, final double c, final Vector x0) {
+	public L1RegularizedLBFGS(final Function f, final double c, final double[] x0) {
 		this(f, c, x0, 20);
 	}
 	
-	public L1RegularizedLBFGS(final Function f, final double c, final Vector x0, final int updateHistoryLimit) {
+	public L1RegularizedLBFGS(final Function f, final double c, final double[] x0, final int updateHistoryLimit) {
 		this(f, c, x0, updateHistoryLimit, null);
 	}
 	
-	public L1RegularizedLBFGS(final Function f, final double c, final Vector x0, final int updateHistoryLimit, final boolean[] doRegularize) {
+	public L1RegularizedLBFGS(final Function f, final double c, final double[] x0, final int updateHistoryLimit, final boolean[] doRegularize) {
 		super(f, x0, new OrthantWiseBacktrackingLineSearcher(), updateHistoryLimit);
 		this.c = c;
 		this.doRegularize = new boolean[f.xdim()];
@@ -155,7 +153,7 @@ public class L1RegularizedLBFGS extends LimitedMemoryBFGS {
 	
 	@Override
 	protected double[] getSearchDirection0() {
-		return ArrayVector.negate(pdfx.clone());
+		return ArrayOp.negate(pdfx.clone());
 	}
 
 	private void constrainSearchDirection(final double[] dir) {
@@ -183,6 +181,6 @@ public class L1RegularizedLBFGS extends LimitedMemoryBFGS {
 	
 	@Override
 	public boolean converged(final double epsilon) {
-		return ArrayVector.l2norm(pdfx) < epsilon;
+		return ArrayOp.l2norm(pdfx) < epsilon;
 	}
 }

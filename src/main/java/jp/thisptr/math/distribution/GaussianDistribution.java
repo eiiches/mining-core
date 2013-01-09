@@ -2,7 +2,9 @@ package jp.thisptr.math.distribution;
 
 import java.util.Random;
 
-public class GaussianDistribution extends Distribution {
+import org.apache.commons.lang.NotImplementedException;
+
+public class GaussianDistribution implements Distribution {
 	private final double average;
 	private final double deviation;
 	private final Random random = new Random();
@@ -19,5 +21,10 @@ public class GaussianDistribution extends Distribution {
 	@Override
 	public double sample() {
 		return random.nextGaussian() * deviation + average;
+	}
+	
+	@Override
+	public double at(final double x) {
+		return Math.exp(-Math.pow(x - average, 2) / (2 * deviation * deviation)) / Math.sqrt(2 * Math.PI * deviation * deviation);
 	}
 }

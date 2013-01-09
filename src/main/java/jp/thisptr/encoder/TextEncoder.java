@@ -3,8 +3,8 @@ package jp.thisptr.encoder;
 import java.util.List;
 
 import jp.thisptr.core.util.SequencialIdMapper;
-import jp.thisptr.math.vector.d.SparseMapVector;
-import jp.thisptr.math.vector.d.SparseVector;
+import jp.thisptr.math.structure.vector.SparseMapVector;
+import jp.thisptr.math.structure.vector.SparseVector;
 import jp.thisptr.tokenizer.Tokenizer;
 
 public class TextEncoder {

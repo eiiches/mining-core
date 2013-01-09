@@ -3,7 +3,7 @@ package jp.thisptr.classifier.instance.transform;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import jp.thisptr.classifier.instance.Instance;
 import jp.thisptr.classifier.instance.Instances;
-import jp.thisptr.math.vector.d.SparseMapVector;
+import jp.thisptr.math.structure.vector.SparseMapVector;
 
 public class IdfTransformer extends Transformer<SparseMapVector> {
 	@Override

@@ -14,6 +14,18 @@ public class SequencialIdMapper<T> {
 	private final Lock read = rwlock.readLock();
 	private final Lock write = rwlock.writeLock();
 	
+	private final int beginId;
+	private int nextId;
+	
+	public SequencialIdMapper() {
+		this(0);
+	}
+	
+	public SequencialIdMapper(final int beginId) {
+		this.beginId = beginId;
+		this.nextId = beginId;
+	}
+	
 	public int size() {
 		read.lock();
 		try {
@@ -26,7 +38,7 @@ public class SequencialIdMapper<T> {
 	public T reverse(final int id) {
 		read.lock();
 		try {
-			return objects.get(id);
+			return objects.get(id - beginId);
 		} finally {
 			read.unlock();
 		}
@@ -39,11 +51,10 @@ public class SequencialIdMapper<T> {
 	private int mapIfAbsent(final T token) {
 		write.lock();
 		try {
-			Integer id = objectId.size();
-			Integer pid = objectId.putIfAbsent(token, id);
+			final Integer pid = objectId.putIfAbsent(token, nextId);
 			if (pid == null) {
 				objects.add(token);
-				return id;
+				return nextId++;
 			}
 			return pid;
 		} finally {
@@ -52,9 +63,9 @@ public class SequencialIdMapper<T> {
 	}
 	
 	public int map(final T obj) {
-		Integer id = get(obj);
-		if (id == null)
-			id = mapIfAbsent(obj);
-		return id;
+		final Integer id = get(obj);
+		if (id != null)
+			return id;
+		return mapIfAbsent(obj);
 	}
 }

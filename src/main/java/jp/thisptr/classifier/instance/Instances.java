@@ -1,6 +1,6 @@
 package jp.thisptr.classifier.instance;
 
-import jp.thisptr.math.vector.d.Vector;
+import jp.thisptr.math.structure.vector.Vector;
 
 public class Instances<VectorType extends Vector, CategoryType> extends BasicInstances<VectorType, CategoryType> {
 	private int dim = 0;

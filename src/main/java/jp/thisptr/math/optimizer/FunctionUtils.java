@@ -1,8 +1,8 @@
 package jp.thisptr.math.optimizer;
 
-import jp.thisptr.math.vector.d.ArrayVector;
-import jp.thisptr.math.vector.d.DenseArrayVector;
-import jp.thisptr.math.vector.d.Vector;
+import jp.thisptr.math.structure.operation.ArrayOp;
+import jp.thisptr.math.structure.vector.DenseArrayVector;
+import jp.thisptr.math.structure.vector.Vector;
 
 public final class FunctionUtils {
 	private FunctionUtils() { }
@@ -20,7 +20,7 @@ public final class FunctionUtils {
 			@Override
 			public Vector df(final Vector x) {
 				final DenseArrayVector v = (DenseArrayVector) f.df(x);
-				ArrayVector.negate(v.rawArray());
+				ArrayOp.negate(v.rawArray());
 				return v;
 			}
 		};

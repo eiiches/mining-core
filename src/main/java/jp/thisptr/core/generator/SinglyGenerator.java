@@ -13,6 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import jp.thisptr.core.exception.TypeError;
 import jp.thisptr.core.exception.UnsupportedTypeException;
 import jp.thisptr.core.exception.ValueError;
@@ -21,6 +23,9 @@ import jp.thisptr.core.generator.signal.StopIteration;
 import jp.thisptr.core.lambda.Lambda1;
 import jp.thisptr.core.lambda.Lambda2;
 import jp.thisptr.core.lambda.util.Lambdas;
+import jp.thisptr.core.mapreduce.MapReduceRunner;
+import jp.thisptr.core.mapreduce.Mapper;
+import jp.thisptr.core.mapreduce.Reducer;
 import jp.thisptr.core.tuple.Pair;
 import jp.thisptr.core.util.OutputParameter;
 
@@ -482,4 +487,12 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 			}
 		});
 	}
+	
+//	public <InputKey, InputValue, MappedKey, MappedValue, ReducedKey, ReducedValue>
+//	SinglyGenerator<T> mapReduce(final Mapper<InputKey, InputValue, MappedKey, MappedValue> mapper,
+//			final Reducer<MappedKey, MappedValue, ReducedKey, ReducedValue> reducer) {
+//		final MapReduceRunner<InputKey, InputValue, ReducedKey, ReducedValue> runner =
+//				new MapReduceRunner<InputKey, InputValue, ReducedKey, ReducedValue>(mapper, reducer);
+//		throw new NotImplementedException();
+//	}
 }
