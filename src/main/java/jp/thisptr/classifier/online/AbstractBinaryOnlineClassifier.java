@@ -3,7 +3,7 @@ package jp.thisptr.classifier.online;
 import java.util.Arrays;
 
 import jp.thisptr.classifier.OnlineLearner;
-import jp.thisptr.classifier.instance.Instance;
+import jp.thisptr.instance.LabeledInstance;
 import jp.thisptr.math.structure.operation.VectorOp;
 import jp.thisptr.math.structure.vector.DenseArrayVector;
 import jp.thisptr.math.structure.vector.SparseMapVector;
@@ -67,7 +67,7 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Sp
 	}
 	
 	@Override
-	public final void learn(final Instance<SparseMapVector, Boolean> instance) {
+	public final void learn(final LabeledInstance<SparseMapVector, Boolean> instance) {
 		final SparseMapVector x = instance.getVector();
 		final int y = instance.getLabel() ? 1 : -1;
 		

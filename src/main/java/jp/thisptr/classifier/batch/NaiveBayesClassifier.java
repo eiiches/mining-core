@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import jp.thisptr.classifier.instance.Instances;
 import jp.thisptr.classifier.BatchLearner;
 import jp.thisptr.core.collection.DefaultMap;
 import jp.thisptr.core.generator.Generators;
@@ -16,6 +15,7 @@ import jp.thisptr.core.lambda.alias.Lambda;
 import jp.thisptr.core.lambda.util.Lambdas;
 import jp.thisptr.core.util.Cache;
 import jp.thisptr.core.util.CollectionUtils;
+import jp.thisptr.instance.Instances;
 import jp.thisptr.math.structure.vector.SparseMapVector;
 import jp.thisptr.math.structure.vector.SparseVector;
 

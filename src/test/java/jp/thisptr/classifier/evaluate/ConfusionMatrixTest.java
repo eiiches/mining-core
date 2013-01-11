@@ -1,6 +1,7 @@
-package jp.thisptr.classifier;
+package jp.thisptr.classifier.evaluate;
 
 import static org.junit.Assert.assertEquals;
+import jp.thisptr.classifier.evaluate.ConfusionMatrix;
 
 import org.junit.Test;
 

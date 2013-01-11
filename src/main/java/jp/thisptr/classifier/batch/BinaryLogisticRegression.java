@@ -1,9 +1,12 @@
 package jp.thisptr.classifier.batch;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
+
+import java.util.List;
+
 import jp.thisptr.classifier.BatchLearner;
-import jp.thisptr.classifier.instance.Instance;
-import jp.thisptr.classifier.instance.Instances;
+import jp.thisptr.instance.Instances;
+import jp.thisptr.instance.LabeledInstance;
 import jp.thisptr.math.optimizer.Function;
 import jp.thisptr.math.optimizer.FunctionMinimizer;
 import jp.thisptr.math.optimizer.gradient.L1RegularizedLBFGS;
@@ -15,7 +18,7 @@ import jp.thisptr.math.structure.vector.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, Boolean, Instances<SparseMapVector, Boolean>> {
+public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, Boolean> {
 	private final Logger log = LoggerFactory.getLogger(BinaryLogisticRegression.class);
 	
 	private static final int DEFAULT_MAX_ITERATION = 1000;
@@ -26,7 +29,7 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 	private double convergenceCriteria;
 	private int maxIteration;
 	
-	private Vector w;
+	private double[] w;
 	private int dim;
 
 	public BinaryLogisticRegression() {
@@ -43,21 +46,20 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 		this.maxIteration = DEFAULT_MAX_ITERATION;
 	}
 
-	private static double calcPy1(final SparseMapVector x, final DenseArrayVector w) {
-		final double[] ww = w.rawArray();
-		double wx = ww[0];
+	private static double calcPy1(final SparseMapVector x, final double[] w) {
+		double wx = w[0];
 		for (final Int2DoubleMap.Entry v : x.rawMap().int2DoubleEntrySet()) {
 			// Run boundary check because when we have unseed data x,
 			// the dimension of x can (almost always) be larger than the learning data.
-			if (ww.length > v.getIntKey() + 1)
-				wx += v.getDoubleValue() * ww[v.getIntKey() + 1];
+			if (w.length > v.getIntKey() + 1)
+				wx += v.getDoubleValue() * w[v.getIntKey() + 1];
 		}
 		return 1.0 / (1 + Math.exp(-wx));
 	}
 	
 	@Override
-	public void learn(final Instances<SparseMapVector, Boolean> instances) {
-		dim = instances.dim();
+	public void learn(final List<? extends LabeledInstance<? extends SparseMapVector, Boolean>> instances) {
+		dim = Instances.getDimension(instances);
 		
 		final Function f = new Function() {
 			@Override
@@ -66,13 +68,12 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 			}
 	
 			@Override
-			public double f(final Vector w) {
-				final DenseArrayVector ww = (DenseArrayVector) w;
+			public double f(final double[] w) {
 				double sum = 0.0;
-				for (final Instance<SparseMapVector, Boolean> instance : instances) {
+				for (final LabeledInstance<? extends SparseMapVector, Boolean> instance : instances) {
 					final boolean y = instance.getLabel();
 					final SparseMapVector x = instance.getVector();
-					final double p = calcPy1(x, ww);
+					final double p = calcPy1(x, w);
 					if (y) {
 						sum += Math.log(p);
 					} else {
@@ -84,13 +85,12 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 			}
 	
 			@Override
-			public Vector df(final Vector w) {
-				final DenseArrayVector ww = (DenseArrayVector) w;
+			public double[] df(final double[] w) {
 				final double[] result = new double[dim + 1];
-				for (final Instance<SparseMapVector, Boolean> instance : instances) {
+				for (final LabeledInstance<? extends SparseMapVector, Boolean> instance : instances) {
 					final double y = instance.getLabel() ? 1.0 : 0.0;
 					final SparseMapVector x = instance.getVector();
-					final double p = calcPy1(x, ww);
+					final double p = calcPy1(x, w);
 					result[0] += y - p;
 //					for (int i = 0; i < dim; ++i)
 //						result[i + 1] += (y - p) * x.get(i);
@@ -98,7 +98,8 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 						result[v.getIntKey() + 1] += (y - p) * v.getDoubleValue();
 //						result[v.getIndex() + 1] += -2 * (2 * c * y - c - y + 1) * p * v.getValue() + 2 * c * y * v.getValue();
 				}
-				return DenseArrayVector.wrap(ArrayOp.negate(result));
+				ArrayOp.negate(result);
+				return result;
 			}
 		};
 		
@@ -134,7 +135,7 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 		}
 		
 		log.debug(String.format("Converged: f(x) = %.2f", minimizer.function().f(w)));
-		log.debug(String.format("# of non-zero elements in w: %d (c = %.2f)", ArrayOp.nonzero(((DenseArrayVector) w).rawArray(), 1.0e-10), l1Regularizer));
+		log.debug(String.format("# of non-zero elements in w: %d (c = %.2f)", ArrayOp.nonzero(w, 1.0e-10), l1Regularizer));
 	}
 	
 	@Override
@@ -142,10 +143,10 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 		if (w == null)
 			throw new IllegalStateException("The model must be learned first.");
 		// FIXME: The threshold should be better to be able to be adjusted.
-		return calcPy1(x, (DenseArrayVector) w) > 0.5;
+		return calcPy1(x, w) > 0.5;
 	}
 
-	public Vector getWeights() {
-		return w;
+	public DenseArrayVector getWeights() {
+		return new DenseArrayVector(w);
 	}
 }

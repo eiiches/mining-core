@@ -3,9 +3,9 @@ package jp.thisptr.recommend;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.thisptr.classifier.instance.Instance;
-import jp.thisptr.classifier.instance.Instances;
 import jp.thisptr.core.util.ScoredItem;
+import jp.thisptr.instance.Instance;
+import jp.thisptr.instance.Instances;
 import jp.thisptr.math.distribution.multivariate.GibbsDistribution;
 import jp.thisptr.math.distribution.multivariate.MultivariateDistribution;
 import jp.thisptr.math.structure.vector.SparseMapVector;

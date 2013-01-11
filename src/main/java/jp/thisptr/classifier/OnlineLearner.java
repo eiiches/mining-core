@@ -1,7 +1,7 @@
 package jp.thisptr.classifier;
 
-import jp.thisptr.classifier.instance.Instance;
+import jp.thisptr.instance.LabeledInstance;
 
-public interface OnlineLearner<VectorType, ClassType> extends Learner<VectorType, ClassType> {
-	void learn(final Instance<VectorType, ClassType> instance);
+public interface OnlineLearner<VectorType, ClassType> extends Classifier<VectorType, ClassType> {
+	void learn(final LabeledInstance<VectorType, ClassType> instance);
 }

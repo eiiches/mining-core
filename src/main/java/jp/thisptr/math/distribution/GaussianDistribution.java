@@ -2,8 +2,6 @@ package jp.thisptr.math.distribution;
 
 import java.util.Random;
 
-import org.apache.commons.lang.NotImplementedException;
-
 public class GaussianDistribution implements Distribution {
 	private final double average;
 	private final double deviation;

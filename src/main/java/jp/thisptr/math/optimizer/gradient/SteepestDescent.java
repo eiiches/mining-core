@@ -5,7 +5,6 @@ import jp.thisptr.math.optimizer.FunctionMinimizer;
 import jp.thisptr.math.optimizer.linesearch.BacktrackingLineSearcher;
 import jp.thisptr.math.optimizer.linesearch.LineSearcher;
 import jp.thisptr.math.structure.operation.ArrayOp;
-import jp.thisptr.math.structure.vector.Vector;
 
 public class SteepestDescent extends FunctionMinimizer {
 	private final Function f;
@@ -22,16 +21,16 @@ public class SteepestDescent extends FunctionMinimizer {
 		this(f, null, lineSearcher);
 	}
 	
-	public SteepestDescent(final Function f, final Vector x0) {
+	public SteepestDescent(final Function f, final double[] x0) {
 		this(f, x0, null);
 	}
 	
-	public SteepestDescent(final Function f, final Vector x0, final LineSearcher lineSearcher) {
+	public SteepestDescent(final Function f, final double[] x0, final LineSearcher lineSearcher) {
 		this.f = f;
 		this.x = new double[f.xdim()];
 		if (x0 != null)
 			for (int i = 0; i < f.xdim(); ++i)
-				this.x[i] = x0.get(i);
+				this.x[i] = x0[i];
 		this.dfx = f.df(x);
 		this.lineSearcher = lineSearcher != null ? lineSearcher : new BacktrackingLineSearcher();
 	}

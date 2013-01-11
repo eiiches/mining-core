@@ -1,10 +1,13 @@
-package jp.thisptr.classifier.logisticregression;
+package jp.thisptr.classifier.batch;
 
 import static org.junit.Assert.assertTrue;
-import jp.thisptr.classifier.ConfusionMatrix;
-import jp.thisptr.classifier.batch.BinaryLogisticRegression;
-import jp.thisptr.classifier.instance.Instance;
-import jp.thisptr.classifier.instance.Instances;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jp.thisptr.classifier.evaluate.ConfusionMatrix;
+import jp.thisptr.instance.Instance;
+import jp.thisptr.instance.LabeledInstance;
 import jp.thisptr.math.distribution.Distribution;
 import jp.thisptr.math.distribution.GaussianDistribution;
 import jp.thisptr.math.structure.vector.SparseMapVector;
@@ -25,15 +28,15 @@ public class BinaryLogisticRegressionTest {
 		final GaussianDistribution class1 = new GaussianDistribution(0, 0.5);
 		final GaussianDistribution class2 = new GaussianDistribution(1, 0.5);
 
-		final Instances<SparseMapVector, Boolean> instances = new Instances<SparseMapVector, Boolean>();
-		for (int i = 0; i < 100; ++i) instances.add(createRandomVector(class1, dim), true);
-		for (int i = 0; i < 100; ++i) instances.add(createRandomVector(class2, dim), false);
+		final List<LabeledInstance<SparseMapVector, Boolean>> instances = new ArrayList<LabeledInstance<SparseMapVector, Boolean>>();
+		for (int i = 0; i < 100; ++i) instances.add(new LabeledInstance<SparseMapVector, Boolean>(createRandomVector(class1, dim), true));
+		for (int i = 0; i < 100; ++i) instances.add(new LabeledInstance<SparseMapVector, Boolean>(createRandomVector(class2, dim), false));
 
 		final BinaryLogisticRegression classifier = new BinaryLogisticRegression();
 		classifier.learn(instances);
 		
 		final ConfusionMatrix<Boolean> confusion = new ConfusionMatrix<Boolean>();
-		for (final Instance<SparseMapVector, Boolean> instance : instances)
+		for (final LabeledInstance<SparseMapVector, Boolean> instance : instances)
 			confusion.add(instance.getLabel(), classifier.classify(instance.getVector()));
 
 		assertTrue(confusion.getAccuracy() > 0.9);

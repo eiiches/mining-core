@@ -1,25 +1,21 @@
 package jp.thisptr.math.optimizer.gradient;
 
+import static org.junit.Assert.assertEquals;
 import jp.thisptr.math.optimizer.Function;
 import jp.thisptr.math.optimizer.FunctionMinimizer;
-import jp.thisptr.math.structure.vector.DenseArrayVector;
-import jp.thisptr.math.structure.vector.Vector;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class L1RegularizedLBFGSTest {
+	private static Logger log = LoggerFactory.getLogger(L1RegularizedLBFGSTest.class);
 	
-	private void runOptimization(final String name, final FunctionMinimizer optimizer, final Function target, final int maxStep) {
-		System.out.printf("(%s) Initial: f(%s) = %.2f, f'(x) = %s%n", name, optimizer.current(), target.f(optimizer.current()), target.df(optimizer.current()));
-		{ int i = 1; while (!optimizer.converged()) {
-			optimizer.step();
-			System.out.printf("(%s) Iteration %d: f(%s) = %.2f, f'(x) = %s%n", name, i, optimizer.current(), target.f(optimizer.current()), target.df(optimizer.current()));
-			if (i > maxStep)
-				throw new RuntimeException("Poor convergence or diverged!");
-			++i;
-		}}
-		System.out.printf("(%s) Converged%n", name);
+	private void runOptimization(final String name, final FunctionMinimizer optimizer, final Function target, final int maxIterations, final double epsilon) {
+		log.info(String.format("%s: Start", name));
+		
+		optimizer.minimize(maxIterations, epsilon);
+		log.info(String.format("%s: Converged", name));
 	}
 	
 	@Test
@@ -37,34 +33,34 @@ public class L1RegularizedLBFGSTest {
 		}
 		
 		final Function target = new Function() {
-			public double f(final Vector x) {
+			public double f(final double[] x) {
 				double result = 0.0;
 				for (int i = 0; i < n; i += 2) {
-					double t1 = 1.0 - x.get(i);
-					double t2 = 10.0 * (x.get(i + 1) - x.get(i) * x.get(i));
+					double t1 = 1.0 - x[i];
+					double t2 = 10.0 * (x[i + 1] - x[i] * x[i]);
 					result += t1 * t1 + t2 * t2;
 				}
 				return result;
 			}
-			public Vector df(final Vector x) {
+			public double[] df(final double[] x) {
 				final double[] result = new double[n];
 				for (int i = 0; i < n; i += 2) {
-					double t1 = 1.0 - x.get(i);
-					double t2 = 10.0 * (x.get(i + 1) - x.get(i) * x.get(i));
+					double t1 = 1.0 - x[i];
+					double t2 = 10.0 * (x[i + 1] - x[i] * x[i]);
 					result[i + 1] = 20.0 * t2;
-					result[i] = -2.0 * (x.get(i) * result[i + 1] + t1);
+					result[i] = -2.0 * (x[i] * result[i + 1] + t1);
 				}
-				return DenseArrayVector.wrap(result);
+				return result;
 			}
 			public int xdim() {
 				return n;
 			}
 		};
-	
+		
 		final double c = 0.1;
-		final FunctionMinimizer optimizer = new L1RegularizedLBFGS(target, c, DenseArrayVector.wrap(x0));
-		runOptimization("LibBFGSSample", optimizer, target, 10000);
-		assertEquals(0.863628, optimizer.current().get(0), 0.0001);
-		assertEquals(0.745354, optimizer.current().get(1), 0.0001);
+		final FunctionMinimizer optimizer = new L1RegularizedLBFGS(target, c, x0);
+		runOptimization("LibBFGSSample", optimizer, target, 10000, 1e-4);
+		assertEquals(0.863628, optimizer.current()[0], 0.0001);
+		assertEquals(0.745354, optimizer.current()[1], 0.0001);
 	}
 }

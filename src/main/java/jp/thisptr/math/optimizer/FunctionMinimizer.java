@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public abstract class FunctionMinimizer {
 	private static Logger log = LoggerFactory.getLogger(FunctionMinimizer.class);
 	
-	public static final double DEFAULT_EPSILON = 0.0001;
+	public static final double DEFAULT_EPSILON = 1e-4;
 	public static final int DEFAULT_MAX_ITERATIONS = 1000;
 	
 	public abstract void step();

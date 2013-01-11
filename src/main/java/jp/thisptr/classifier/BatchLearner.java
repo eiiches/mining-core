@@ -1,7 +1,9 @@
 package jp.thisptr.classifier;
 
-import jp.thisptr.classifier.instance.BasicInstances;
+import java.util.List;
 
-public interface BatchLearner<VectorType, ClassType, InstancesType extends BasicInstances<VectorType, ClassType>> extends Learner<VectorType, ClassType> {
-	void learn(final InstancesType dataset);
+import jp.thisptr.instance.LabeledInstance;
+
+public interface BatchLearner<VectorType, ClassType> extends Classifier<VectorType, ClassType> {
+	void learn(final List<? extends LabeledInstance<? extends VectorType, ClassType>> instances);
 }

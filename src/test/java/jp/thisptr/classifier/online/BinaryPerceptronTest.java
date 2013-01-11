@@ -5,9 +5,9 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
-import jp.thisptr.classifier.ConfusionMatrix;
 import jp.thisptr.classifier.OnlineLearner;
-import jp.thisptr.classifier.instance.Instance;
+import jp.thisptr.classifier.evaluate.ConfusionMatrix;
+import jp.thisptr.instance.LabeledInstance;
 import jp.thisptr.math.structure.vector.SparseMapVector;
 
 import org.junit.Test;
@@ -18,11 +18,11 @@ import org.slf4j.LoggerFactory;
 public class BinaryPerceptronTest {
 	private static Logger log = LoggerFactory.getLogger(BinaryPerceptronTest.class);
 	
-	private static Instance<SparseMapVector, Boolean> instance(final double x1, final double x2, final boolean y) {
-		return new Instance<SparseMapVector, Boolean>(new SparseMapVector(x1, x2), y);
+	private static LabeledInstance<SparseMapVector, Boolean> instance(final double x1, final double x2, final boolean y) {
+		return new LabeledInstance<SparseMapVector, Boolean>(new SparseMapVector(x1, x2), y);
 	}
 	
-	private static List<Instance<SparseMapVector, Boolean>> instances = Arrays.asList(
+	private static List<LabeledInstance<SparseMapVector, Boolean>> instances = Arrays.asList(
 		instance(0, 0, true),
 		instance(0, 1, true),
 		instance(1, 2, true),
@@ -45,12 +45,12 @@ public class BinaryPerceptronTest {
 		
 		for (int i = 0; i < nIterations; ++i) {
 			log.debug(String.format("Iteration %d:", i + 1));
-			for (final Instance<SparseMapVector, Boolean> instance : instances)
+			for (final LabeledInstance<SparseMapVector, Boolean> instance : instances)
 				model.learn(instance);
 		}
 	
 		final ConfusionMatrix<Boolean> cm = new ConfusionMatrix<Boolean>();
-		for (final Instance<SparseMapVector, Boolean> instance : instances) {
+		for (final LabeledInstance<SparseMapVector, Boolean> instance : instances) {
 			final Boolean predicted = model.classify(instance.getVector());
 			final Boolean actual = instance.getLabel();
 			cm.add(actual, predicted);
