@@ -3,9 +3,7 @@ package jp.thisptr.math.vector;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 
-import java.util.Map;
-
-import jp.thisptr.util.CollectionUtils;
+import java.util.Collections;
 
 public class SparseMapVector extends SparseVector implements Vector.Modifiable, Vector.MapAccessible {
 	private final Int2DoubleMap map;
@@ -36,8 +34,9 @@ public class SparseMapVector extends SparseVector implements Vector.Modifiable, 
 	
 	@Override
 	public int size() {
-		Integer result = CollectionUtils.max(map.keySet());
-		return result != null ? result + 1 : 0;
+		if (map.isEmpty())
+			return 0;
+		return Collections.max(map.keySet()) + 1;
 	}
 	
 	@Override
