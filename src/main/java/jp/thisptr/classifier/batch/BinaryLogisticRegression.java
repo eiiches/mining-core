@@ -5,15 +5,15 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import java.util.List;
 
 import jp.thisptr.classifier.BatchLearner;
-import jp.thisptr.instance.Instances;
-import jp.thisptr.instance.LabeledInstance;
-import jp.thisptr.math.optimizer.Function;
-import jp.thisptr.math.optimizer.FunctionMinimizer;
-import jp.thisptr.math.optimizer.gradient.L1RegularizedLBFGS;
-import jp.thisptr.math.structure.operation.ArrayOp;
-import jp.thisptr.math.structure.vector.DenseArrayVector;
-import jp.thisptr.math.structure.vector.SparseMapVector;
-import jp.thisptr.math.structure.vector.Vector;
+import jp.thisptr.math.operation.ArrayOp;
+import jp.thisptr.math.vector.DenseArrayVector;
+import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.math.vector.Vector;
+import jp.thisptr.optimizer.Function;
+import jp.thisptr.optimizer.FunctionMinimizer;
+import jp.thisptr.optimizer.gradient.L1RegularizedLBFGS;
+import jp.thisptr.structure.instance.Instances;
+import jp.thisptr.structure.instance.LabeledInstance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

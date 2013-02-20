@@ -2,8 +2,8 @@ package jp.thisptr.classifier.online;
 
 import java.util.Map;
 
-import jp.thisptr.math.structure.operation.VectorOp;
-import jp.thisptr.math.structure.vector.SparseMapVector;
+import jp.thisptr.math.operation.VectorOp;
+import jp.thisptr.math.vector.SparseMapVector;
 
 /**
  * Implementation of Passive-Aggressive online classifier, described in,

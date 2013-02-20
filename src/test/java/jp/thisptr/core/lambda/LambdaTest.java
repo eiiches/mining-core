@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
-import jp.thisptr.core.lambda.util.Lambdas;
+import jp.thisptr.util.Lambdas;
 
 import org.junit.Test;
 

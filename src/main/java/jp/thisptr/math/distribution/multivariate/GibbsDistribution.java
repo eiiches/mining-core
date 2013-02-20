@@ -1,7 +1,7 @@
 package jp.thisptr.math.distribution.multivariate;
 
-import jp.thisptr.math.structure.operation.ArrayOp;
-import jp.thisptr.math.structure.vector.SparseMapVector;
+import jp.thisptr.math.operation.ArrayOp;
+import jp.thisptr.math.vector.SparseMapVector;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -20,11 +20,11 @@ public class GibbsDistribution implements MultivariateDistribution {
 	}
 
 	@Override
-	public double at(final double[] x) {
+	public double densityAt(final double[] x) {
 		return Math.exp(ArrayOp.dot(x, lambda)) / z;
 	}
 	
-	public double at(final SparseMapVector x) {
+	public double densityAt(final SparseMapVector x) {
 		throw new NotImplementedException();
 	}
 }

@@ -2,7 +2,7 @@ package jp.thisptr.classifier.online;
 
 import java.util.Map;
 
-import jp.thisptr.math.structure.vector.SparseMapVector;
+import jp.thisptr.math.vector.SparseMapVector;
 
 
 public class BinaryPerceptron extends AbstractBinaryOnlineClassifier {

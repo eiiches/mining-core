@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import jp.thisptr.classifier.Classifier;
-import jp.thisptr.instance.LabeledInstance;
+import jp.thisptr.structure.instance.LabeledInstance;
 
 public abstract class CrossValidation<VectorType, ClassType> {
 	protected abstract Classifier<VectorType, ClassType> build(final List<? extends LabeledInstance<? extends VectorType, ClassType>> learnset);

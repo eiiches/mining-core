@@ -8,11 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import jp.thisptr.core.exception.ValueError;
-import jp.thisptr.core.lambda.util.Lambdas;
-import jp.thisptr.core.lambda.util.Predicates;
-import jp.thisptr.core.tuple.Pair;
-import jp.thisptr.core.util.OutputParameter;
+import jp.thisptr.lang.ValueError;
+import jp.thisptr.lang.generator.Generators;
+import jp.thisptr.lang.tuple.Pair;
+import jp.thisptr.util.Lambdas;
+import jp.thisptr.util.OutputParameter;
+import jp.thisptr.util.Predicates;
 
 import org.junit.Test;
 

@@ -3,9 +3,10 @@ package jp.thisptr.math.optimizer.gradient;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import jp.thisptr.math.distribution.UniformDistribution;
-import jp.thisptr.math.optimizer.Function;
-import jp.thisptr.math.optimizer.FunctionMinimizer;
-import jp.thisptr.math.optimizer.linesearch.BacktrackingLineSearcher;
+import jp.thisptr.optimizer.Function;
+import jp.thisptr.optimizer.FunctionMinimizer;
+import jp.thisptr.optimizer.gradient.LimitedMemoryBFGS;
+import jp.thisptr.optimizer.linesearch.BacktrackingLineSearcher;
 
 import org.junit.Test;
 import org.slf4j.Logger;

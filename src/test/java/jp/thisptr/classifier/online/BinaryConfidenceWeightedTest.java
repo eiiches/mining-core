@@ -1,13 +1,15 @@
 package jp.thisptr.classifier.online;
 
-import jp.thisptr.classifier.OnlineLearner;
-import jp.thisptr.math.structure.vector.SparseMapVector;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.experimental.theories.DataPoint;
+import org.junit.runner.RunWith;
 
-// FIXME: Extending BinaryPerceptronTest is a bad idea.
-public class BinaryConfidenceWeightedTest extends BinaryPerceptronTest {
-	@Override
-	public OnlineLearner<SparseMapVector, Boolean> doCreateLearner() {
-		// TODO: We have to test Mode.PA_I and Mode.PA_II
-		return new BinaryConfidenceWeighted(1, 100);
+@RunWith(Enclosed.class)
+public class BinaryConfidenceWeightedTest {
+	public static class AccuracyTest extends AbstractAccuracyTest {
+		@DataPoint
+		public static BinaryConfidenceWeighted create() {
+			return new BinaryConfidenceWeighted(1, 1);
+		}
 	}
 }

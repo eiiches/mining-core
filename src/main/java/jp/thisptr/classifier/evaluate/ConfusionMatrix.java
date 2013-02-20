@@ -5,8 +5,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 
+ * @param <CategoryType> A class label type, whose <tt>equals()</tt> and <tt>hashCode()</tt> must be correctly implemented.
+ */
 public class ConfusionMatrix<CategoryType> {
 	private Set<CategoryType> categories;
+	
+	/**
+	 * A value for precision/recall/f-measure/accuracy when no evaluations are done.
+	 */
+	private static final double DEFAULT_VALUE = 1.0;
 	
 	/* Map<actual, Map<predicted, count>> */
 	private Map<CategoryType, Map<CategoryType, Integer>> matrix;
@@ -71,22 +80,22 @@ public class ConfusionMatrix<CategoryType> {
 	public double getPrecision(final CategoryType category) {
 		final int denom = getCountPredicted(category);
 		if (denom == 0)
-			return 0.0;
+			return DEFAULT_VALUE;
 		return getCount(category, category) / (double) denom;
 	}
 	
 	public double getRecall(final CategoryType category) {
 		final int denom = getCountActual(category);
 		if (denom == 0)
-			return 0.0;
+			return DEFAULT_VALUE;
 		return getCount(category, category) / (double) denom;
 	}
 	
 	public double getFMeasure(final CategoryType category) {
 		final double precision = getPrecision(category);
 		final double recall = getRecall(category);
-		if (precision == 0.0 || recall == 0.0)
-			return 0.0;
+		if (precision == 0.0 && recall == 0.0)
+			return DEFAULT_VALUE;
 		return 2 * precision * recall / (precision + recall);
 	}
 
@@ -101,7 +110,7 @@ public class ConfusionMatrix<CategoryType> {
 			}
 		}
 		if (all == 0)
-			return 0.0;
+			return DEFAULT_VALUE;
 		return correct / (double) all;
 	}
 	

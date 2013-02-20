@@ -1,13 +1,25 @@
 package jp.thisptr.classifier.online;
 
-import jp.thisptr.classifier.OnlineLearner;
-import jp.thisptr.math.structure.vector.SparseMapVector;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.experimental.theories.DataPoint;
+import org.junit.runner.RunWith;
 
-// FIXME: Extending BinaryPerceptronTest is a bad idea.
-public class BinaryPassiveAggressiveTest extends BinaryPerceptronTest {
-	@Override
-	public OnlineLearner<SparseMapVector, Boolean> doCreateLearner() {
-		// TODO: We have to test Mode.PA_I and Mode.PA_II
-		return new BinaryPassiveAggressive(BinaryPassiveAggressive.Mode.PA_I);
+@RunWith(Enclosed.class)
+public class BinaryPassiveAggressiveTest {
+	public static class AccuracyTest extends AbstractAccuracyTest {
+		@DataPoint
+		public static BinaryPassiveAggressive createPA() {
+			return new BinaryPassiveAggressive(BinaryPassiveAggressive.Mode.PA);
+		}
+		
+		@DataPoint
+		public static BinaryPassiveAggressive createPA1() {
+			return new BinaryPassiveAggressive(BinaryPassiveAggressive.Mode.PA_I);
+		}
+		
+		@DataPoint
+		public static BinaryPassiveAggressive createPA2() {
+			return new BinaryPassiveAggressive(BinaryPassiveAggressive.Mode.PA_II);
+		}
 	}
 }

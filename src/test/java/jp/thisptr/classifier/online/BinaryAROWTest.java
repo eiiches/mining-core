@@ -1,12 +1,15 @@
 package jp.thisptr.classifier.online;
 
-import jp.thisptr.classifier.OnlineLearner;
-import jp.thisptr.math.structure.vector.SparseMapVector;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.experimental.theories.DataPoint;
+import org.junit.runner.RunWith;
 
-// FIXME: Extending BinaryPerceptronTest is a bad idea.
-public class BinaryAROWTest extends BinaryPerceptronTest {
-	@Override
-	public OnlineLearner<SparseMapVector, Boolean> doCreateLearner() {
-		return new BinaryAROW(0.1, 10);
+@RunWith(Enclosed.class)
+public class BinaryAROWTest {
+	public static class AccuracyTest extends AbstractAccuracyTest {
+		@DataPoint
+		public BinaryAROW create() {
+			return new BinaryAROW();
+		}
 	}
 }

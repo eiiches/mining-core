@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.thisptr.classifier.evaluate.ConfusionMatrix;
-import jp.thisptr.instance.Instance;
-import jp.thisptr.instance.LabeledInstance;
 import jp.thisptr.math.distribution.Distribution;
 import jp.thisptr.math.distribution.GaussianDistribution;
-import jp.thisptr.math.structure.vector.SparseMapVector;
+import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.structure.instance.Instance;
+import jp.thisptr.structure.instance.LabeledInstance;
 
 import org.junit.Test;
 
@@ -39,6 +39,7 @@ public class BinaryLogisticRegressionTest {
 		for (final LabeledInstance<SparseMapVector, Boolean> instance : instances)
 			confusion.add(instance.getLabel(), classifier.classify(instance.getVector()));
 
-		assertTrue(confusion.getAccuracy() > 0.9);
+		final double accuracy = confusion.getAccuracy();
+		assertTrue(accuracy > 0.9);
 	}
 }

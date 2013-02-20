@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import jp.thisptr.core.tuple.Pair;
+import jp.thisptr.lang.tuple.Pair;
 
 public final class SuffixTree {
 	private final SuffixArray suffixArray;

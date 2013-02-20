@@ -5,8 +5,8 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import java.util.Map;
 
 import jp.thisptr.hash.IntMurmurHash;
-import jp.thisptr.math.structure.vector.SparseMapVector;
-import jp.thisptr.math.structure.vector.SparseVector;
+import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.math.vector.SparseVector;
 
 public class IntSimHash {
 	private static final int SIZE = Integer.SIZE;
