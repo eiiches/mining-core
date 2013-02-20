@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 
 import java.util.Collections;
 
-public class SparseMapVector extends SparseVector implements Vector.Modifiable, Vector.MapAccessible {
+public class SparseMapVector extends SparseVector implements Vector.MapAccessible {
 	private final Int2DoubleMap map;
 	
 	public SparseMapVector() {
@@ -47,5 +47,11 @@ public class SparseMapVector extends SparseVector implements Vector.Modifiable, 
 	@Override
 	public Int2DoubleMap rawMap() {
 		return map;
+	}
+
+	@Override
+	public void accept(final Visitor visitor) {
+		for (final Int2DoubleMap.Entry e : map.int2DoubleEntrySet())
+			visitor.visit(e.getIntKey(), e.getDoubleValue());
 	}
 }

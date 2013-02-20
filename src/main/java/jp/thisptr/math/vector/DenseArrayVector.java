@@ -2,7 +2,7 @@ package jp.thisptr.math.vector;
 
 import java.util.Arrays;
 
-public class DenseArrayVector extends DenseVector implements Vector.Modifiable, Vector.ArrayAccessible {
+public class DenseArrayVector extends DenseVector {
 	private final double[] array;
 	
 	public DenseArrayVector(final int dimension) {
@@ -40,13 +40,11 @@ public class DenseArrayVector extends DenseVector implements Vector.Modifiable, 
 	public int capacity() {
 		return array.length;
 	}
-	
-	/**
-	 * @return A raw array for the vector.
-	 *   Any modification to the returned array is reflected to the corresponding Vector instance.
-	 */
+
 	@Override
-	public double[] rawArray() {
-		return array;
+	public void accept(final Visitor visitor) {
+		for (int i = 0; i < array.length; ++i)
+			if (array[i] != 0.0)
+				visitor.visit(i, array[i]);
 	}
 }

@@ -3,6 +3,7 @@ package jp.thisptr.classifier.online;
 import java.util.Map;
 
 import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.math.vector.Vector;
 
 
 public class BinaryPerceptron extends AbstractBinaryOnlineClassifier {
@@ -48,10 +49,11 @@ public class BinaryPerceptron extends AbstractBinaryOnlineClassifier {
 		
 		if (y * wx <= 0.0) {
 			w[0] += learningRate * y;
-			for (final Map.Entry<Integer, Double> entry : x.rawMap().entrySet()) {
-				final int i = entry.getKey();
-				w[i + 1] += learningRate * y * entry.getValue();
-			}
+			x.accept(new Vector.Visitor() {
+				public void visit(final int index, final double value) {
+					w[index + 1] += learningRate * y * value;
+				}
+			});
 			return true;
 		}
 		

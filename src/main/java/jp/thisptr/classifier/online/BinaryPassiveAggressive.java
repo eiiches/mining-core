@@ -4,6 +4,7 @@ import java.util.Map;
 
 import jp.thisptr.math.operation.VectorOp;
 import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.math.vector.Vector;
 
 /**
  * Implementation of Passive-Aggressive online classifier, described in,
@@ -78,10 +79,11 @@ public class BinaryPassiveAggressive extends AbstractBinaryOnlineClassifier {
 		if (y * wx <= 1.0) {
 			final double tau = calcUpdateFactor(x, y, wx);
 			w[0] += tau * y;
-			for (final Map.Entry<Integer, Double> entry : x.rawMap().entrySet()) {
-				final int i = entry.getKey();
-				w[i + 1] += tau * y * entry.getValue();
-			}
+			x.accept(new Vector.Visitor() {
+				public void visit(final int index, final double value) {
+					w[index + 1] += tau * y * value;
+				}
+			});
 			return true;
 		}
 		

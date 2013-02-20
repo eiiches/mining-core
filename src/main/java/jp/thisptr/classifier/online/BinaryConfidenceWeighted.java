@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.math.vector.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -23,7 +24,7 @@ public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 	private final double varianceIncrement;
 	private final double initialVariance;
 	
-	private double[] sigma;
+	protected double[] sigma;
 	
 	public BinaryConfidenceWeighted() {
 		this(DEFAULT_VARIANCE_INCREMENT, DEFAULT_INITIAL_VARIANCE);
@@ -49,13 +50,13 @@ public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 	}
 	
 	private double calcV(final SparseMapVector x) {
-		double result = sigma[0];
-		for (final Map.Entry<Integer, Double> xi : x.rawMap().entrySet()) {
-			final int i = xi.getKey();
-			final double value = xi.getValue();
-			result += sigma[i + 1] * value * value;
-		}
-		return result;
+		final double[] result = new double[] { sigma[0] };
+		x.accept(new Vector.Visitor() {
+			public void visit(final int index, final double value) {
+				result[0] += sigma[index + 1] * value * value;
+			}
+		});
+		return result[0];
 	}
 	
 	/**
@@ -79,16 +80,15 @@ public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 		if (alpha > 0) {
 			w[0] += alpha * y * sigma[0];
 			sigma[0] = 1 / (1 / sigma[0] + 2 * alpha * phi);
-			for (final Map.Entry<Integer, Double> xi : x.rawMap().entrySet()) {
-				final int i = xi.getKey();
-				final double value = xi.getValue();
-				w[i + 1] += alpha * y * sigma[i + 1] * value;
-				sigma[i + 1] = 1 / (1 / sigma[i + 1] + 2 * alpha * phi * value * value);
-			}
+			x.accept(new Vector.Visitor() {
+				public void visit(final int index, final double value) {
+					w[index + 1] += alpha * y * sigma[index + 1] * value;
+					sigma[index + 1] = 1 / (1 / sigma[index + 1] + 2 * alpha * phi * value * value);
+				}
+			});
 			
 			if (log.isDebugEnabled())
 				log.debug(String.format("Variance updated to %s", ArrayUtils.toString(ArrayUtils.subarray(sigma, 0, n + 1))));
-
 			return true;
 		}
 		

@@ -1,12 +1,9 @@
 package jp.thisptr.hash.lsh;
 
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
-
 import java.util.Map;
 
 import jp.thisptr.hash.LongMurmurHash;
-import jp.thisptr.math.vector.SparseMapVector;
-import jp.thisptr.math.vector.SparseVector;
+import jp.thisptr.math.vector.Vector;
 
 public class LongSimHash {
 	private static final int SIZE = Long.SIZE;
@@ -36,10 +33,13 @@ public class LongSimHash {
 		return finalize(v);
 	}
 	
-	public long hash(final SparseVector vector) {
+	public long hash(final Vector vector) {
 		final double[] v = new double[SIZE];
-		for (final Int2DoubleMap.Entry value : ((SparseMapVector) vector).rawMap().int2DoubleEntrySet())
-			update(v, LongMurmurHash.hash(value.getIntKey()), value.getDoubleValue());
+		vector.accept(new Vector.Visitor() {
+			public void visit(final int index, final double value) {
+				update(v, LongMurmurHash.hash(index), value);
+			}
+		});
 		return finalize(v);
 	}
 }

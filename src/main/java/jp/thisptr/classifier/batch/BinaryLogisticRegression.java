@@ -47,14 +47,16 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 	}
 
 	private static double calcPy1(final SparseMapVector x, final double[] w) {
-		double wx = w[0];
-		for (final Int2DoubleMap.Entry v : x.rawMap().int2DoubleEntrySet()) {
-			// Run boundary check because when we have unseed data x,
-			// the dimension of x can (almost always) be larger than the learning data.
-			if (w.length > v.getIntKey() + 1)
-				wx += v.getDoubleValue() * w[v.getIntKey() + 1];
-		}
-		return 1.0 / (1 + Math.exp(-wx));
+		final double[] wx = new double[] { w[0] };
+		x.accept(new Vector.Visitor() {
+			public void visit(final int index, final double value) {
+				// Run boundary check because when we have unseed data x,
+				// the dimension of x can (almost always) be larger than the learning data.
+				if (w.length > index + 1)
+					wx[0] += value * w[index + 1];
+			}
+		});
+		return 1.0 / (1 + Math.exp(-wx[0]));
 	}
 	
 	@Override
@@ -94,9 +96,12 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 					result[0] += y - p;
 //					for (int i = 0; i < dim; ++i)
 //						result[i + 1] += (y - p) * x.get(i);
-					for (final Int2DoubleMap.Entry v : x.rawMap().int2DoubleEntrySet())
-						result[v.getIntKey() + 1] += (y - p) * v.getDoubleValue();
-//						result[v.getIndex() + 1] += -2 * (2 * c * y - c - y + 1) * p * v.getValue() + 2 * c * y * v.getValue();
+					x.accept(new Vector.Visitor() {
+						public void visit(final int index, final double value) {
+							result[index + 1] += (y - p) * value;
+//							result[v.getIndex() + 1] += -2 * (2 * c * y - c - y + 1) * p * v.getValue() + 2 * c * y * v.getValue();
+						}
+					});
 				}
 				ArrayOp.negate(result);
 				return result;
