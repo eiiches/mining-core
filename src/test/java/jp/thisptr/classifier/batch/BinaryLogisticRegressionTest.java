@@ -9,9 +9,9 @@ import jp.thisptr.classifier.evaluate.ConfusionMatrix;
 import jp.thisptr.math.distribution.Distribution;
 import jp.thisptr.math.distribution.GaussianDistribution;
 import jp.thisptr.math.vector.SparseMapVector;
-import jp.thisptr.structure.instance.Instance;
 import jp.thisptr.structure.instance.LabeledInstance;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class BinaryLogisticRegressionTest {
@@ -22,6 +22,7 @@ public class BinaryLogisticRegressionTest {
 		return new SparseMapVector(result);
 	}
 
+	@Ignore
 	@Test
 	public void test() {
 		final int dim = 2;
