@@ -29,6 +29,16 @@ public class DenseArrayVectorTest {
 			}
 		});
 	}
+
+	@Test
+	public void testCapacity() {
+		assertEquals(4, sut.capacity());
+	}
+	
+	@Test
+	public void testSize() {
+		assertEquals(4, sut.size());
+	}
 	
 	@Test
 	public void testSet() {
@@ -40,7 +50,7 @@ public class DenseArrayVectorTest {
 	public void testOutOfBoundSet() {
 		sut.set(4, 3.0);
 	}
-	
+
 	@Test
 	public void testGet() {
 		assertEquals(0.0, sut.get(0), 0.0);
