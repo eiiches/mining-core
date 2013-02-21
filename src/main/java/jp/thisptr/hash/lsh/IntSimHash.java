@@ -35,7 +35,7 @@ public class IntSimHash {
 	
 	public int hash(final Vector vector) {
 		final double[] v = new double[SIZE];
-		vector.accept(new Vector.Visitor() {
+		vector.walk(new Vector.Visitor() {
 			public void visit(final int index, final double value) {
 				update(v, IntMurmurHash.hash(index), value);
 			}

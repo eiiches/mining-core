@@ -24,10 +24,10 @@ public interface Vector extends Iterable<Element> {
 	void set(final int index, final double value);
 	
 	/**
-	 * Visit each element in this vector. Note that the order of visits is not guaranteed.
+	 * Visit each element in this vector. Note that the order of visits is not specified.
 	 * @param visitor
 	 */
-	void accept(final Visitor visitor);
+	void walk(final Visitor visitor);
 
 	public interface Visitor {
 		void visit(final int index, final double value);

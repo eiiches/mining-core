@@ -54,7 +54,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 	
 	private double calcV(final SparseMapVector x) {
 		final double[] result = new double[] { sigma[0] };
-		x.accept(new Vector.Visitor() {
+		x.walk(new Vector.Visitor() {
 			public void visit(final int index, final double value) {
 				result[0] += sigma[index + 1] * value * value;
 			}
@@ -77,7 +77,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 					
 			w[0] += alpha * y * sigma[0];
 			sigma[0] -= beta * sigma[0] * sigma[0];
-			x.accept(new Vector.Visitor() {
+			x.walk(new Vector.Visitor() {
 				public void visit(final int index, final double value) {
 					w[index + 1] += alpha * y * sigma[index + 1] * value;
 					sigma[index + 1] -= beta * sigma[0] * sigma[0] * value * value;

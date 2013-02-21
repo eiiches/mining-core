@@ -44,7 +44,7 @@ public class DenseArrayVector extends DenseVector {
 	}
 
 	@Override
-	public void accept(final Visitor visitor) {
+	public void walk(final Visitor visitor) {
 		for (int i = 0; i < array.length; ++i)
 			if (array[i] != 0.0)
 				visitor.visit(i, array[i]);

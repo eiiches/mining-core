@@ -48,7 +48,7 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 
 	private static double calcPy1(final SparseMapVector x, final double[] w) {
 		final double[] wx = new double[] { w[0] };
-		x.accept(new Vector.Visitor() {
+		x.walk(new Vector.Visitor() {
 			public void visit(final int index, final double value) {
 				// Run boundary check because when we have unseed data x,
 				// the dimension of x can (almost always) be larger than the learning data.
@@ -96,7 +96,7 @@ public class BinaryLogisticRegression implements BatchLearner<SparseMapVector, B
 					result[0] += y - p;
 //					for (int i = 0; i < dim; ++i)
 //						result[i + 1] += (y - p) * x.get(i);
-					x.accept(new Vector.Visitor() {
+					x.walk(new Vector.Visitor() {
 						public void visit(final int index, final double value) {
 							result[index + 1] += (y - p) * value;
 //							result[v.getIndex() + 1] += -2 * (2 * c * y - c - y + 1) * p * v.getValue() + 2 * c * y * v.getValue();

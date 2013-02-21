@@ -35,7 +35,7 @@ public class LongSimHash {
 	
 	public long hash(final Vector vector) {
 		final double[] v = new double[SIZE];
-		vector.accept(new Vector.Visitor() {
+		vector.walk(new Vector.Visitor() {
 			public void visit(final int index, final double value) {
 				update(v, LongMurmurHash.hash(index), value);
 			}
