@@ -1,6 +1,5 @@
 package jp.thisptr.math.vector;
 
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 
 public interface Vector {
 	int size();
@@ -29,10 +28,5 @@ public interface Vector {
 
 	public interface Visitor {
 		void visit(final int index, final double value);
-	}
-	
-	@Deprecated
-	public interface MapAccessible {
-		Int2DoubleMap rawMap();
 	}
 }

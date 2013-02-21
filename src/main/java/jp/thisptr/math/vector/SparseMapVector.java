@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 
 import java.util.Collections;
 
-public class SparseMapVector extends SparseVector implements Vector.MapAccessible {
+public class SparseMapVector extends SparseVector {
 	private final Int2DoubleMap map;
 	
 	public SparseMapVector() {
@@ -42,11 +42,6 @@ public class SparseMapVector extends SparseVector implements Vector.MapAccessibl
 	@Override
 	public int capacity() {
 		return Integer.MAX_VALUE;
-	}
-	
-	@Override
-	public Int2DoubleMap rawMap() {
-		return map;
 	}
 
 	@Override

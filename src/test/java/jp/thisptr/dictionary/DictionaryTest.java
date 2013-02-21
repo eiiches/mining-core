@@ -1,4 +1,4 @@
-package jp.thisptr.core.dictionary;
+package jp.thisptr.dictionary;
 
 import static org.junit.Assert.assertArrayEquals;
 

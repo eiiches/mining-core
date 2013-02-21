@@ -1,4 +1,4 @@
-package jp.thisptr.math.optimizer.gradient;
+package jp.thisptr.optimizer.gradient;
 
 import static org.junit.Assert.assertEquals;
 import jp.thisptr.optimizer.Function;

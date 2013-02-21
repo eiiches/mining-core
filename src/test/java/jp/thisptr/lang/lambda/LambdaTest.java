@@ -1,4 +1,4 @@
-package jp.thisptr.core.lambda;
+package jp.thisptr.lang.lambda;
 
 import static org.junit.Assert.assertEquals;
 

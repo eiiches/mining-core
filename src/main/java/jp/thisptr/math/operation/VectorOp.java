@@ -1,8 +1,6 @@
 package jp.thisptr.math.operation;
 
-import java.util.Map;
-
-import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.math.vector.Vector;
 
 public final class VectorOp {
 	private VectorOp() { }
@@ -15,14 +13,15 @@ public final class VectorOp {
 	 * @param yLength A length of {@code y}, staring from the offset.
 	 * @return The dot product of {@code x} and {@code y}.
 	 */
-	public static double dot(final SparseMapVector x, final double[] y, final int yOffset, final int yLength) {
-		double result = 0.0;
-		for (final Map.Entry<Integer, Double> xi : x.rawMap().entrySet()) {
-			final int i = xi.getKey();
-			if (0 <= i && i < yLength)
-				result += y[i + yOffset] * xi.getValue();
-		}
-		return result;
+	public static double dot(final Vector x, final double[] y, final int yOffset, final int yLength) {
+		final double[] result = new double[1];
+		x.accept(new Vector.Visitor() {
+			public void visit(final int index, final double value) {
+				if (0 <= index && index < yLength)
+					result[0] += y[index + yOffset] * value;
+			}
+		});
+		return result[0];
 	}
 	
 	/**
@@ -30,13 +29,14 @@ public final class VectorOp {
 	 * @param x
 	 * @return
 	 */
-	public static double l2norm2(final SparseMapVector x) {
-		double result = 0.0;
-		for (final Map.Entry<Integer, Double> xi : x.rawMap().entrySet()) {
-			final double value = xi.getValue();
-			result += value * value;
-		}
-		return result;
+	public static double l2norm2(final Vector x) {
+		final double[] result = new double[1];
+		x.accept(new Vector.Visitor() {
+			public void visit(final int index, final double value) {
+				result[0] += value * value;
+			}
+		});
+		return result[0];
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public final class VectorOp {
 	 * @param x
 	 * @return
 	 */
-	public static double l2norm(final SparseMapVector x) {
+	public static double l2norm(final Vector x) {
 		return Math.sqrt(l2norm2(x));
 	}
 }
