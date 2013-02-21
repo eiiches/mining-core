@@ -1,4 +1,4 @@
-package jp.thisptr.util;
+package jp.thisptr.util.experimental;
 
 import java.util.BitSet;
 

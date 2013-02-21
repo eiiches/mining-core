@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import jp.thisptr.structure.dataframe.DataFrame;
+import jp.thisptr.util.IOGenerators;
 
 import org.apache.commons.io.IOUtils;
 
@@ -26,15 +27,13 @@ public class Iris extends DataFrame {
 	public final ColumnDef<Double> columnPetalWidth = new ColumnDefNumerical("petalWidth");
 	public final ColumnDef<Species> columnSpecies = new ColumnDefNominal<Species>("species");
 	
+	private static final Pattern TAB = Pattern.compile("\t");
+	
 	public Iris() {
-		final Pattern sep = Pattern.compile("\t");
 		try (final InputStream is = getClass().getClassLoader().getResourceAsStream("dataset/iris.dat")) {
-			int linuNum = 0;
-			for (final String line : IOUtils.readLines(is)) {
-				if (linuNum++ == 0)
-					continue;
+			for (final String line : IOGenerators.readLines(is).skip(1)) {
 				final DataFrame.RowView row = addRow();
-				final String[] values = sep.split(line);
+				final String[] values = TAB.split(line);
 				row.setValue(columnSepalLength, Double.valueOf(values[0]));
 				row.setValue(columnSepalWidth, Double.valueOf(values[1]));
 				row.setValue(columnPetalLength, Double.valueOf(values[2]));

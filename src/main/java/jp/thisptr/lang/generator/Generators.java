@@ -160,8 +160,8 @@ public final class Generators {
 		};
 	}
 	
-	public static <T> UninvokableGenerator<T> uninvokableGenerator(final SinglyGenerator<T> it) {
-		return new UninvokableGenerator<T>(it);
+	public static <T> UndoableGenerator<T> uninvokableGenerator(final SinglyGenerator<T> it) {
+		return new UndoableGenerator<T>(it);
 	}
 	
 	public static <T, U> SinglyGenerator<Pair<T, U>> zip(final SinglyGenerator<T> first, final SinglyGenerator<U> second) {

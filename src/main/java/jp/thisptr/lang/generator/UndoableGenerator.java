@@ -4,22 +4,22 @@ import java.util.Stack;
 
 import jp.thisptr.lang.StopIteration;
 
-public class UninvokableGenerator<T> extends SinglyGenerator<T> {
+public class UndoableGenerator<T> extends SinglyGenerator<T> {
 	private SinglyGenerator<T> it;
-	private Stack<T> uninvokeStack = new Stack<>();
+	private Stack<T> undo = new Stack<T>();
 	
-	public UninvokableGenerator(final SinglyGenerator<T> it) {
+	public UndoableGenerator(final SinglyGenerator<T> it) {
 		this.it = it;
 	}
 	
 	public void uninvoke(final T item) {
-		uninvokeStack.push(item);
+		undo.push(item);
 	}
 	
 	@Override
 	public T invoke() throws StopIteration {
-		if (!uninvokeStack.isEmpty())
-			return uninvokeStack.pop();
+		if (!undo.isEmpty())
+			return undo.pop();
 		return it.invoke();
 	}
 }

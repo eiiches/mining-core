@@ -15,6 +15,7 @@ import jp.thisptr.lang.lambda.alias.BinaryFunction;
 import jp.thisptr.lang.lambda.alias.Lambda;
 import jp.thisptr.lang.tuple.Pair;
 import jp.thisptr.lang.tuple.Tuple;
+import jp.thisptr.util.experimental.ReflectUtils;
 
 public final class Lambdas {
 	private Lambdas() { }

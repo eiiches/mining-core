@@ -154,4 +154,9 @@ public class GeneratorTest {
 	public void testUnique() {
 		assertEquals(Arrays.asList(0, 1), Generators.array(0, 0, 1, 1).unique().toList());
 	}
+	
+	@Test
+	public void testSkip() {
+		assertEquals(Arrays.asList(0, 1), Generators.array(0, 0, 0, 1).skip(2).toList());
+	}
 }

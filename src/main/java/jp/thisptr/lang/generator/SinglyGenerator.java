@@ -376,7 +376,7 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 	}
 	
 	public <U> SinglyGenerator<List<T>> group(final Lambda1<U, ? super T> f) {
-		final UninvokableGenerator<T> it = Generators.uninvokableGenerator(this);
+		final UndoableGenerator<T> it = Generators.uninvokableGenerator(this);
 		return new SinglyGenerator<List<T>>() {
 			public List<T> invoke() throws StopIteration {
 				List<T> result = new ArrayList<T>();
@@ -415,7 +415,7 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 	}
 	
 	public SinglyGenerator<List<T>> group(final Lambda2<Boolean, ? super T, ? super T> isGroup) {
-		final UninvokableGenerator<T> it = Generators.uninvokableGenerator(this);
+		final UndoableGenerator<T> it = Generators.uninvokableGenerator(this);
 		return new SinglyGenerator<List<T>>() {
 			public List<T> invoke() throws StopIteration {
 				final List<T> result = new ArrayList<T>();
@@ -481,5 +481,20 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 				return item != null;
 			}
 		});
+	}
+	
+	public SinglyGenerator<T> skip(final int n) {
+		final SinglyGenerator<T> it = this;
+		return new SinglyGenerator<T>() {
+			private boolean isFirstInvocation = true;
+			public T invoke() throws StopIteration {
+				if (isFirstInvocation) {
+					for (int i = 0; i < n; ++i)
+						it.invoke();
+					isFirstInvocation = false;
+				}
+				return it.invoke();
+			}
+		};
 	}
 }
