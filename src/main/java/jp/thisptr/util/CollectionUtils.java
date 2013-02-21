@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -15,9 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import jp.thisptr.lang.ContinueIteration;
 import jp.thisptr.lang.ValueError;
-import jp.thisptr.lang.collection.DefaultMap;
 import jp.thisptr.lang.generator.Generators;
-import jp.thisptr.lang.lambda.Lambda0;
 import jp.thisptr.lang.lambda.Lambda1;
 import jp.thisptr.lang.lambda.Lambda2;
 import jp.thisptr.lang.lambda.alias.Predicate;
