@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 
-import jp.thisptr.lang.collection.DefaultMap;
-
 import org.junit.Before;
 import org.junit.Test;
 
