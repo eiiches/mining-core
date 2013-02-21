@@ -2,6 +2,7 @@ package jp.thisptr.math.vector;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class DenseArrayVector extends DenseVector {
 	private final double[] array;
@@ -52,16 +53,29 @@ public class DenseArrayVector extends DenseVector {
 	@Override
 	public Iterator<Element> iterator() {
 		return new Iterator<Element>() {
-			private int index = 0;
+			private int index = -1;
 			private int pindex = -1;
+			
+			private int proceed(final int index) {
+				int i = index;
+				for (++i; i < array.length; ++i) {
+					if (array[i] != 0.0)
+						break;
+				}
+				return i;
+			}
 			
 			@Override
 			public boolean hasNext() {
+				if (index < 0)
+					index = proceed(index);
 				return index < array.length;
 			}
 
 			@Override
 			public Element next() {
+				if (!hasNext())
+					throw new NoSuchElementException();
 				pindex = index;
 				final Element result = new Element() {
 					@Override
@@ -71,13 +85,10 @@ public class DenseArrayVector extends DenseVector {
 
 					@Override
 					public double value() {
-						return array[index];
+						return array[pindex];
 					}
 				};
-				for (; index < array.length; ++index) {
-					if (array[index] != 0.0)
-						break;
-				}
+				index = proceed(index);
 				return result;
 			}
 
