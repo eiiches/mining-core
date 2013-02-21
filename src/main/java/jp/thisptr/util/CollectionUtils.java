@@ -137,22 +137,4 @@ public final class CollectionUtils {
 		}
 		return result;
 	}
-	
-	public static <T> T max(final Iterable<T> iterable, final Comparator<T> comparator) {
-		T bestItem = null;
-		for (T item : iterable) {
-			if (bestItem == null || comparator.compare(item, bestItem) > 0)
-				bestItem = item;
-		}
-		return bestItem;
-	}
-	
-	public static <T extends Comparable<T>> T max(final Iterable<T> iterable) {
-		T bestItem = null;
-		for (T item : iterable) {
-			if (bestItem == null || item.compareTo(bestItem) > 0)
-				bestItem = item;
-		}
-		return bestItem;
-	}
 }
