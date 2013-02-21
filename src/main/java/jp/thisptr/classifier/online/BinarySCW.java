@@ -52,7 +52,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 		Arrays.fill(sigma, oldSize, newSize, initialVariance);
 	}
 	
-	private double calcV(final SparseMapVector x) {
+	private double calcV(final Vector x) {
 		final double[] result = new double[] { sigma[0] };
 		x.walk(new Vector.Visitor() {
 			public void visit(final int index, final double value) {
@@ -63,7 +63,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 	}
 
 	@Override
-	protected boolean doUpdate(final SparseMapVector x, final int y) {
+	protected boolean doUpdate(final Vector x, final int y) {
 		final double phi = eta; // FIXME: phi = CDF^-1(eta)
 		final double zeta = 1 + phi * phi;
 		final double m = y * calcWx(x);

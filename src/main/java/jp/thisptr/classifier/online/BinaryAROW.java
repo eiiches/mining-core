@@ -52,7 +52,7 @@ public class BinaryAROW extends AbstractBinaryOnlineClassifier {
 		Arrays.fill(sigma, oldSize, newSize, initialVariance);
 	}
 	
-	private double calcV(final SparseMapVector x) {
+	private double calcV(final Vector x) {
 		// just a reference wrapper
 		final double[] result = new double[] { sigma[0] };
 		x.walk(new Vector.Visitor() {
@@ -64,7 +64,7 @@ public class BinaryAROW extends AbstractBinaryOnlineClassifier {
 	}
 	
 	@Override
-	protected boolean doUpdate(final SparseMapVector x, final int y) {
+	protected boolean doUpdate(final Vector x, final int y) {
 		final double wx = calcWx(x);
 		final double v = calcV(x);
 		final double r = 1 / (2 * regularizationTradeoff);

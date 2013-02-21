@@ -55,7 +55,7 @@ public class BinaryPassiveAggressive extends AbstractBinaryOnlineClassifier {
 		this.aggressiveness = aggressiveness;
 	}
 	
-	private double calcUpdateFactor(final SparseMapVector x, final int y, final double wx) {
+	private double calcUpdateFactor(final Vector x, final int y, final double wx) {
 		// adding 1 is for an intercept term, avoiding the case x2 == 0.
 		final double x2 = VectorOp.l2norm2(x) + 1;
 		final double loss = Math.max(0.0, 1 - y * wx);
@@ -73,7 +73,7 @@ public class BinaryPassiveAggressive extends AbstractBinaryOnlineClassifier {
 	}
 	
 	@Override
-	protected boolean doUpdate(final SparseMapVector x, final int y) {
+	protected boolean doUpdate(final Vector x, final int y) {
 		final double wx = calcWx(x);
 		
 		if (y * wx <= 1.0) {

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import jp.thisptr.classifier.OnlineLearner;
 import jp.thisptr.math.operation.VectorOp;
 import jp.thisptr.math.vector.DenseArrayVector;
-import jp.thisptr.math.vector.SparseMapVector;
 import jp.thisptr.math.vector.Vector;
 import jp.thisptr.structure.instance.LabeledInstance;
 
@@ -13,7 +12,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<SparseMapVector, Boolean> {
+public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Vector, Boolean> {
 	private static Logger log = LoggerFactory.getLogger(AbstractBinaryOnlineClassifier.class);
 
 	public static final int DEFAULT_INITIAL_CAPACITY = 16;
@@ -43,13 +42,13 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Sp
 	 * @param x
 	 * @return
 	 */
-	protected double calcWx(final SparseMapVector x) {
+	protected double calcWx(final Vector x) {
 		// Passing yOffset = 1 and then adding w[0] is for the intercept term.
 		return VectorOp.dot(x, w, 1, n) + w[0];
 	}
 	
 	@Override
-	public final Boolean classify(final SparseMapVector x) {
+	public final Boolean classify(final Vector x) {
 		final double wx = calcWx(x);
 		return wx > 0.0;
 	}
@@ -59,7 +58,7 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Sp
 		doEnsureCapacity(size);
 	}
 	
-	private void update(final SparseMapVector x, final int y) {
+	private void update(final Vector x, final int y) {
 		final boolean isUpdated = doUpdate(x, y);
 		if (isUpdated)
 			if (log.isDebugEnabled())
@@ -67,8 +66,8 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Sp
 	}
 	
 	@Override
-	public final void learn(final LabeledInstance<? extends SparseMapVector, ? extends Boolean> instance) {
-		final SparseMapVector x = instance.getVector();
+	public final void learn(final LabeledInstance<? extends Vector, ? extends Boolean> instance) {
+		final Vector x = instance.getVector();
 		final int y = instance.getLabel() ? 1 : -1;
 		
 		// Ensure capacity for the new learning data.
@@ -88,7 +87,7 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Sp
 	 * @param y
 	 * @return True if parameter is updated.
 	 */
-	protected abstract boolean doUpdate(final SparseMapVector x, final int y);
+	protected abstract boolean doUpdate(final Vector x, final int y);
 	
 	public Vector getWeights() {
 		return new DenseArrayVector(w);

@@ -44,7 +44,7 @@ public class BinaryPerceptron extends AbstractBinaryOnlineClassifier {
 	}
 
 	@Override
-	protected boolean doUpdate(final SparseMapVector x, final int y) {
+	protected boolean doUpdate(final Vector x, final int y) {
 		final double wx = calcWx(x);
 		
 		if (y * wx <= 0.0) {
