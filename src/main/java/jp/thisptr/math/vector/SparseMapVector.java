@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 
 import java.util.Collections;
+import java.util.Iterator;
 
 public class SparseMapVector extends SparseVector {
 	private final Int2DoubleMap map;
@@ -48,5 +49,37 @@ public class SparseMapVector extends SparseVector {
 	public void accept(final Visitor visitor) {
 		for (final Int2DoubleMap.Entry e : map.int2DoubleEntrySet())
 			visitor.visit(e.getIntKey(), e.getDoubleValue());
+	}
+
+	@Override
+	public Iterator<Element> iterator() {
+		final Iterator<Int2DoubleMap.Entry> iter = map.int2DoubleEntrySet().iterator();
+		return new Iterator<Vector.Element>() {
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+			
+			@Override
+			public Element next() {
+				final Int2DoubleMap.Entry e = iter.next();
+				return new Element() {
+					@Override
+					public double value() {
+						return e.getDoubleValue();
+					}
+					
+					@Override
+					public int index() {
+						return e.getIntKey();
+					}
+				};
+			}
+
+			@Override
+			public void remove() {
+				iter.remove();
+			}
+		};
 	}
 }
