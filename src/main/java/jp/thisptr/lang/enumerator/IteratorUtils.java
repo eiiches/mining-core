@@ -1,4 +1,4 @@
-package jp.thisptr.lang.generator;
+package jp.thisptr.lang.enumerator;
 
 import java.util.Iterator;
 

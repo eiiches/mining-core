@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import jp.thisptr.lang.ContinueIteration;
 import jp.thisptr.lang.ValueError;
-import jp.thisptr.lang.generator.Generators;
+import jp.thisptr.lang.enumerator.Enumerators;
 import jp.thisptr.lang.lambda.Lambda1;
 import jp.thisptr.lang.lambda.Lambda2;
 import jp.thisptr.lang.lambda.alias.Predicate;
@@ -39,7 +39,7 @@ public final class CollectionUtils {
 		Iterator<T> iter = iterable.iterator();
 		if (!iter.hasNext())
 			throw new ValueError();
-		return foldl(Generators.array(iter), f, iter.next());
+		return foldl(Enumerators.array(iter), f, iter.next());
 	}
 	
 	public static <T extends Number> T sum(final Iterable<T> iterable) {

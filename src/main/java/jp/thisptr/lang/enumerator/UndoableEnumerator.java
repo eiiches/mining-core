@@ -1,14 +1,14 @@
-package jp.thisptr.lang.generator;
+package jp.thisptr.lang.enumerator;
 
 import java.util.Stack;
 
 import jp.thisptr.lang.StopIteration;
 
-public class UndoableGenerator<T> extends SinglyGenerator<T> {
-	private SinglyGenerator<T> it;
+public class UndoableEnumerator<T> extends SinglyEnumerator<T> {
+	private SinglyEnumerator<T> it;
 	private Stack<T> undo = new Stack<T>();
 	
-	public UndoableGenerator(final SinglyGenerator<T> it) {
+	public UndoableEnumerator(final SinglyEnumerator<T> it) {
 		this.it = it;
 	}
 	

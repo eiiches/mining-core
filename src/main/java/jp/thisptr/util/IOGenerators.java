@@ -11,35 +11,35 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 
 import jp.thisptr.lang.StopIteration;
-import jp.thisptr.lang.generator.SinglyGenerator;
+import jp.thisptr.lang.enumerator.SinglyEnumerator;
 
 import org.apache.commons.io.IOUtils;
 
 public final class IOGenerators {
 	private IOGenerators() { }
 	
-	public static SinglyGenerator<String> readLines(final File file, final Charset charset) throws FileNotFoundException {
+	public static SinglyEnumerator<String> readLines(final File file, final Charset charset) throws FileNotFoundException {
 		return readLines(new FileInputStream(file), charset);
 	}
 	
-	public static SinglyGenerator<String> readLines(final File file) throws FileNotFoundException {
+	public static SinglyEnumerator<String> readLines(final File file) throws FileNotFoundException {
 		return readLines(new FileInputStream(file), Charset.defaultCharset());
 	}
 	
-	public static SinglyGenerator<String> readLines(final InputStream is, final Charset charset) {
+	public static SinglyEnumerator<String> readLines(final InputStream is, final Charset charset) {
 		return readLines(new InputStreamReader(is, charset));
 	}
 	
-	public static SinglyGenerator<String> readLines(final InputStream is) {
+	public static SinglyEnumerator<String> readLines(final InputStream is) {
 		return readLines(new InputStreamReader(is, Charset.defaultCharset()));
 	}
 	
-	public static SinglyGenerator<String> readLines(final Reader reader) {
+	public static SinglyEnumerator<String> readLines(final Reader reader) {
 		final BufferedReader bufferedReader = reader instanceof BufferedReader
 				? (BufferedReader) reader
 				: new BufferedReader(reader);
 				
-		return new SinglyGenerator<String>() {
+		return new SinglyEnumerator<String>() {
 			public String invoke() throws StopIteration {
 				try {
 					String line = bufferedReader.readLine();

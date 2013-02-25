@@ -1,8 +1,5 @@
 package jp.thisptr.classifier.online;
 
-import java.util.Map;
-
-import jp.thisptr.math.vector.SparseMapVector;
 import jp.thisptr.math.vector.Vector;
 
 

@@ -8,7 +8,7 @@ import jp.thisptr.classifier.Classifier;
 import jp.thisptr.structure.instance.LabeledInstance;
 
 public abstract class CrossValidation<VectorType, ClassType> {
-	protected abstract Classifier<VectorType, ClassType> build(final List<? extends LabeledInstance<? extends VectorType, ClassType>> learnset);
+	protected abstract Classifier<? super VectorType, ClassType> build(final List<? extends LabeledInstance<? extends VectorType, ClassType>> learnset);
 	
 	public <InstanceType extends LabeledInstance<? extends VectorType, ClassType>> ConfusionMatrix<ClassType> fold(final Iterable<InstanceType> dataset0, final int n) {
 		final ConfusionMatrix<ClassType> cv = new ConfusionMatrix<ClassType>();
@@ -30,7 +30,7 @@ public abstract class CrossValidation<VectorType, ClassType> {
 				}
 				learnset.add(dataset.get(i));
 			}
-			final Classifier<VectorType, ClassType> classifier = build(learnset);
+			final Classifier<? super VectorType, ClassType> classifier = build(learnset);
 			for (final InstanceType d : testset) {
 				final ClassType classified = classifier.classify(d.getVector());
 				cv.add(d.getLabel(), classified);

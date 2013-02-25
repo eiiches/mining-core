@@ -2,8 +2,8 @@ package jp.thisptr.util;
 
 import java.io.File;
 
-import jp.thisptr.lang.generator.Generators;
-import jp.thisptr.lang.generator.SinglyGenerator;
+import jp.thisptr.lang.enumerator.Enumerators;
+import jp.thisptr.lang.enumerator.SinglyEnumerator;
 import jp.thisptr.lang.lambda.alias.Predicate;
 
 public class FileFinder {
@@ -31,9 +31,9 @@ public class FileFinder {
 		return this;
 	}
 	
-	public SinglyGenerator<File> find() {
+	public SinglyEnumerator<File> find() {
 		File base = new File(basePath);
-		SinglyGenerator<File> result = Generators.array(base.listFiles());
+		SinglyEnumerator<File> result = Enumerators.array(base.listFiles());
 		if (name != null)
 			result = result.filter(new Predicate<File>() { public Boolean invoke(final File f) {
 				return f.getName().matches(name);

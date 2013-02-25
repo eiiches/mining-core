@@ -1,4 +1,4 @@
-package jp.thisptr.lang.generator;
+package jp.thisptr.lang.enumerator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,7 +16,7 @@ import jp.thisptr.lang.StopIteration;
 import jp.thisptr.lang.lambda.Lambda1;
 import jp.thisptr.util.OutputParameter;
 
-public abstract class ChunkedGenerator<T> extends AbstractGeneratorCore<List<T>> implements Generator<T> {
+public abstract class ChunkedEnumerator<T> extends AbstractEnumeratorCore<List<T>> implements Enumerator<T> {
 	
 	public class GeneratorIterator implements Iterator<T> {
 		private Iterator<T> iter = null;
@@ -51,9 +51,9 @@ public abstract class ChunkedGenerator<T> extends AbstractGeneratorCore<List<T>>
 		return new GeneratorIterator();
 	}
 	
-	public <U> ChunkedGenerator<U> map(final Lambda1<U, ? super T> f) {
-		final ChunkedGenerator<T> it = this;
-		return new ChunkedGenerator<U>() {
+	public <U> ChunkedEnumerator<U> map(final Lambda1<U, ? super T> f) {
+		final ChunkedEnumerator<T> it = this;
+		return new ChunkedEnumerator<U>() {
 			public List<U> invoke() throws StopIteration {
 				final List<U> result = new ArrayList<U>();
 				for (T item : it.invoke())
@@ -63,8 +63,8 @@ public abstract class ChunkedGenerator<T> extends AbstractGeneratorCore<List<T>>
 		};
 	}
 	
-	public <U> ChunkedGenerator<U> map(final Lambda1<U, ? super T> f, final OutputParameter<Future<?>> producerFuture, final ExecutorService mapExecutor, final int bufferSize) {
-		final ChunkedGenerator<T> it = this;
+	public <U> ChunkedEnumerator<U> map(final Lambda1<U, ? super T> f, final OutputParameter<Future<?>> producerFuture, final ExecutorService mapExecutor, final int bufferSize) {
+		final ChunkedEnumerator<T> it = this;
 		final Object poison = new Object();
 		final BlockingQueue<Object> queue = (bufferSize > 0) ?
 				new LinkedBlockingQueue<Object>(bufferSize) : new LinkedBlockingQueue<Object>();
@@ -95,7 +95,7 @@ public abstract class ChunkedGenerator<T> extends AbstractGeneratorCore<List<T>>
 		};
 		producerFuture.add(producerExecutor.submit(producer));
 		producerExecutor.shutdown();
-		return new ChunkedGenerator<U>() {
+		return new ChunkedEnumerator<U>() {
 			public List<U> invoke() throws StopIteration {
 				try {
 					Object item = queue.take();
@@ -131,9 +131,9 @@ public abstract class ChunkedGenerator<T> extends AbstractGeneratorCore<List<T>>
 		return lastEvaluated;
 	}
 
-	public ChunkedGenerator<T> tee(final Lambda1<?, ? super T> f) {
-		final ChunkedGenerator<T> it = this;
-		return new ChunkedGenerator<T>() {
+	public ChunkedEnumerator<T> tee(final Lambda1<?, ? super T> f) {
+		final ChunkedEnumerator<T> it = this;
+		return new ChunkedEnumerator<T>() {
 			public List<T> invoke() throws StopIteration {
 				final List<T> items = it.invoke();
 				for (T item : items)
@@ -143,9 +143,9 @@ public abstract class ChunkedGenerator<T> extends AbstractGeneratorCore<List<T>>
 		};
 	}
 	
-	public ChunkedGenerator<T> filterNull() {
-		final ChunkedGenerator<T> it = this;
-		return new ChunkedGenerator<T>() {
+	public ChunkedEnumerator<T> filterNull() {
+		final ChunkedEnumerator<T> it = this;
+		return new ChunkedEnumerator<T>() {
 			public List<T> invoke() throws StopIteration {
 				final List<T> items = it.invoke();
 				final List<T> result = new ArrayList<T>(items.size());
@@ -169,9 +169,9 @@ public abstract class ChunkedGenerator<T> extends AbstractGeneratorCore<List<T>>
 	/**
 	 * Expand chunks.
 	 */
-	public SinglyGenerator<T> unchunk() {
-		final ChunkedGenerator<T> it = this;
-		return new SinglyGenerator<T>() {
+	public SinglyEnumerator<T> unchunk() {
+		final ChunkedEnumerator<T> it = this;
+		return new SinglyEnumerator<T>() {
 			private Iterator<T> current = null;
 			public T invoke() throws StopIteration {
 				if (current == null || !current.hasNext()) {
@@ -186,7 +186,7 @@ public abstract class ChunkedGenerator<T> extends AbstractGeneratorCore<List<T>>
 	/**
 	 * Merge all chunks and re-split into equally-sized chunks.
 	 */
-	public ChunkedGenerator<T> chunk(final int chunkSize) {
+	public ChunkedEnumerator<T> chunk(final int chunkSize) {
 		return unchunk().chunk(chunkSize);
 	}
 }

@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 public class BinaryAROWTest {
 	public static class AccuracyTest extends AbstractAccuracyTest {
 		@DataPoint
-		public BinaryAROW create() {
+		public static BinaryAROW create() {
 			return new BinaryAROW();
 		}
 	}

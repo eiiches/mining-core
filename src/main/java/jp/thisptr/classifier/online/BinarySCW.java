@@ -1,9 +1,10 @@
 package jp.thisptr.classifier.online;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.Iterator;
 
-import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.lang.enumerator.Enumerators;
+import jp.thisptr.lang.lambda.Lambda1;
 import jp.thisptr.math.vector.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -74,7 +75,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 		if (alpha != 0) {
 			final double u = Math.pow(-alpha * v * phi + Math.sqrt(alpha * alpha * v * v * phi * phi + 4 * v), 2);
 			final double beta = alpha * phi / (Math.sqrt(u) + v * alpha * phi);
-					
+
 			w[0] += alpha * y * sigma[0];
 			sigma[0] -= beta * sigma[0] * sigma[0];
 			x.walk(new Vector.Visitor() {

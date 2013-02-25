@@ -7,8 +7,6 @@ import java.util.regex.Pattern;
 import jp.thisptr.structure.dataframe.DataFrame;
 import jp.thisptr.util.IOGenerators;
 
-import org.apache.commons.io.IOUtils;
-
 
 /**
  * Fischer's iris data set.

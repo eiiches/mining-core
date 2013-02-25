@@ -1,4 +1,4 @@
-package jp.thisptr.lang.generator;
+package jp.thisptr.lang.enumerator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +24,7 @@ import jp.thisptr.lang.tuple.Pair;
 import jp.thisptr.util.Lambdas;
 import jp.thisptr.util.OutputParameter;
 
-public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implements Generator<T> {
+public abstract class SinglyEnumerator<T> extends AbstractEnumeratorCore<T> implements Enumerator<T> {
 	
 	private class GeneratorIterator implements Iterator<T> {
 		private T nextValue = null;
@@ -82,12 +82,12 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		return result;
 	}
 
-	public <U> SinglyGenerator<U> map(final Lambda1<U, ? super T> f, final OutputParameter<Future<?>> producerFuture, final ExecutorService mapExecutor) {
+	public <U> SinglyEnumerator<U> map(final Lambda1<U, ? super T> f, final OutputParameter<Future<?>> producerFuture, final ExecutorService mapExecutor) {
 		return map(f, producerFuture, mapExecutor, -1);
 	}
 	
-	public <U> SinglyGenerator<U> map(final Lambda1<U, ? super T> f, final OutputParameter<Future<?>> producerFuture, final ExecutorService mapExecutor, final int bufferSize) {
-		final SinglyGenerator<T> original = this;
+	public <U> SinglyEnumerator<U> map(final Lambda1<U, ? super T> f, final OutputParameter<Future<?>> producerFuture, final ExecutorService mapExecutor, final int bufferSize) {
+		final SinglyEnumerator<T> original = this;
 		final Object poison = new Object();
 		final BlockingQueue<Object> queue = (bufferSize > 0) ?
 				new LinkedBlockingQueue<Object>(bufferSize) : new LinkedBlockingQueue<Object>();
@@ -115,7 +115,7 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 		producerFuture.add(producerExecutor.submit(producer));
 		producerExecutor.shutdown();
-		return new SinglyGenerator<U>() {
+		return new SinglyEnumerator<U>() {
 			public U invoke() throws StopIteration {
 				try {
 					Object item = queue.take();
@@ -131,9 +131,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public <U> SinglyGenerator<U> map(final Lambda1<U, ? super T> f) {
-		final SinglyGenerator<T> original = this;
-		return new SinglyGenerator<U>() {
+	public <U> SinglyEnumerator<U> map(final Lambda1<U, ? super T> f) {
+		final SinglyEnumerator<T> original = this;
+		return new SinglyEnumerator<U>() {
 			public U invoke() throws StopIteration {
 				while (true) {
 					try {
@@ -146,9 +146,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<T> filter(final Lambda1<Boolean, ? super T> pred) {
-		final SinglyGenerator<T> original = this;
-		return new SinglyGenerator<T>() {
+	public SinglyEnumerator<T> filter(final Lambda1<Boolean, ? super T> pred) {
+		final SinglyEnumerator<T> original = this;
+		return new SinglyEnumerator<T>() {
 			public T invoke() throws StopIteration {
 				while (true) {
 					T item = original.invoke();
@@ -159,9 +159,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<T> head(final int n) {
-		final SinglyGenerator<T> original = this;
-		return new SinglyGenerator<T>() {
+	public SinglyEnumerator<T> head(final int n) {
+		final SinglyEnumerator<T> original = this;
+		return new SinglyEnumerator<T>() {
 			private int i = 0;
 			public T invoke() throws StopIteration {
 				if (i++ >= n)
@@ -171,19 +171,19 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<T> tail(final int n) {
+	public SinglyEnumerator<T> tail(final int n) {
 		final LinkedList<T> queue = new LinkedList<T>();
 		for (T item : this) {
 			queue.add(item);
 			while (queue.size() > n)
 				queue.pop();
 		}
-		return Generators.array(queue);
+		return Enumerators.array(queue);
 	}
 	
-	public <U> SinglyGenerator<U> foldl(final Lambda2<U, ? super U, ? super T> f, final U initial) {
-		final SinglyGenerator<T> it = this;
-		return new SinglyGenerator<U>() {
+	public <U> SinglyEnumerator<U> foldl(final Lambda2<U, ? super U, ? super T> f, final U initial) {
+		final SinglyEnumerator<T> it = this;
+		return new SinglyEnumerator<U>() {
 			private U current;
 			private boolean initialized = false;
 			public U invoke() throws StopIteration {
@@ -198,9 +198,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<T> foldl(final Lambda2<T, ? super T, ? super T> f) {
-		final SinglyGenerator<T> it = this;
-		return new SinglyGenerator<T>() {
+	public SinglyEnumerator<T> foldl(final Lambda2<T, ? super T, ? super T> f) {
+		final SinglyEnumerator<T> it = this;
+		return new SinglyEnumerator<T>() {
 			private T current;
 			private boolean initialized = false;
 			public T invoke() throws StopIteration {
@@ -228,9 +228,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		}
 	}
 	
-	public <U, IterableType extends Iterable<U>> SinglyGenerator<U> expand(final Lambda1<IterableType, ? super T> f) {
-		final SinglyGenerator<T> original = this;
-		return new SinglyGenerator<U>() {
+	public <U, IterableType extends Iterable<U>> SinglyEnumerator<U> expand(final Lambda1<IterableType, ? super T> f) {
+		final SinglyEnumerator<T> original = this;
+		return new SinglyEnumerator<U>() {
 			private Iterator<U> current = null;
 			public U invoke() throws StopIteration {
 				while (true) {
@@ -246,9 +246,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 
-	public <U, ListType extends List<U>> ChunkedGenerator<U> expandChunked(final Lambda1<ListType, ? super T> f) {
-		final SinglyGenerator<T> it = this;
-		return new ChunkedGenerator<U>() {
+	public <U, ListType extends List<U>> ChunkedEnumerator<U> expandChunked(final Lambda1<ListType, ? super T> f) {
+		final SinglyEnumerator<T> it = this;
+		return new ChunkedEnumerator<U>() {
 			public List<U> invoke() throws StopIteration {
 				return f.invoke(it.invoke());
 			}
@@ -256,9 +256,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 	}
 
 	@Deprecated
-	public <U> SinglyGenerator<U> ungroup(final Class<U> u) {
-		final SinglyGenerator<?> it = this;
-		return new SinglyGenerator<U>() {
+	public <U> SinglyEnumerator<U> ungroup(final Class<U> u) {
+		final SinglyEnumerator<?> it = this;
+		return new SinglyEnumerator<U>() {
 			@SuppressWarnings("rawtypes")
 			private Iterator current = null;
 			public U invoke() throws StopIteration {
@@ -279,9 +279,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<T> tee(final Lambda1<?, ? super T> f) {
-		final SinglyGenerator<T> it = this;
-		return new SinglyGenerator<T>() {
+	public SinglyEnumerator<T> tee(final Lambda1<?, ? super T> f) {
+		final SinglyEnumerator<T> it = this;
+		return new SinglyEnumerator<T>() {
 			public T invoke() throws StopIteration {
 				final T item = it.invoke();
 				f.invoke(item);
@@ -290,9 +290,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<List<T>> split(final int chunkSize) {
-		final SinglyGenerator<T> it = this;
-		return new SinglyGenerator<List<T>>() {
+	public SinglyEnumerator<List<T>> split(final int chunkSize) {
+		final SinglyEnumerator<T> it = this;
+		return new SinglyEnumerator<List<T>>() {
 			public List<T> invoke() throws StopIteration {
 				final List<T> result = new ArrayList<T>(chunkSize);
 				try {
@@ -312,13 +312,13 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 	 * Unchunk a not chunked generator. This virtually does not do anything.
 	 * @return this
 	 */
-	public SinglyGenerator<T> unchunk() {
+	public SinglyEnumerator<T> unchunk() {
 		return this;
 	}
 	
-	public ChunkedGenerator<T> chunk(final int chunkSize) {
-		final SinglyGenerator<T> it = this;
-		return new ChunkedGenerator<T>() {
+	public ChunkedEnumerator<T> chunk(final int chunkSize) {
+		final SinglyEnumerator<T> it = this;
+		return new ChunkedEnumerator<T>() {
 			public List<T> invoke() throws StopIteration {
 				final List<T> result = new ArrayList<T>(chunkSize);
 				try {
@@ -334,14 +334,14 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<T> buffer(final OutputParameter<Future<?>> future) {
+	public SinglyEnumerator<T> buffer(final OutputParameter<Future<?>> future) {
 		return buffer(future, -1);
 	}
 	
-	public SinglyGenerator<T> buffer(final OutputParameter<Future<?>> future, final int n) {
+	public SinglyEnumerator<T> buffer(final OutputParameter<Future<?>> future, final int n) {
 		final Object poison = new Object();
 		final BlockingQueue<Object> queue = (n > 0) ? new LinkedBlockingQueue<Object>(n) : new LinkedBlockingQueue<Object>();
-		final SinglyGenerator<T> original = this;
+		final SinglyEnumerator<T> original = this;
 		Runnable producer = new Runnable() {
 			public void run() {
 				while (true) try {
@@ -359,7 +359,7 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		future.add(executor.submit(producer));
 		executor.shutdown(); // automatically shutdown thread upon completion.
-		return new SinglyGenerator<T>() {
+		return new SinglyEnumerator<T>() {
 			public T invoke() throws StopIteration {
 				try {
 					Object item = queue.take();
@@ -375,9 +375,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public <U> SinglyGenerator<List<T>> group(final Lambda1<U, ? super T> f) {
-		final UndoableGenerator<T> it = Generators.uninvokableGenerator(this);
-		return new SinglyGenerator<List<T>>() {
+	public <U> SinglyEnumerator<List<T>> group(final Lambda1<U, ? super T> f) {
+		final UndoableEnumerator<T> it = Enumerators.uninvokableGenerator(this);
+		return new SinglyEnumerator<List<T>>() {
 			public List<T> invoke() throws StopIteration {
 				List<T> result = new ArrayList<T>();
 				U key = null;
@@ -402,21 +402,21 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public <U> SinglyGenerator<Pair<T, U>> zip(final SinglyGenerator<U> it) {
-		return Generators.zip(this, it);
+	public <U> SinglyEnumerator<Pair<T, U>> zip(final SinglyEnumerator<U> it) {
+		return Enumerators.zip(this, it);
 	}
 	
-	public SinglyGenerator<List<T>> group(final int n) {
-		return Generators.group(this, n);
+	public SinglyEnumerator<List<T>> group(final int n) {
+		return Enumerators.group(this, n);
 	}
 	
-	public SinglyGenerator<List<T>> group() {
+	public SinglyEnumerator<List<T>> group() {
 		return group(Lambdas.<T>equals());
 	}
 	
-	public SinglyGenerator<List<T>> group(final Lambda2<Boolean, ? super T, ? super T> isGroup) {
-		final UndoableGenerator<T> it = Generators.uninvokableGenerator(this);
-		return new SinglyGenerator<List<T>>() {
+	public SinglyEnumerator<List<T>> group(final Lambda2<Boolean, ? super T, ? super T> isGroup) {
+		final UndoableEnumerator<T> it = Enumerators.uninvokableGenerator(this);
+		return new SinglyEnumerator<List<T>>() {
 			public List<T> invoke() throws StopIteration {
 				final List<T> result = new ArrayList<T>();
 				try {
@@ -437,9 +437,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<List<T>> window(final int n) {
-		final SinglyGenerator<T> it = this;
-		return new SinglyGenerator<List<T>>() {
+	public SinglyEnumerator<List<T>> window(final int n) {
+		final SinglyEnumerator<T> it = this;
+		return new SinglyEnumerator<List<T>>() {
 			private LinkedList<T> queue = new LinkedList<T>();
 			public List<T> invoke() throws StopIteration {
 				if (!queue.isEmpty())
@@ -451,17 +451,17 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 	
-	public SinglyGenerator<T> chain(final SinglyGenerator<T> generator) {
-		return Generators.chain(this, generator);
+	public SinglyEnumerator<T> chain(final SinglyEnumerator<T> generator) {
+		return Enumerators.chain(this, generator);
 	}
 	
-	public SinglyGenerator<T> chain(final Iterable<T> iterable) {
-		return Generators.chain(this, Generators.array(iterable));
+	public SinglyEnumerator<T> chain(final Iterable<T> iterable) {
+		return Enumerators.chain(this, Enumerators.array(iterable));
 	}
 	
-	public SinglyGenerator<T> unique() {
-		final SinglyGenerator<T> it = this;
-		return new SinglyGenerator<T>() {
+	public SinglyEnumerator<T> unique() {
+		final SinglyEnumerator<T> it = this;
+		return new SinglyEnumerator<T>() {
 			private T prev = null;
 			public T invoke() throws StopIteration {
 				while (true) {
@@ -475,7 +475,7 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		};
 	}
 
-	public SinglyGenerator<T> filterNull() {
+	public SinglyEnumerator<T> filterNull() {
 		return filter(new Lambda1<Boolean, T>() {
 			public Boolean invoke(final T item) {
 				return item != null;
@@ -483,9 +483,9 @@ public abstract class SinglyGenerator<T> extends AbstractGeneratorCore<T> implem
 		});
 	}
 	
-	public SinglyGenerator<T> skip(final int n) {
-		final SinglyGenerator<T> it = this;
-		return new SinglyGenerator<T>() {
+	public SinglyEnumerator<T> skip(final int n) {
+		final SinglyEnumerator<T> it = this;
+		return new SinglyEnumerator<T>() {
 			private boolean isFirstInvocation = true;
 			public T invoke() throws StopIteration {
 				if (isFirstInvocation) {
