@@ -9,7 +9,7 @@ public class BinarySCWTest {
 	public static class AccuracyTest extends AbstractAccuracyTest {
 		@DataPoint
 		public static BinarySCW create() {
-			return new BinarySCW(0.2, 0.5);
+			return new BinarySCW(BinarySCW.Mode.SCW_I, 2.0, 0.5);
 		}
 	}
 }

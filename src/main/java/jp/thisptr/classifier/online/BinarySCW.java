@@ -1,10 +1,7 @@
 package jp.thisptr.classifier.online;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
-import jp.thisptr.lang.enumerator.Enumerators;
-import jp.thisptr.lang.lambda.Lambda1;
 import jp.thisptr.math.vector.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -22,23 +19,31 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 	public static final double DEFAULT_C = 0.1;
 	public static final double DEFAULT_ETA = 1;
 	public static final double DEFAULT_INITIAL_VARIANCE = 1.0;
+	public static final Mode DEFAULT_MODE = Mode.SCW_I;
 	
+	private final Mode mode;
 	private final double c;
 	private final double eta;
 	private final double initialVariance;
 	
+	public static enum Mode {
+		SCW_I,
+		SCW_II
+	}
+	
 	private double[] sigma;
 	
 	public BinarySCW() {
-		this(DEFAULT_ETA, DEFAULT_C);
+		this(DEFAULT_MODE, DEFAULT_ETA, DEFAULT_C);
 	}
 	
-	public BinarySCW(final double eta, final double c) {
-		this(eta, c, DEFAULT_INITIAL_CAPACITY);
+	public BinarySCW(final Mode mode, final double eta, final double c) {
+		this(mode, eta, c, DEFAULT_INITIAL_CAPACITY);
 	}
 	
-	public BinarySCW(final double eta, final double c, final int initialCapacity) {
+	public BinarySCW(final Mode mode, final double eta, final double c, final int initialCapacity) {
 		super(initialCapacity);
+		this.mode = mode;
 		this.c = c;
 		this.eta = eta;
 		this.initialVariance = DEFAULT_INITIAL_VARIANCE;
@@ -70,26 +75,29 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 		final double m = y * calcWx(x);
 		final double v = calcV(x);
 		final double psi = 1 + phi * phi / 2;
+		
 		final double alpha = Math.min(c, Math.max(0, 1.0 / (v * zeta) * (-m * psi + Math.sqrt(m * m * Math.pow(phi, 4) / 4 + v * phi * phi * zeta))));
+		if (alpha == 0.0)
+			return false;
 		
-		if (alpha != 0) {
-			final double u = Math.pow(-alpha * v * phi + Math.sqrt(alpha * alpha * v * v * phi * phi + 4 * v), 2);
-			final double beta = alpha * phi / (Math.sqrt(u) + v * alpha * phi);
+		final double u = Math.pow(-alpha * v * phi + Math.sqrt(alpha * alpha * v * v * phi * phi + 4 * v), 2) / 4;
+		final double beta = alpha * phi / (Math.sqrt(u) + v * alpha * phi);
 
-			w[0] += alpha * y * sigma[0];
-			sigma[0] -= beta * sigma[0] * sigma[0];
-			x.walk(new Vector.Visitor() {
-				public void visit(final int index, final double value) {
-					w[index + 1] += alpha * y * sigma[index + 1] * value;
-					sigma[index + 1] -= beta * sigma[0] * sigma[0] * value * value;
-				}
-			});
-			
-			if (log.isDebugEnabled())
-				log.debug(String.format("Variance updated to %s", ArrayUtils.toString(ArrayUtils.subarray(sigma, 0, n + 1))));
-			return true;
-		}
+		w[0] += alpha * y * sigma[0];
+		sigma[0] -= beta * sigma[0] * sigma[0];
+		x.walk(new Vector.Visitor() {
+			public void visit(final int index, final double value) {
+				w[index + 1] += alpha * y * sigma[index + 1] * value;
+				sigma[index + 1] -= beta * sigma[index + 1] * sigma[index + 1] * value * value;
+			}
+		});
 		
-		return false;
+		if (log.isDebugEnabled())
+			log.debug("Variance updated to {}", ArrayUtils.toString(ArrayUtils.subarray(sigma, 0, n + 1)));
+		return true;
+	}
+
+	public Mode getMode() {
+		return mode;
 	}
 }
