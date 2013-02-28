@@ -1,5 +1,5 @@
 package jp.thisptr.math.matrix;
 
-public abstract class SparseMatrix extends Matrix {
+public abstract class SparseMatrix implements Matrix {
 
 }

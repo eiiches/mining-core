@@ -1,9 +1,14 @@
 package jp.thisptr.math.matrix;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import jp.thisptr.math.vector.SparseMapVector;
+import jp.thisptr.math.vector.Vector;
+
+import org.apache.commons.lang.NotImplementedException;
 
 public class SparseMapMatrix extends SparseMatrix {
 	private final Map<Integer, SparseMapVector> data = new HashMap<Integer, SparseMapVector>();
@@ -24,5 +29,46 @@ public class SparseMapMatrix extends SparseMatrix {
 			data.put(row, rowVector);
 		}
 		rowVector.set(col, value);
+	}
+
+	@Override
+	public int rowSize() {
+		if (data.isEmpty())
+			return 0;
+		return Collections.max(data.keySet()) + 1;
+	}
+
+	@Override
+	public int rowCapacity() {
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
+	public int colSize() {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public int colCapacity() {
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
+	public void walk(final Visitor visitor) {
+		for (final Map.Entry<Integer, SparseMapVector> row : data.entrySet()) {
+			row.getValue().walk(new Vector.Visitor() {
+				@Override
+				public void visit(final int index, final double value) {
+					visitor.visit(row.getKey(), index, value);
+				}
+			});
+		}
+	}
+
+	@Override
+	public Iterator<Element> iterator() {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 }

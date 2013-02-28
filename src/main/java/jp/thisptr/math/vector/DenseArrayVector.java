@@ -49,6 +49,24 @@ public class DenseArrayVector extends DenseVector {
 			if (array[i] != 0.0)
 				visitor.visit(i, array[i]);
 	}
+	
+	public class DenseArrayVectorElement implements Element {
+		private final int index;
+		
+		public DenseArrayVectorElement(final int index) {
+			this.index = index;
+		}
+		
+		@Override
+		public int index() {
+			return index;
+		}
+
+		@Override
+		public double value() {
+			return array[index];
+		}
+	}
 
 	@Override
 	public Iterator<Element> iterator() {
@@ -77,17 +95,7 @@ public class DenseArrayVector extends DenseVector {
 				if (!hasNext())
 					throw new NoSuchElementException();
 				pindex = index;
-				final Element result = new Element() {
-					@Override
-					public int index() {
-						return pindex;
-					}
-
-					@Override
-					public double value() {
-						return array[pindex];
-					}
-				};
+				final Element result = new DenseArrayVectorElement(pindex);
 				index = proceed(index);
 				return result;
 			}

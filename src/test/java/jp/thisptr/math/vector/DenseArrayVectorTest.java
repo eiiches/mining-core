@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import jp.thisptr.lang.tuple.Pair;
 
@@ -83,6 +85,20 @@ public class DenseArrayVectorTest {
 		final List<Pair<Integer, Double>> actual = new ArrayList<>();
 		for (final Vector.Element e : sut)
 			actual.add(Pair.make(e.index(), e.value()));
+		sortElements(actual);
+		assertEquals(Arrays.asList(Pair.make(1, 1.0), Pair.make(3, 2.0)), actual);
+	}
+	
+	@Test
+	public void testIteratorNext() {
+		final List<Pair<Integer, Double>> actual = new ArrayList<>();
+		final Iterator<Vector.Element> iter = sut.iterator();
+		try {
+			while (true) {
+				final Vector.Element e = iter.next();
+				actual.add(Pair.make(e.index(), e.value()));
+			}
+		} catch (NoSuchElementException e) { }
 		sortElements(actual);
 		assertEquals(Arrays.asList(Pair.make(1, 1.0), Pair.make(3, 2.0)), actual);
 	}
