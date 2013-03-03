@@ -1,5 +1,7 @@
 package jp.thisptr.math.distribution;
 
+import org.apache.commons.lang.NotImplementedException;
+
 /**
  * An implementation of exponential distribution: p(x) = λ exp(-λx), where λ > 0.
  * 
@@ -47,5 +49,17 @@ public class ExponentialDistribution implements Distribution {
 		if (x < 0)
 			return 0;
 		return lambda * Math.exp(-lambda * x);
+	}
+
+	@Override
+	public double cumulativeAt(final double x) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public double inverseCumulativeAt(final double p) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 }

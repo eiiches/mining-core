@@ -2,6 +2,8 @@ package jp.thisptr.math.distribution;
 
 import java.util.Random;
 
+import org.apache.commons.lang.NotImplementedException;
+
 public class UniformDistribution implements Distribution {
 	private static final double EPSILON = 1e-10;
 	
@@ -30,8 +32,25 @@ public class UniformDistribution implements Distribution {
 	
 	@Override
 	public double densityAt(final double x) {
-		if (begin <= x && x <= end)
-			return 1.0 / (end - begin);
-		return 0;
+		if (x < begin)
+			return 0.0;
+		if (end < x)
+			return 0.0;
+		return 1.0 / (end - begin);
+	}
+
+	@Override
+	public double cumulativeAt(final double x) {
+		if (x < begin)
+			return 0.0;
+		if (end < x)
+			return 1.0;
+		return (x - begin) / (end - begin);
+	}
+
+	@Override
+	public double inverseCumulativeAt(final double p) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 }
