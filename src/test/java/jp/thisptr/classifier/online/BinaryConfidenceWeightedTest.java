@@ -9,7 +9,7 @@ public class BinaryConfidenceWeightedTest {
 	public static class AccuracyTest extends AbstractAccuracyTest {
 		@DataPoint
 		public static BinaryConfidenceWeighted create() {
-			return new BinaryConfidenceWeighted(1, 1);
+			return new BinaryConfidenceWeighted(0.8, 1);
 		}
 	}
 }

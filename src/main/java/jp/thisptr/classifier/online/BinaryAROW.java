@@ -18,7 +18,7 @@ public class BinaryAROW extends AbstractBinaryOnlineClassifier {
 	private static Logger log = LoggerFactory.getLogger(BinaryAROW.class);
 	
 	public static final double DEFAULT_REGULARIZATION_TRADEOFF = 0.1;
-	public static final double DEFAULT_INITIAL_VARIANCE = 100;
+	public static final double DEFAULT_INITIAL_VARIANCE = 1.0;
 	
 	/**
 	 * A tradeoff parameter between the loss and the regularization term, which corresponds to λ<sub>1</sub> and λ<sub>2</sub> in the paper.

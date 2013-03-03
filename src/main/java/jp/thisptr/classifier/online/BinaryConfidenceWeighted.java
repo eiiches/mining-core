@@ -3,6 +3,7 @@ package jp.thisptr.classifier.online;
 import java.util.Arrays;
 import java.util.Map;
 
+import jp.thisptr.math.SpecialFunctions;
 import jp.thisptr.math.vector.SparseMapVector;
 import jp.thisptr.math.vector.Vector;
 
@@ -18,25 +19,25 @@ import org.slf4j.LoggerFactory;
 public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 	private static Logger log = LoggerFactory.getLogger(BinaryConfidenceWeighted.class);
 	
-	public static final double DEFAULT_VARIANCE_INCREMENT = 1;
-	public static final double DEFAULT_INITIAL_VARIANCE = 100;
+	public static final double DEFAULT_ETA = 0.8;
+	public static final double DEFAULT_INITIAL_VARIANCE = 1.0;
 	
-	private final double varianceIncrement;
+	private final double eta;
 	private final double initialVariance;
 	
 	protected double[] sigma;
 	
 	public BinaryConfidenceWeighted() {
-		this(DEFAULT_VARIANCE_INCREMENT, DEFAULT_INITIAL_VARIANCE);
+		this(DEFAULT_ETA, DEFAULT_INITIAL_VARIANCE);
 	}
 	
-	public BinaryConfidenceWeighted(final double varianceIncrement, final double initialVariance) {
-		this(varianceIncrement, initialVariance, DEFAULT_INITIAL_CAPACITY);
+	public BinaryConfidenceWeighted(final double eta, final double initialVariance) {
+		this(eta, initialVariance, DEFAULT_INITIAL_CAPACITY);
 	}
 	
-	public BinaryConfidenceWeighted(final double varianceIncrement, final double initialVariance, final int initialCapacity) {
+	public BinaryConfidenceWeighted(final double eta, final double initialVariance, final int initialCapacity) {
 		super(initialCapacity);
-		this.varianceIncrement = varianceIncrement;
+		this.eta = eta;
 		this.initialVariance = initialVariance;
 		this.sigma = new double[initialCapacity];
 		Arrays.fill(sigma, initialVariance);
@@ -72,7 +73,7 @@ public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 
 	@Override
 	protected boolean doUpdate(final Vector x, final int y) {
-		final double phi = varianceIncrement;
+		final double phi = SpecialFunctions.gaussianInverseCumulative(eta);
 		final double m = y * calcWx(x);
 		final double v = calcV(x);
 		final double alpha = solveQuadratic(2 * phi, 1 + 2 * phi * m, m - phi * v) / v;

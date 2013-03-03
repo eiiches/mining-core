@@ -2,6 +2,7 @@ package jp.thisptr.classifier.online;
 
 import java.util.Arrays;
 
+import jp.thisptr.math.SpecialFunctions;
 import jp.thisptr.math.vector.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -17,7 +18,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 	private static Logger log = LoggerFactory.getLogger(BinarySCW.class);
 	
 	public static final double DEFAULT_C = 0.1;
-	public static final double DEFAULT_ETA = 1;
+	public static final double DEFAULT_ETA = 0.8;
 	public static final double DEFAULT_INITIAL_VARIANCE = 1.0;
 	public static final Mode DEFAULT_MODE = Mode.SCW_I;
 	
@@ -70,7 +71,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 
 	@Override
 	protected boolean doUpdate(final Vector x, final int y) {
-		final double phi = eta; // FIXME: phi = CDF^-1(eta)
+		final double phi = SpecialFunctions.gaussianInverseCumulative(eta); // FIXME: phi = CDF^-1(eta)
 		final double zeta = 1 + phi * phi;
 		final double m = y * calcWx(x);
 		final double v = calcV(x);
