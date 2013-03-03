@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import jp.thisptr.structure.dataframe.DataFrame;
-import jp.thisptr.util.IOGenerators;
+import jp.thisptr.util.IOEnumerators;
 
 
 /**
@@ -29,7 +29,7 @@ public class Iris extends DataFrame {
 	
 	public Iris() {
 		try (final InputStream is = getClass().getClassLoader().getResourceAsStream("dataset/iris.dat")) {
-			for (final String line : IOGenerators.readLines(is).skip(1)) {
+			for (final String line : IOEnumerators.readLines(is).skip(1)) {
 				final DataFrame.RowView row = addRow();
 				final String[] values = TAB.split(line);
 				row.setValue(columnSepalLength, Double.valueOf(values[0]));

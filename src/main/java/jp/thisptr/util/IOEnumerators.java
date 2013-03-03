@@ -15,8 +15,8 @@ import jp.thisptr.lang.enumerator.SinglyEnumerator;
 
 import org.apache.commons.io.IOUtils;
 
-public final class IOGenerators {
-	private IOGenerators() { }
+public final class IOEnumerators {
+	private IOEnumerators() { }
 	
 	public static SinglyEnumerator<String> readLines(final File file, final Charset charset) throws FileNotFoundException {
 		return readLines(new FileInputStream(file), charset);
