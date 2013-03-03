@@ -1,6 +1,5 @@
 package jp.thisptr.hash;
 
-import org.apache.commons.lang.StringUtils;
 
 
 public final class IntMurmurHash {
