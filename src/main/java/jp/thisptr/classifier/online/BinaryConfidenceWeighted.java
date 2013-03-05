@@ -1,10 +1,8 @@
 package jp.thisptr.classifier.online;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import jp.thisptr.math.SpecialFunctions;
-import jp.thisptr.math.vector.SparseMapVector;
 import jp.thisptr.math.vector.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -23,6 +21,7 @@ public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 	public static final double DEFAULT_INITIAL_VARIANCE = 1.0;
 	
 	private final double eta;
+	private final double phi;
 	private final double initialVariance;
 	
 	protected double[] sigma;
@@ -38,6 +37,7 @@ public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 	public BinaryConfidenceWeighted(final double eta, final double initialVariance, final int initialCapacity) {
 		super(initialCapacity);
 		this.eta = eta;
+		this.phi = SpecialFunctions.gaussianInverseCumulative(eta);
 		this.initialVariance = initialVariance;
 		this.sigma = new double[initialCapacity];
 		Arrays.fill(sigma, initialVariance);
@@ -73,7 +73,6 @@ public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 
 	@Override
 	protected boolean doUpdate(final Vector x, final int y) {
-		final double phi = SpecialFunctions.gaussianInverseCumulative(eta);
 		final double m = y * calcWx(x);
 		final double v = calcV(x);
 		final double alpha = solveQuadratic(2 * phi, 1 + 2 * phi * m, m - phi * v) / v;

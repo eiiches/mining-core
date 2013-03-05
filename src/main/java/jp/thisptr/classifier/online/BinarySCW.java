@@ -24,7 +24,17 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 	
 	private final Mode mode;
 	private final double c;
+	
+	/**
+	 * A confidence parameter. This value must be within a range of (0, 1).
+	 */
 	private final double eta;
+	
+	/**
+	 * A inverse gaussian cumulative of eta.
+	 */
+	private final double phi;
+	
 	private final double initialVariance;
 	
 	public static enum Mode {
@@ -47,6 +57,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 		this.mode = mode;
 		this.c = c;
 		this.eta = eta;
+		this.phi = SpecialFunctions.gaussianInverseCumulative(eta);
 		this.initialVariance = DEFAULT_INITIAL_VARIANCE;
 		this.sigma = new double[initialCapacity];
 		Arrays.fill(sigma, initialVariance);
@@ -71,7 +82,6 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 
 	@Override
 	protected boolean doUpdate(final Vector x, final int y) {
-		final double phi = SpecialFunctions.gaussianInverseCumulative(eta); // FIXME: phi = CDF^-1(eta)
 		final double zeta = 1 + phi * phi;
 		final double m = y * calcWx(x);
 		final double v = calcV(x);
