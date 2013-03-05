@@ -3,9 +3,9 @@ package jp.thisptr.structure.suffixarray;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-
 import jp.thisptr.lang.tuple.Pair;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 public final class SuffixTree {
 	private final SuffixArray suffixArray;

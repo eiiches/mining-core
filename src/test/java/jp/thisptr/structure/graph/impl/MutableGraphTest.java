@@ -1,9 +1,8 @@
 package jp.thisptr.structure.graph.impl;
 
-import jp.thisptr.structure.graph.Vertex;
+import java.util.Random;
 
-import org.apache.commons.lang.math.RandomUtils;
-import org.junit.Test;
+import jp.thisptr.structure.graph.Vertex;
 
 public class MutableGraphTest {
 
@@ -17,10 +16,12 @@ public class MutableGraphTest {
 		for (int i = 0; i < vertices; ++i)
 			graph.addVertices(new MutableVertex());
 		
+		final Random random = new Random();
+		
 		// randomly connect vertices
 		for (int i = 0; i < edges; ++i) {
-			final int src = RandomUtils.nextInt(vertices);
-			final int dst = RandomUtils.nextInt(vertices);
+			final int src = random.nextInt(vertices);
+			final int dst = random.nextInt(vertices);
 			final MutableVertex srcVertex = (MutableVertex) graph.getVertices().get(src);
 			final Vertex dstVertex = graph.getVertices().get(dst);
 			srcVertex.addOutVertex(dstVertex);

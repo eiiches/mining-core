@@ -6,14 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import jp.thisptr.lang.NotImplementedException;
 import jp.thisptr.lang.lambda.Lambda1;
 import jp.thisptr.lang.tuple.Pair;
 import jp.thisptr.math.vector.SparseMapVector;
 import jp.thisptr.structure.instance.Instance;
 import jp.thisptr.structure.instance.LabeledInstance;
 import jp.thisptr.util.SequencialIdMapper;
-
-import org.apache.commons.lang.NotImplementedException;
 
 /**
  * This class represents a dataset, which later can be converted to 

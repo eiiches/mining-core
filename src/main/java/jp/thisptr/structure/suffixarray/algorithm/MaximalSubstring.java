@@ -3,9 +3,9 @@ package jp.thisptr.structure.suffixarray.algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-
 import jp.thisptr.structure.suffixarray.SuffixTree;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 public class MaximalSubstring {
 	private final SuffixTree suffixTree;

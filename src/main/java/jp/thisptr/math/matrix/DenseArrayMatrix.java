@@ -2,9 +2,8 @@ package jp.thisptr.math.matrix;
 
 import java.util.Iterator;
 
+import jp.thisptr.lang.NotImplementedException;
 import jp.thisptr.math.vector.DenseArrayVector;
-
-import org.apache.commons.lang.NotImplementedException;
 
 public class DenseArrayMatrix extends DenseMatrix {
 	private final DenseArrayVector[] data;

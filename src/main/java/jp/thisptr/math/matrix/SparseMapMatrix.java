@@ -5,10 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import jp.thisptr.lang.NotImplementedException;
 import jp.thisptr.math.vector.SparseMapVector;
 import jp.thisptr.math.vector.Vector;
-
-import org.apache.commons.lang.NotImplementedException;
 
 public class SparseMapMatrix extends SparseMatrix {
 	private final Map<Integer, SparseMapVector> data = new HashMap<Integer, SparseMapVector>();

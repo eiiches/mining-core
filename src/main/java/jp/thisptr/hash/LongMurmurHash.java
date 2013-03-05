@@ -1,6 +1,6 @@
 package jp.thisptr.hash;
 
-import org.apache.commons.lang.NotImplementedException;
+import jp.thisptr.lang.NotImplementedException;
 
 public final class LongMurmurHash {
 	private LongMurmurHash() { }

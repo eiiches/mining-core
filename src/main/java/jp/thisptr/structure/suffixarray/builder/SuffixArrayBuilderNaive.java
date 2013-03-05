@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import jp.thisptr.structure.suffixarray.SuffixArray;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 public final class SuffixArrayBuilderNaive extends SuffixArrayBuilder {
 	public SuffixArray build(final char[] text) {

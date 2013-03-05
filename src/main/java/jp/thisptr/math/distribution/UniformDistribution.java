@@ -2,7 +2,7 @@ package jp.thisptr.math.distribution;
 
 import java.util.Random;
 
-import org.apache.commons.lang.NotImplementedException;
+import jp.thisptr.lang.NotImplementedException;
 
 public class UniformDistribution implements Distribution {
 	private static final double EPSILON = 1e-10;

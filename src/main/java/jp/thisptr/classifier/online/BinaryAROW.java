@@ -2,10 +2,9 @@ package jp.thisptr.classifier.online;
 
 import java.util.Arrays;
 
-import jp.thisptr.math.vector.SparseMapVector;
 import jp.thisptr.math.vector.Vector;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

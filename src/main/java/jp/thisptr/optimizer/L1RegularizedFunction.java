@@ -1,7 +1,6 @@
 package jp.thisptr.optimizer;
 
-import org.apache.commons.lang.NotImplementedException;
-
+import jp.thisptr.lang.NotImplementedException;
 import jp.thisptr.math.operation.ArrayOp;
 
 public class L1RegularizedFunction extends Function {

@@ -1,9 +1,8 @@
 package jp.thisptr.math.distribution.multivariate;
 
+import jp.thisptr.lang.NotImplementedException;
 import jp.thisptr.math.operation.ArrayOp;
 import jp.thisptr.math.vector.SparseMapVector;
-
-import org.apache.commons.lang.NotImplementedException;
 
 public class GibbsDistribution implements MultivariateDistribution {
 	private final double z;

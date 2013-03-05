@@ -1,6 +1,6 @@
 package jp.thisptr.math.distribution;
 
-import org.apache.commons.lang.NotImplementedException;
+import jp.thisptr.lang.NotImplementedException;
 
 /**
  * An implementation of exponential distribution: p(x) = λ exp(-λx), where λ > 0.
