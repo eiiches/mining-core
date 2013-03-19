@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.thisptr.classifier.evaluate.ConfusionMatrix;
+import net.thisptr.classifier.evaluation.ConfusionMatrix;
 import net.thisptr.math.distribution.Distribution;
 import net.thisptr.math.distribution.GaussianDistribution;
 import net.thisptr.math.vector.SparseMapVector;

@@ -1,6 +1,8 @@
-package net.thisptr.classifier.evaluate;
+package net.thisptr.classifier.evaluation;
 
 import static org.junit.Assert.assertEquals;
+
+import net.thisptr.classifier.evaluation.ConfusionMatrix;
 
 import org.junit.Before;
 import org.junit.Test;

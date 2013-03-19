@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.thisptr.classifier.OnlineLearner;
-import net.thisptr.classifier.evaluate.ConfusionMatrix;
+import net.thisptr.classifier.evaluation.ConfusionMatrix;
 import net.thisptr.math.vector.SparseMapVector;
 import net.thisptr.structure.instance.LabeledInstance;
 

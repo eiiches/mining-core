@@ -1,4 +1,4 @@
-package net.thisptr.classifier.evaluate;
+package net.thisptr.classifier.evaluation;
 
 import java.util.HashMap;
 import java.util.HashSet;
