@@ -7,6 +7,13 @@ import java.util.NoSuchElementException;
 public class DenseArrayVector extends DenseVector {
 	private final double[] array;
 	
+	public DenseArrayVector(final Vector src) {
+		final int size = src.size();
+		array = new double[size];
+		for (final Vector.Element e : src)
+			array[e.index()] = e.value();
+	}
+	
 	public DenseArrayVector(final int dimension) {
 		array = new double[dimension];
 	}

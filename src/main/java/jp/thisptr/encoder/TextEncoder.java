@@ -7,6 +7,7 @@ import jp.thisptr.math.vector.SparseVector;
 import jp.thisptr.tokenizer.Tokenizer;
 import jp.thisptr.util.SequencialIdMapper;
 
+@Deprecated
 public class TextEncoder {
 	private final boolean wordCount;
 	private final Tokenizer tokenizer;
@@ -37,12 +38,8 @@ public class TextEncoder {
 	private int[] convertTokensToIds(final List<String> tokens) {
 		final int[] ids = new int[tokens.size()];
 		int index = 0;
-		for (final String token : tokens) {
-			Integer id = wordId.get(token);
-			if (id == null)
-				id = wordId.map(token);
-			ids[index++] = id;
-		}
+		for (final String token : tokens)
+			ids[index++] = wordId.map(token);
 		return ids;
 	}
 	

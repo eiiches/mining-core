@@ -82,4 +82,17 @@ public class SparseMapVector extends SparseVector {
 			}
 		};
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder("[");
+		String sep = "";
+		for (final Element element : this) {
+			builder.append(sep);
+			builder.append(String.format("%d: %.2f", element.index(), element.value()));
+			sep = ", ";
+		}
+		builder.append("]");
+		return builder.toString();
+	}
 }

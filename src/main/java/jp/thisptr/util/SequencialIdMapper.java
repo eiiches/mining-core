@@ -44,8 +44,11 @@ public class SequencialIdMapper<T> {
 		}
 	}
 	
-	public Integer get(final T obj) {
-		return objectId.get(obj);
+	public int get(final T obj) {
+		final Integer id = objectId.get(obj);
+		if (id == null)
+			return -1;
+		return id;
 	}
 	
 	private int mapIfAbsent(final T token) {
@@ -63,7 +66,7 @@ public class SequencialIdMapper<T> {
 	}
 	
 	public int map(final T obj) {
-		final Integer id = get(obj);
+		final Integer id = objectId.get(obj);
 		if (id != null)
 			return id;
 		return mapIfAbsent(obj);
