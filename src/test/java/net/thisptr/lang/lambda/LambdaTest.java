@@ -9,12 +9,6 @@ import net.thisptr.util.Lambdas;
 import org.junit.Test;
 
 public class LambdaTest {
-	
-	@Test
-	public void testStringToLong() {
-		assertEquals(Long.valueOf(123), Lambdas.toLong().invoke("123"));
-	}
-	
 	@Test
 	public void testMax() {
 		assertEquals(Integer.valueOf(3), Lambdas.<Integer>max().invoke(3, 1));

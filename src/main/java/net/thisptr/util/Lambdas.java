@@ -15,7 +15,6 @@ import net.thisptr.lang.lambda.alias.BinaryFunction;
 import net.thisptr.lang.lambda.alias.Lambda;
 import net.thisptr.lang.tuple.Pair;
 import net.thisptr.lang.tuple.Tuple;
-import net.thisptr.util.experimental.ReflectUtils;
 
 public final class Lambdas {
 	private Lambdas() { }
@@ -35,26 +34,6 @@ public final class Lambdas {
 	
 	public static final <T, U> Lambda1<T, U> fromStaticMethod(final Method method) {
 		return fromMethod(method, null);
-	}
-	
-	private static Lambda1<Long, String> _stringToLong = valueOf(Long.class);
-	private static Lambda1<Integer, String> _stringToInteger = valueOf(Integer.class);
-	private static Lambda1<Double, String> _stringToDouble = valueOf(Double.class);
-	
-	public static Lambda1<Integer, String> toInteger() {
-		return _stringToInteger;
-	}
-	
-	public static Lambda1<Long, String> toLong() {
-		return _stringToLong;
-	}
-	
-	public static Lambda1<Double, String> toDouble() {
-		return _stringToDouble;
-	}
-	
-	public static <T> Lambda1<T, String> valueOf(final Class<T> klass) {
-		return fromStaticMethod(ReflectUtils.getMethod(klass, "valueOf", String.class));
 	}
 	
 	private static Lambda1<Integer, Integer> _incrementInteger = new Lambda1<Integer, Integer>() {
