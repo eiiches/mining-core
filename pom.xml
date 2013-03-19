@@ -23,9 +23,9 @@
 
 	<repositories>
 		<repository>
-			<id>thirdparty</id>
-			<name>thirdparty</name>
-			<url>http://thisptr.net/nexus/content/repositories/thirdparty</url>
+			<id>thisptr.net</id>
+			<name>thisptr.net</name>
+			<url>http://thisptr.net/nexus/content/groups/public</url>
 		</repository>
 	</repositories>
 
