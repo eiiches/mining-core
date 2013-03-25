@@ -39,7 +39,10 @@ public abstract class CrossValidation<VectorType, ClassType> {
 		return cv;
 	}
 	
-	public ConfusionMatrix<ClassType> loocv(final List<? extends LabeledInstance<? extends VectorType, ClassType>> dataset) {
-		return fold(dataset, dataset.size());
+	public <InstanceType extends LabeledInstance<? extends VectorType, ClassType>> ConfusionMatrix<ClassType> loocv(final Iterable<InstanceType> dataset0) {
+		final List<InstanceType> list = new ArrayList<InstanceType>();
+		for (final InstanceType instance : dataset0)
+			list.add(instance);
+		return fold(list, list.size());
 	}
 }
