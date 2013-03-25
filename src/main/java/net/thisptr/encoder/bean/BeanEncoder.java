@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,9 +11,10 @@ import net.thisptr.encoder.Encoder;
 import net.thisptr.encoder.bean.annotation.EncodeWith;
 import net.thisptr.encoder.bean.annotation.Ignore;
 import net.thisptr.encoder.bean.attribute.AttributeEncoder;
+import net.thisptr.encoder.bean.attribute.AttributeEncoder.Context;
+import net.thisptr.encoder.bean.attribute.IgnoreAttributeEncoder;
 import net.thisptr.encoder.bean.attribute.NominalAttributeEncoder;
 import net.thisptr.encoder.bean.attribute.NumericalAttributeEncoder;
-import net.thisptr.encoder.bean.attribute.AttributeEncoder.Context;
 import net.thisptr.lang.tuple.Pair;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.SparseMapVector;
@@ -84,16 +84,20 @@ public class BeanEncoder<T> implements Encoder<T> {
 			}
 			return field.getAnnotation(annotationClass);
 		}
-
+		
 		public boolean isIgnored() {
 			final Ignore ignoreAnnotation = getAnnotation(this.field, this.getter, Ignore.class);
 			return ignoreAnnotation != null;
 		}
-		
+
 		public Class<? extends AttributeEncoder<?>> getEncoderClass() {
+			if (isIgnored())
+				return IgnoreAttributeEncoder.class;
 			final EncodeWith encodeWithAnnotation = getAnnotation(this.field, this.getter, EncodeWith.class);
 			if (encodeWithAnnotation != null)
 				return encodeWithAnnotation.value();
+			if (this.field.getType().isEnum())
+				return NominalAttributeEncoder.class;
 			return defaultAttributeEncoders.get(this.field.getType());
 		}
 
@@ -116,7 +120,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 	
 	private static class Attribute {
 		private final Accessor accessor;
-		private final AttributeEncoder<?> encoder;
+		private AttributeEncoder<?> encoder;
 		
 		public Attribute(final Accessor accessor, final AttributeEncoder<?> encoder) {
 			this.accessor = accessor;
@@ -125,6 +129,10 @@ public class BeanEncoder<T> implements Encoder<T> {
 
 		public Accessor getAccessor() {
 			return accessor;
+		}
+
+		public void setEncoder(final AttributeEncoder<?> encoder) {
+			this.encoder = encoder;
 		}
 
 		public AttributeEncoder<?> getEncoder() {
@@ -137,23 +145,23 @@ public class BeanEncoder<T> implements Encoder<T> {
 		}
 	}
 
-	private final ArrayList<Attribute> attributes;
+	private final Map<String, Attribute> attributes;
 	private final SequencialIdMapper<Pair<String, Object>> idMapper = new SequencialIdMapper<Pair<String, Object>>();
 	private final boolean sparse;
 	
 	public BeanEncoder(final Class<T> klass, final boolean sparse) {
 		this.sparse = sparse;
-		this.attributes = new ArrayList<Attribute>();
+		this.attributes = new HashMap<String, Attribute>();
 		for (final Field field : klass.getFields()) {
 			final Accessor accessor = new Accessor(klass, field.getName());
-			if (accessor.isIgnored())
-				continue;
-			
-			final AttributeEncoder<?> encoder = accessor.newEncoder();
-			if (encoder == null)
-				throw new RuntimeException(String.format("Unencodable attribute %s", accessor));
-			
-			this.attributes.add(new Attribute(accessor, encoder));
+			if (accessor.isIgnored()) {
+				this.attributes.put(field.getName(), new Attribute(accessor, null));
+			} else {
+				final AttributeEncoder<?> encoder = accessor.newEncoder();
+				if (encoder == null)
+					throw new RuntimeException(String.format("Unencodable attribute %s", accessor));
+				this.attributes.put(field.getName(), new Attribute(accessor, encoder));
+			}
 		}
 	}
 	
@@ -184,12 +192,14 @@ public class BeanEncoder<T> implements Encoder<T> {
 	@Override
 	public Vector encode(final T record) {
 		final Vector result = new SparseMapVector();
-		for (final Attribute attribute : attributes) {
+		for (final Attribute attribute : attributes.values()) {
 			try {
 				final Object value = attribute.getAccessor().getValue(record);
 				
 				@SuppressWarnings("unchecked")
 				final AttributeEncoder<Object> encoder = (AttributeEncoder<Object>) attribute.getEncoder();
+				if (encoder == null)
+					continue;
 				
 				encoder.encode(new ContextImpl(attribute.getAccessor(), result), value);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -199,6 +209,13 @@ public class BeanEncoder<T> implements Encoder<T> {
 		if (sparse)
 			return result;
 		return new DenseArrayVector(result);
+	}
+	
+	public void setAttributeEncoder(final String fieldName, final AttributeEncoder<?> encoder) {
+		final Attribute attribute = attributes.get(fieldName);
+		if (attribute == null)
+			throw new RuntimeException(String.format("No such attribute: %s", fieldName));
+		attribute.setEncoder(encoder);
 	}
 	
 	public Pair<String, Object> describeVectorIndex(final int id) {
