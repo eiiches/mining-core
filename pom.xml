@@ -13,11 +13,11 @@
 	<distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://thisptr.net/nexus/content/repositories/releases</url>
+			<url>http://nexus.thisptr.net/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://thisptr.net/nexus/content/repositories/snapshots</url>
+			<url>http://nexus.thisptr.net/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -25,7 +25,7 @@
 		<repository>
 			<id>thisptr.net</id>
 			<name>thisptr.net</name>
-			<url>http://thisptr.net/nexus/content/groups/public</url>
+			<url>http://nexus.thisptr.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
