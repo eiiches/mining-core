@@ -1,11 +1,20 @@
 package net.thisptr.util;
 
-import net.thisptr.lang.tuple.Pair;
 
-public class ScoredItem<ItemType, ScoreType> extends Pair<ItemType, ScoreType> {
-	public ScoreType getScore() { return getSecond(); }
-	public ItemType getItem() { return getFirst(); }
-	public ScoredItem(final ItemType item, final ScoreType score) {
-		super(item, score);
+public class ScoredItem<T> {
+	private final double score;
+	private final T item;
+	
+	public ScoredItem(final T item, final double score) {
+		this.score = score;
+		this.item = item;
+	}
+	
+	public double score() {
+		return this.score;
+	}
+	
+	public T item() {
+		return this.item;
 	}
 }

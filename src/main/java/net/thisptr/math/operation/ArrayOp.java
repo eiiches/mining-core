@@ -57,6 +57,18 @@ public final class ArrayOp {
 		return result;
 	}
 	
+	public static double[] div(final double[] result, final double divisor) {
+		for (int i = 0; i < result.length; ++i)
+			result[i] /= divisor;
+		return result;
+	}
+	
+	public static double[] div(final double[] result, final double[] x, final double y) {
+		for (int i = 0; i < result.length; ++i)
+			result[i] = x[i] / y;
+		return result;
+	}
+	
 	public static double[] mul(final double[] result, final double scale) {
 		for (int i = 0; i < result.length; ++i)
 			result[i] *= scale;
@@ -192,5 +204,36 @@ public final class ArrayOp {
 		final double[] result = new double[n];
 		fill(result, value);
 		return result;
+	}
+
+	public static double sum(final double[] x) {
+		double result = 0.0;
+		for (final double xi : x)
+			result += xi;
+		return result;
+	}
+
+	public static void mask(final double[] x, final boolean[] mask) {
+		assert x.length == mask.length;
+		
+		for (int i = 0; i < x.length; ++i)
+			if (mask[i])
+				x[i] = 0.0;
+	}
+	
+	public static double[] maskNew(final double[] x, final boolean[] mask) {
+		assert x.length == mask.length;
+		
+		final double[] result = x.clone();
+		mask(result, mask);
+		return result;
+	}
+
+	public static double[] onesNew(final int size) {
+		return fillNew(1.0, size);
+	}
+	
+	public static double[] zerosNew(final int size) {
+		return fillNew(0.0, size);
 	}
 }
