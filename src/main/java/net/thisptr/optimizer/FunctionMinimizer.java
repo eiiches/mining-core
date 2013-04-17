@@ -1,6 +1,6 @@
 package net.thisptr.optimizer;
 
-import net.thisptr.math.operation.ArrayOp;
+import net.thisptr.math.operator.ArrayOp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

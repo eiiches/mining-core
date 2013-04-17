@@ -2,7 +2,7 @@ package net.thisptr.classifier.online;
 
 import java.util.Map;
 
-import net.thisptr.math.operation.VectorOp;
+import net.thisptr.math.operator.VectorOp;
 import net.thisptr.math.vector.SparseMapVector;
 import net.thisptr.math.vector.Vector;
 

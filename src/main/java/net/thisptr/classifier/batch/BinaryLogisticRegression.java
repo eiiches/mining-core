@@ -3,7 +3,7 @@ package net.thisptr.classifier.batch;
 import java.util.List;
 
 import net.thisptr.classifier.BatchLearner;
-import net.thisptr.math.operation.ArrayOp;
+import net.thisptr.math.operator.ArrayOp;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
 import net.thisptr.optimizer.Function;

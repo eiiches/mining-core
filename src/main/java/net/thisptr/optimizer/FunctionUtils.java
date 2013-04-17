@@ -1,7 +1,7 @@
 package net.thisptr.optimizer;
 
 import net.thisptr.lang.NotImplementedException;
-import net.thisptr.math.operation.ArrayOp;
+import net.thisptr.math.operator.ArrayOp;
 
 public final class FunctionUtils {
 	private FunctionUtils() { }

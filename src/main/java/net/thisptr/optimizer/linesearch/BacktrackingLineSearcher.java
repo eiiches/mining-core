@@ -1,6 +1,6 @@
 package net.thisptr.optimizer.linesearch;
 
-import net.thisptr.math.operation.ArrayOp;
+import net.thisptr.math.operator.ArrayOp;
 import net.thisptr.optimizer.Function;
 
 import org.slf4j.Logger;

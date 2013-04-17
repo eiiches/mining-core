@@ -1,4 +1,4 @@
-package net.thisptr.math.operation;
+package net.thisptr.math.operator;
 
 import java.util.Arrays;
 

@@ -3,7 +3,7 @@ package net.thisptr.classifier.online;
 import java.util.Arrays;
 
 import net.thisptr.classifier.OnlineLearner;
-import net.thisptr.math.operation.VectorOp;
+import net.thisptr.math.operator.VectorOp;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
 import net.thisptr.structure.instance.LabeledInstance;

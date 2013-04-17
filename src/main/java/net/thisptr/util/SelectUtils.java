@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-import net.thisptr.math.operation.ArrayOp;
+import net.thisptr.math.operator.ArrayOp;
 
 public final class SelectUtils {
 	private SelectUtils() { }

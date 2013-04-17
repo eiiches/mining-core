@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
-import net.thisptr.math.operation.ArrayOp;
+import net.thisptr.math.operator.ArrayOp;
 
 import org.junit.Test;
 

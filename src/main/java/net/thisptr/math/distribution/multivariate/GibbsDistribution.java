@@ -1,7 +1,7 @@
 package net.thisptr.math.distribution.multivariate;
 
 import net.thisptr.lang.NotImplementedException;
-import net.thisptr.math.operation.ArrayOp;
+import net.thisptr.math.operator.ArrayOp;
 import net.thisptr.math.vector.SparseMapVector;
 
 public class GibbsDistribution implements MultivariateDistribution {

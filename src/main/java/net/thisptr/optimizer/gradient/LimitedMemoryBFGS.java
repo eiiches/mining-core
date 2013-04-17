@@ -3,7 +3,7 @@ package net.thisptr.optimizer.gradient;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import net.thisptr.math.operation.ArrayOp;
+import net.thisptr.math.operator.ArrayOp;
 import net.thisptr.optimizer.Function;
 import net.thisptr.optimizer.FunctionMinimizer;
 import net.thisptr.optimizer.linesearch.BacktrackingLineSearcher;
