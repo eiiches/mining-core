@@ -1,19 +1,20 @@
 package net.thisptr.tokenizer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.thisptr.dictionary.Dictionary;
+import net.thisptr.string.matcher.StringPattern;
+import net.thisptr.string.matcher.WuManber;
 import net.thisptr.structure.suffixarray.SuffixArray;
 import net.thisptr.structure.suffixarray.SuffixTree;
 import net.thisptr.structure.suffixarray.algorithm.MaximalSubstring;
 
 public class MaximalSubstringTokenizer extends Tokenizer {
-	private final Dictionary dictionary;
+	private final StringPattern dictionary;
 	private final DictionaryTokenizer tokenizer;
+	private final List<String> maximalSubstrings;
 	
 	public MaximalSubstringTokenizer(final Iterable<String> learnset) {
 		final StringBuilder builder = new StringBuilder();
@@ -39,16 +40,13 @@ public class MaximalSubstringTokenizer extends Tokenizer {
 				fixed.add(substring.substring(sep + 1, substring.length()));
 		}
 		
-		try {
-			dictionary = Dictionary.load(new ArrayList<String>(fixed));
-			tokenizer = new DictionaryTokenizer(dictionary);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		maximalSubstrings = new ArrayList<String>(fixed);
+		dictionary = WuManber.compile(new ArrayList<String>(fixed));
+		tokenizer = new DictionaryTokenizer(dictionary);
 	}
 
-	public Dictionary getDictionary() {
-		return dictionary;
+	public List<String> getMaximalSubstrings() {
+		return maximalSubstrings;
 	}
 
 	@Override
