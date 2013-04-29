@@ -63,11 +63,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-gosen</artifactId>
-			<version>4.0.0</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
