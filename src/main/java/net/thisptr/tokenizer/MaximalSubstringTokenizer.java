@@ -7,9 +7,10 @@ import java.util.Set;
 
 import net.thisptr.string.matcher.StringPattern;
 import net.thisptr.string.matcher.WuManber;
-import net.thisptr.structure.suffixarray.SuffixArray;
-import net.thisptr.structure.suffixarray.SuffixTree;
-import net.thisptr.structure.suffixarray.algorithm.MaximalSubstring;
+import net.thisptr.string.misc.MaximalSubstring;
+import net.thisptr.string.misc.SuffixTree;
+import net.thisptr.string.suffixarray.SaisSuffixArrayBuilder;
+import net.thisptr.string.suffixarray.SuffixArray;
 
 public class MaximalSubstringTokenizer extends Tokenizer {
 	private final StringPattern dictionary;
@@ -23,8 +24,9 @@ public class MaximalSubstringTokenizer extends Tokenizer {
 			builder.append((char) 0);
 		}
 		final String source = builder.toString();
-		final SuffixArray suffixArray = SuffixArray.build(source);
-		final SuffixTree suffixTree = SuffixTree.build(suffixArray);
+		final char[] sourceCharArray = source.toCharArray();
+		final SuffixArray suffixArray = new SaisSuffixArrayBuilder().build(sourceCharArray);
+		final SuffixTree suffixTree = SuffixTree.build(sourceCharArray, suffixArray);
 		
 		final Set<String> fixed = new HashSet<String>();
 		final List<String> substrings = new MaximalSubstring(suffixTree).extractAll();

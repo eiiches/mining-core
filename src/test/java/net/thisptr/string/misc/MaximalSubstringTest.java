@@ -1,12 +1,10 @@
-package net.thisptr.structure.suffixarray.algorithm;
+package net.thisptr.string.misc;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import net.thisptr.structure.suffixarray.SuffixTree;
 
 import org.junit.Test;
 

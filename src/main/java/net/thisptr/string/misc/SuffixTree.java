@@ -1,19 +1,23 @@
-package net.thisptr.structure.suffixarray;
+package net.thisptr.string.misc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.thisptr.lang.tuple.Pair;
+import net.thisptr.string.suffixarray.SaisSuffixArrayBuilder;
+import net.thisptr.string.suffixarray.SuffixArray;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 public final class SuffixTree {
+	private final char[] text;
 	private final SuffixArray suffixArray;
 	private final int[] beginIndices;
 	private final int[] endIndices;
 	private final int[] depthValues;
 	
-	private SuffixTree(final SuffixArray suffixArray, final int[] beginIndices, final int[] endIndices, final int[] depthValues) {
+	private SuffixTree(final char[] text, final SuffixArray suffixArray, final int[] beginIndices, final int[] endIndices, final int[] depthValues) {
+		this.text = text;
 		this.suffixArray = suffixArray;
 		this.beginIndices = beginIndices;
 		this.endIndices = endIndices;
@@ -21,15 +25,15 @@ public final class SuffixTree {
 	}
 	
 	public int size() {
-		return suffixArray.size();
+		return suffixArray.length();
 	}
 	
 	public char[] getText() {
-		return suffixArray.getText();
+		return text;
 	}
 	
 	public int[] getSuffixArray() {
-		return suffixArray.getIntArray();
+		return suffixArray.intArray();
 	}
 	
 	public int[] getBeginIndices() {
@@ -44,10 +48,9 @@ public final class SuffixTree {
 		return depthValues;
 	}
 	
-	public static SuffixTree build(final SuffixArray suffixArray) {
-		final int n = suffixArray.size();
-		final char[] text = suffixArray.getText();
-		final int[] SA = suffixArray.getIntArray();
+	public static SuffixTree build(final char[] text, final SuffixArray suffixArray) {
+		final int n = suffixArray.length();
+		final int[] SA = suffixArray.intArray();
 		final int[] beginIndices = new int[n];
 		final int[] endIndices = new int[n];
 		final int[] depthValues = new int[n];
@@ -96,14 +99,15 @@ public final class SuffixTree {
 				break;
 			S.add(Pair.make(i, n - SA[i] + 1));
 		}
-		return new SuffixTree(suffixArray,
+		return new SuffixTree(text, suffixArray,
 				ArrayUtils.subarray(beginIndices, 0, nodeNum),
 				ArrayUtils.subarray(endIndices, 0, nodeNum),
 				ArrayUtils.subarray(depthValues, 0, nodeNum));
 	}
 	
 	public static SuffixTree build(final char[] text) {
-		return build(SuffixArray.build(text));
+		final SuffixArray sa = new SaisSuffixArrayBuilder().build(text);
+		return build(text, sa);
 	}
 	
 	public static SuffixTree build(final String text) {

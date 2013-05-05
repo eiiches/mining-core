@@ -1,7 +1,7 @@
-package net.thisptr.structure.suffixarray;
+package net.thisptr.string.misc;
 
 import static org.junit.Assert.assertArrayEquals;
-import net.thisptr.structure.suffixarray.SuffixTree;
+import net.thisptr.string.misc.SuffixTree;
 
 import org.junit.Test;
 

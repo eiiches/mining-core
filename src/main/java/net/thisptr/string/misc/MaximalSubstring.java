@@ -1,9 +1,7 @@
-package net.thisptr.structure.suffixarray.algorithm;
+package net.thisptr.string.misc;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.thisptr.structure.suffixarray.SuffixTree;
 
 import org.apache.commons.lang3.ArrayUtils;
 
