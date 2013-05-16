@@ -2,6 +2,7 @@ package net.thisptr.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -70,5 +71,9 @@ public class SequencialIdMapper<T> {
 		if (id != null)
 			return id;
 		return mapIfAbsent(obj);
+	}
+	
+	public Set<T> keySet() {
+		return objectId.keySet();
 	}
 }
