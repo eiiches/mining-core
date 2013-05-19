@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.thisptr.string.matcher.StringPattern;
-import net.thisptr.string.matcher.WuManber;
+import net.thisptr.string.matcher.WuManberPattern;
 import net.thisptr.string.misc.MaximalSubstring;
 import net.thisptr.string.misc.SuffixTree;
 import net.thisptr.string.suffixarray.SaisSuffixArrayBuilder;
@@ -43,7 +43,7 @@ public class MaximalSubstringTokenizer extends Tokenizer {
 		}
 		
 		maximalSubstrings = new ArrayList<String>(fixed);
-		dictionary = WuManber.compile(new ArrayList<String>(fixed));
+		dictionary = WuManberPattern.compile(new ArrayList<String>(fixed));
 		tokenizer = new DictionaryTokenizer(dictionary);
 	}
 

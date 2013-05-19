@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Queue;
 
 
-public final class WuManber implements StringPattern {
+public final class WuManberPattern implements StringPattern {
 	public static final int DEFAULT_BLOCK_SIZE = 3;
 	public static final int DEFAULT_TABLE_SIZE = 8192;
 	
@@ -29,7 +29,7 @@ public final class WuManber implements StringPattern {
 		return block.hashCode();
 	}
 
-	private WuManber(final Collection<String> patterns) {
+	private WuManberPattern(final Collection<String> patterns) {
 		if (patterns.isEmpty())
 			throw new IllegalArgumentException("Specify at least one pattern.");
 		
@@ -141,8 +141,8 @@ public final class WuManber implements StringPattern {
 		}
 	}
 	
-	public static WuManber compile(final Collection<String> patterns) {
-		return new WuManber(patterns);
+	public static WuManberPattern compile(final Collection<String> patterns) {
+		return new WuManberPattern(patterns);
 	}
 
 	@Override

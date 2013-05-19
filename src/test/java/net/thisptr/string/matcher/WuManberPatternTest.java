@@ -13,7 +13,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
-public class WuManberTest {
+public class WuManberPatternTest {
 	
 	private static class MatchResult {
 		public final int at;
@@ -100,7 +100,7 @@ public class WuManberTest {
 	@Theory
 	public void test(final Fixture fixture) {
 		final List<String> needles = Arrays.asList(fixture.needles);
-		final StringPattern pattern = WuManber.compile(needles);
+		final StringPattern pattern = WuManberPattern.compile(needles);
 		final StringMatcher matcher = pattern.matcher(fixture.haystack);
 		
 		final Set<MatchResult> actual = new HashSet<MatchResult>();
