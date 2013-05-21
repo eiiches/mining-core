@@ -39,6 +39,11 @@ public class CharArraySequence extends AbstractArraySequence {
 	public void set(final int index, final char value) {
 		raw[begin + index] = value;
 	}
+	
+	@Override
+	public void set(final int index, final int value) {
+		raw[begin + index] = (char) value;
+	}
 
 	@Override
 	public CharArraySequence view(final int begin, final int end) {
