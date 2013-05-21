@@ -12,7 +12,7 @@ public interface BidirectionalGraph extends IncidenceGraph {
 	 * @param dest
 	 * @param visitor
 	 */
-	void walkInEdges(int dest, Visitor visitor);
+	void walkInEdges(int dest, NodeVisitor visitor);
 	
 	/**
 	 * @param dest

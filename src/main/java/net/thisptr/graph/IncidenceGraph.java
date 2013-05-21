@@ -13,7 +13,7 @@ public interface IncidenceGraph extends Graph {
 	 * @param src
 	 * @param visitor
 	 */
-	void walkOutEdges(int src, Visitor visitor);
+	void walkOutEdges(int src, NodeVisitor visitor);
 	
 	/**
 	 * @param src
