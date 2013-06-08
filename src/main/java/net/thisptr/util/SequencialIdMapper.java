@@ -1,5 +1,6 @@
 package net.thisptr.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -7,7 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SequencialIdMapper<T> {
+public class SequencialIdMapper<T> implements Serializable {
+	private static final long serialVersionUID = -1079355763961449263L;
+	
 	private final ConcurrentHashMap<T, Integer> objectId = new ConcurrentHashMap<T, Integer>();
 	private final List<T> objects = new ArrayList<T>();
 	

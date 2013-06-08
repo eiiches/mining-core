@@ -1,5 +1,7 @@
 package net.thisptr.graph;
 
+import java.util.NoSuchElementException;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -31,10 +33,10 @@ public class BidirectionalMapGraph implements BidirectionalMutableGraph {
 	public boolean addEdge(final int src, final int dest) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return false;
+			throw new NoSuchElementException();
 		
 		if (!outEdges.containsKey(dest))
-			return false;
+			throw new NoSuchElementException();
 		
 		inEdges.get(dest).add(src);
 		return dests.add(dest);
@@ -49,7 +51,7 @@ public class BidirectionalMapGraph implements BidirectionalMutableGraph {
 	public boolean removeEdge(final int src, final int dest) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return false;
+			throw new NoSuchElementException();
 		
 		inEdges.get(dest).remove(src);
 		return dests.remove(dest);
@@ -59,7 +61,7 @@ public class BidirectionalMapGraph implements BidirectionalMutableGraph {
 	public int[] getOutEdges(final int src) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return null;
+			throw new NoSuchElementException();
 		
 		return dests.toArray(new int[dests.size()]);
 	}
@@ -68,7 +70,7 @@ public class BidirectionalMapGraph implements BidirectionalMutableGraph {
 	public int getOutDegree(final int src) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return -1;
+			throw new NoSuchElementException();
 		
 		return dests.size();
 	}
@@ -77,7 +79,7 @@ public class BidirectionalMapGraph implements BidirectionalMutableGraph {
 	public void walkOutEdges(final int src, final NodeVisitor visitor) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return;
+			throw new NoSuchElementException();
 		
 		final IntIterator iter = dests.iterator();
 		while (iter.hasNext())
@@ -88,7 +90,7 @@ public class BidirectionalMapGraph implements BidirectionalMutableGraph {
 	public int[] getInEdges(int dest) {
 		final IntSet srcs = inEdges.get(dest);
 		if (srcs == null)
-			return null;
+			throw new NoSuchElementException();
 		
 		return srcs.toArray(new int[srcs.size()]);
 	}
@@ -97,7 +99,7 @@ public class BidirectionalMapGraph implements BidirectionalMutableGraph {
 	public void walkInEdges(int dest, NodeVisitor visitor) {
 		final IntSet srcs = inEdges.get(dest);
 		if (srcs == null)
-			return;
+			throw new NoSuchElementException();
 		
 		final IntIterator iter = srcs.iterator();
 		while (iter.hasNext())
@@ -108,7 +110,7 @@ public class BidirectionalMapGraph implements BidirectionalMutableGraph {
 	public int getInDegree(int dest) {
 		final IntSet srcs = inEdges.get(dest);
 		if (srcs == null)
-			return -1;
+			throw new NoSuchElementException();
 		
 		return srcs.size();
 	}

@@ -1,11 +1,17 @@
 package net.thisptr.graph;
 
-import net.thisptr.lang.NotImplementedException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class IncidenceArrayGraph implements IncidenceGraph {
+import java.io.Serializable;
+import java.util.NoSuchElementException;
+
+import net.thisptr.lang.NotImplementedException;
+
+public class IncidenceArrayGraph implements IncidenceGraph, Serializable {
+	private static final long serialVersionUID = -894557306655225982L;
+	
 	private Int2ObjectMap<int[]> outEdges;
 	
 	public IncidenceArrayGraph(final IncidenceGraph orig) {
@@ -20,14 +26,18 @@ public class IncidenceArrayGraph implements IncidenceGraph {
 
 	@Override
 	public int[] getOutEdges(int src) {
-		return outEdges.get(src);
+		final int[] dests = outEdges.get(src);
+		if (dests == null)
+			throw new NoSuchElementException();
+		
+		return dests;
 	}
 
 	@Override
 	public void walkOutEdges(int src, NodeVisitor visitor) {
 		final int[] dests = outEdges.get(src);
 		if (dests == null)
-			return;
+			throw new NoSuchElementException();
 		
 		for (final int dest : dests)
 			visitor.visit(dest);
@@ -37,7 +47,7 @@ public class IncidenceArrayGraph implements IncidenceGraph {
 	public int getOutDegree(int src) {
 		final int[] dests = outEdges.get(src);
 		if (dests == null)
-			return -1;
+			throw new NoSuchElementException();
 		
 		return dests.length;
 	}

@@ -1,11 +1,14 @@
 package net.thisptr.graph;
 
-import net.thisptr.lang.NotImplementedException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+
+import java.util.NoSuchElementException;
+
+import net.thisptr.lang.NotImplementedException;
 
 public class IncidenceMapGraph implements IncidenceMutableGraph {
 	private Int2ObjectMap<IntSet> outEdges;
@@ -20,7 +23,6 @@ public class IncidenceMapGraph implements IncidenceMutableGraph {
 			return false;
 		
 		outEdges.put(id, new IntOpenHashSet());
-		
 		return true;
 	}
 
@@ -28,12 +30,12 @@ public class IncidenceMapGraph implements IncidenceMutableGraph {
 	public boolean addEdge(final int src, final int dest) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return false;
+			throw new NoSuchElementException();
 		
-		if (outEdges.containsKey(dest))
-			dests.add(dest);
+		if (!outEdges.containsKey(dest))
+			throw new NoSuchElementException();
 		
-		return true;
+		return dests.add(dest);
 	}
 
 	@Override
@@ -45,7 +47,7 @@ public class IncidenceMapGraph implements IncidenceMutableGraph {
 	public boolean removeEdge(final int src, final int dest) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return false;
+			throw new NoSuchElementException();
 		
 		return dests.remove(dest);
 	}
@@ -54,7 +56,7 @@ public class IncidenceMapGraph implements IncidenceMutableGraph {
 	public int[] getOutEdges(final int src) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return null;
+			throw new NoSuchElementException();
 		
 		return dests.toArray(new int[dests.size()]);
 	}
@@ -63,7 +65,7 @@ public class IncidenceMapGraph implements IncidenceMutableGraph {
 	public int getOutDegree(final int src) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return -1;
+			throw new NoSuchElementException();
 		
 		return dests.size();
 	}
@@ -72,7 +74,7 @@ public class IncidenceMapGraph implements IncidenceMutableGraph {
 	public void walkOutEdges(final int src, final NodeVisitor visitor) {
 		final IntSet dests = outEdges.get(src);
 		if (dests == null)
-			return;
+			throw new NoSuchElementException();
 		
 		final IntIterator iter = dests.iterator();
 		while (iter.hasNext())
