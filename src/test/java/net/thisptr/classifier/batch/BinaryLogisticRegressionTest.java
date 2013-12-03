@@ -34,8 +34,8 @@ public class BinaryLogisticRegressionTest {
 		for (int i = 0; i < 100; ++i) instances.add(new LabeledInstance<SparseMapVector, Boolean>(createRandomVector(class2, dim), false));
 
 		final BinaryLogisticRegression classifier = new BinaryLogisticRegression();
-		classifier.learn(instances);
-		
+		classifier.train(instances);
+
 		final ConfusionMatrix<Boolean> confusion = new ConfusionMatrix<Boolean>();
 		for (final LabeledInstance<SparseMapVector, Boolean> instance : instances)
 			confusion.add(instance.getLabel(), classifier.classify(instance.getVector()));

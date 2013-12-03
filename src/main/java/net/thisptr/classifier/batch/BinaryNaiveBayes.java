@@ -45,7 +45,7 @@ public class BinaryNaiveBayes implements BatchLearner<Vector, Boolean> {
 	private Map<Boolean, ClassCount> classes = null;
 
 	@Override
-	public void learn(final List<? extends LabeledInstance<? extends Vector, Boolean>> instances) {
+	public void train(final List<? extends LabeledInstance<? extends Vector, Boolean>> instances) {
 		final int dim = Instances.getDimension(instances);
 		final Map<Boolean, ClassCount> classes = new HashMap<Boolean, ClassCount>();
 		for (final LabeledInstance<? extends Vector, Boolean> instance : instances) {

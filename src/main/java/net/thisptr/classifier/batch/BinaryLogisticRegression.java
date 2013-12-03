@@ -55,17 +55,17 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 		});
 		return 1.0 / (1 + Math.exp(-wx[0]));
 	}
-	
+
 	@Override
-	public void learn(final List<? extends LabeledInstance<? extends Vector, Boolean>> instances) {
+	public void train(final List<? extends LabeledInstance<? extends Vector, Boolean>> instances) {
 		dim = Instances.getDimension(instances);
-		
+
 		final Function f = new Function() {
 			@Override
 			public int xdim() {
 				return dim + 1; // 1 for intercept term
 			}
-	
+
 			@Override
 			public double f(final double[] w) {
 				double sum = 0.0;

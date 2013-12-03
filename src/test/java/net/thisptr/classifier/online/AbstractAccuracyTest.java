@@ -53,9 +53,9 @@ public abstract class AbstractAccuracyTest {
 		for (int i = 0; i < fixture.nIterations; ++i) {
 			log.debug(String.format("Iteration %d:", i + 1));
 			for (final LabeledInstance<SparseMapVector, Boolean> instance : fixture.instances)
-				sut.learn(instance);
+				sut.train(instance);
 		}
-		
+
 		final ConfusionMatrix<Boolean> cm = new ConfusionMatrix<Boolean>();
 		for (final LabeledInstance<SparseMapVector, Boolean> instance : fixture.instances) {
 			final Boolean predicted = sut.classify(instance.getVector());
