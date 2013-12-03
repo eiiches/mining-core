@@ -12,8 +12,8 @@ public class SparseMapVector extends SparseVector {
 	public SparseMapVector() {
 		map = new Int2DoubleOpenHashMap();
 	}
-	
-	public SparseMapVector(final double... values) {
+
+	public SparseMapVector(final double[] values) {
 		this();
 		for (int i = 0; i < values.length; ++i)
 			set(i, values[i]);

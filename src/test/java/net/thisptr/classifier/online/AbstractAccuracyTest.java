@@ -23,7 +23,7 @@ public abstract class AbstractAccuracyTest {
 	
 	protected static class Fixture {
 		protected static LabeledInstance<SparseMapVector, Boolean> toInstance(final double x1, final double x2, final boolean y) {
-			return new LabeledInstance<SparseMapVector, Boolean>(new SparseMapVector(x1, x2), y);
+			return new LabeledInstance<SparseMapVector, Boolean>(new SparseMapVector(new double[] { x1, x2 }), y);
 		}
 		public int nIterations = 10;
 		public double expectedAccuracy = 0.9;

@@ -17,8 +17,8 @@ public class DenseArrayVector extends DenseVector {
 	public DenseArrayVector(final int dimension) {
 		array = new double[dimension];
 	}
-	
-	public DenseArrayVector(final double... values) {
+
+	public DenseArrayVector(final double[] values) {
 		array = Arrays.copyOf(values, values.length);
 	}
 	
@@ -26,6 +26,10 @@ public class DenseArrayVector extends DenseVector {
 		array = v;
 	}
 	
+	public double[] raw() {
+		return array;
+	}
+
 	public static DenseArrayVector wrap(final double[] v) {
 		return new DenseArrayVector(v, true);
 	}
