@@ -11,7 +11,7 @@ public interface Vector extends Iterable<Element> {
 	/**
 	 * Get value at the given index.
 	 * @param index
-	 * @return
+	 * @return value at the given index
 	 */
 	double get(final int index);
 	
