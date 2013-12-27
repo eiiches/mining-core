@@ -454,8 +454,8 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		momentum = buf.getDouble();
 		learningRate = buf.getDouble();
 		weightDecay = buf.getDouble();
-		for (int j = 0; j < hiddenNodes; ++j)
-			for (int i = 0; i < visibleNodes; ++i)
+		for (int j = 0; j < hiddenNodes + 1; ++j)
+			for (int i = 0; i < visibleNodes + 1; ++i)
 				weights[j][i] = buf.getDouble();
 	}
 }
