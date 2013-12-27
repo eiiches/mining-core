@@ -1,5 +1,6 @@
 package net.thisptr.neuralnet;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,14 +25,14 @@ import net.thisptr.util.ThreadUtils;
  * </ol>
  * </p>
  */
-public class RestrictedBoltzmannMachine implements DimensionReduction, UnsupervisedOnlineLearner, UnsupervisedOnlineBatchLearner {
+public class RestrictedBoltzmannMachine implements DimensionReduction, UnsupervisedOnlineLearner, UnsupervisedOnlineBatchLearner, SerializableModel {
 	public static final double DEFAULT_LEARNING_RATE = 0.01;
 	public static final double DEFAULT_WEIGHT_DECAY = 0.001;
 	public static final double DEFAULT_MOMENTUM = 0.5;
 	public static final UnitType DEFAULT_HIDDEN_UNIT_TYPE = UnitType.Logistic;
 
 	public static final double INITIAL_WEIGHT_DEVIATION = 0.1;
-	
+
 	private static final CachedSampler uniformDistribution = new CachedSampler(65536, new UniformDistribution(0.0, 1.0));
 	private static final CachedSampler normalDistribution = new CachedSampler(65536, new GaussianDistribution(0.0, 1.0));
 
@@ -39,12 +40,12 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	 * The learning rate of RBM.
 	 */
 	private double learningRate = DEFAULT_LEARNING_RATE;
-	
+
 	/**
 	 * In each iteration, this value times the value of weight is subtracted to penalize large weights.
 	 */
 	private double weightDecay = DEFAULT_WEIGHT_DECAY;
-	
+
 	/**
 	 * In each iteration, this value times the previous update is added to each weight for faster training.
 	 */
@@ -59,7 +60,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	 * The number of hidden nodes without the bias.
 	 */
 	private int hiddenNodes;
-	
+
 	public enum UnitType {
 		Logistic, Linear
 	}
@@ -68,11 +69,14 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	 * The type of hidden unit.
 	 */
 	private UnitType hiddenUnitType = DEFAULT_HIDDEN_UNIT_TYPE;
-	
+
 	/**
-	 * <p>Weights of the network.</p>
+	 * <p>
+	 * Weights of the network.
+	 * </p>
 	 * 
-	 * Layout:
+	 * Layout: (Transposed)
+	 * 
 	 * <pre>
 	 *        bias      h1       h2
 	 *  bias   NaN    w[0][1]  w[0][2]
@@ -87,39 +91,39 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	 * Stores the difference of the weight from the previous update.
 	 */
 	private double[][] update;
-	
+
 	private DoubleArrayPool doubleArrayPool = new DoubleArrayPool();
 	private BooleanArrayPool booleanArrayPool = new BooleanArrayPool();
 
 	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes) {
 		this(visibleNodes, hiddenNodes, DEFAULT_LEARNING_RATE);
 	}
-	
+
 	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes, final double learningRate) {
 		this.visibleNodes = visibleNodes;
 		this.hiddenNodes = hiddenNodes;
 		this.learningRate = learningRate;
-		this.weights = new double[visibleNodes + 1][hiddenNodes + 1];
+		this.weights = new double[hiddenNodes + 1][visibleNodes + 1];
 
 		final GaussianDistribution initializer = new GaussianDistribution(0.0, INITIAL_WEIGHT_DEVIATION);
 		for (int i = 0; i < visibleNodes + 1; ++i)
 			for (int j = 0; j < hiddenNodes + 1; ++j)
-				this.weights[i][j] = initializer.sample();
+				this.weights[j][i] = initializer.sample();
 		this.weights[0][0] = 0.0; // this value is unused
 
-		this.update = new double[visibleNodes + 1][hiddenNodes + 1];
+		this.update = new double[hiddenNodes + 1][visibleNodes + 1];
 	}
 
 	private void activateWithBias(final boolean[] h, final double[] ph) {
 		for (int i = 1; i < h.length; ++i)
 			h[i] = uniformDistribution.next() < ph[i];
 	}
-	
+
 	private void activateWithBias(final boolean[][] h, final double[][] ph) {
 		for (int n = 0; n < ph.length; ++n)
 			activateWithBias(h[n], ph[n]);
 	}
-	
+
 	private static void applyNoiseWithBias(final double[] x, final CachedSampler sampler) {
 		for (int i = 1; i < x.length; ++i)
 			x[i] += sampler.next();
@@ -134,12 +138,17 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		Arrays.fill(result, 0.0);
 
 		result[0] = 1.0;
-		h.walk(new Visitor() {
-			@Override
-			public void visit(int index, double value) {
-				result[index + 1] = value;
-			}
-		});
+		if (h instanceof DenseArrayVector) {
+			final double[] raw = ((DenseArrayVector) h).raw();
+			System.arraycopy(raw, 0, result, 1, lengthIncludingBias - 1);
+		} else {
+			h.walk(new Visitor() {
+				@Override
+				public void visit(int index, double value) {
+					result[index + 1] = value;
+				}
+			});
+		}
 	}
 
 	private static void applyLogisticSigmoid(final double[] h) {
@@ -151,51 +160,51 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		for (int n = 0; n < h.length; ++n)
 			applyLogisticSigmoid(h[n]);
 	}
-	
+
 	private void computeHiddenProbabilityWithBias(final double[][] h, final double[][] x, final ExecutorService executor, final int hintNumThreads) {
-		MatrixOp.multiply(h, x, weights, executor, hintNumThreads);
+		MatrixOp.assign_X_Yt(h, x, weights, executor, hintNumThreads);
 		applyLogisticSigmoid(h);
 		for (int n = 0; n < h.length; ++n)
 			h[n][0] = 1.0;
 	}
-	
+
 	private void computeHiddenProbabilityWithBias(final double[] h, final double[] x, final ExecutorService executor, final int hintNumThreads) {
 		computeHiddenProbabilityWithBias(new double[][] { h }, new double[][] { x }, executor, hintNumThreads);
 	}
-	
+
 	private void computeVisibleProbabilityWithBias(final double[][] x, final double[][] h, final ExecutorService executor, final int hintNumThreads) {
-		MatrixOp.multiplyTransposed(x, h, weights, executor, hintNumThreads);
+		MatrixOp.assign_X_Y(x, h, weights, executor, hintNumThreads);
 		applyLogisticSigmoid(x);
 		for (int n = 0; n < x.length; ++n)
 			x[n][0] = 1.0;
 	}
 
 	private void computeVisibleProbabilityWithBias(final double[][] x, final boolean[][] h, final ExecutorService executor, final int hintNumThreads) {
-		MatrixOp.multiplyTransposed(x, h, weights, executor, hintNumThreads);
+		MatrixOp.assign_X_Y(x, h, weights, executor, hintNumThreads);
 		applyLogisticSigmoid(x);
 		for (int n = 0; n < x.length; ++n)
 			x[n][0] = 1.0;
 	}
-	
+
 	private void computeVisibleProbabilityWithBias(final double[] x, final double[] h, final ExecutorService executor, final int hintNumThreads) {
 		computeVisibleProbabilityWithBias(new double[][] { x }, new double[][] { h }, executor, hintNumThreads);
 	}
-	
+
 	private void computeHiddenValueWithBias(final double[][] h, final double[][] x, final ExecutorService executor, final int hintNumThreads) {
-		MatrixOp.multiply(h, x, weights, executor, hintNumThreads);
+		MatrixOp.assign_X_Yt(h, x, weights, executor, hintNumThreads);
 		for (int n = 0; n < h.length; ++n)
 			h[n][0] = 1.0;
 	}
-	
+
 	private void computeHiddenValueWithBias(final double[] h, final double[] x, final ExecutorService executor, final int hintNumThreads) {
 		computeHiddenValueWithBias(new double[][] { h }, new double[][] { x }, executor, hintNumThreads);
 	}
-	
+
 	@Override
 	public void train(final Vector px0) {
 		train(px0, null);
 	}
-	
+
 	public void train(final Vector px0, final ExecutorService executor) {
 		final double[] x0 = doubleArrayPool.borrowArray(visibleNodes + 1);
 		try {
@@ -228,6 +237,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		final double[][] ph1 = doubleArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
 		final double[][] px1 = doubleArrayPool.borrowArrays(visibleNodes + 1, batchSize);
 		final boolean[][] h0 = booleanArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
+		final double[][] tmp = doubleArrayPool.borrowArrays(visibleNodes + 1, hiddenNodes + 1);
 		try {
 			switch (hiddenUnitType) {
 				case Linear:
@@ -263,23 +273,32 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 					tasks.add(new Runnable() {
 						@Override
 						public void run() {
-							for (int i = rowsplit.begin(); i < rowsplit.end(); ++i) {
-								for (int j = colsplit.begin(); j < colsplit.end(); ++j) {
+							final double[][] update = RestrictedBoltzmannMachine.this.update;
+							final double[][] weights = RestrictedBoltzmannMachine.this.weights;
+							final double learningRate = RestrictedBoltzmannMachine.this.learningRate;
+							final double momentum = RestrictedBoltzmannMachine.this.momentum;
+							final double weightDecay = RestrictedBoltzmannMachine.this.weightDecay;
+							final int cend = colsplit.end();
+							final int rend = rowsplit.end();
+							final int _batchSize = batchSize;
+							final double invBatchSize = 1.0 / batchSize;
+
+							for (int j = colsplit.begin(); j < cend; ++j) {
+								for (int i = rowsplit.begin(); i < rend; ++i) {
 									double positive = 0, negative = 0;
-									for (int n = 0; n < batchSize; ++n) {
+									for (int n = 0; n < _batchSize; ++n) {
 										positive += x0[n][i] * ph0[n][j];
 										negative += px1[n][i] * ph1[n][j];
 									}
-									update[i][j] = update[i][j] * momentum
-											+ learningRate * ((positive - negative) / batchSize - (weights[i][j] * weightDecay));
-									weights[i][j] += update[i][j];
+									update[j][i] = update[j][i] * momentum + learningRate * ((positive - negative) * invBatchSize - (weights[j][i] * weightDecay));
+									weights[j][i] += update[j][i];
 								}
 							}
 						}
 					});
 				}
 			}
-			
+
 			try {
 				ThreadUtils.invokeAll(tasks, executor);
 			} catch (InterruptedException | ExecutionException e) {
@@ -290,6 +309,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 			doubleArrayPool.returnArrays(ph1);
 			doubleArrayPool.returnArrays(px1);
 			booleanArrayPool.returnArrays(h0);
+			doubleArrayPool.returnArrays(tmp);
 		}
 	}
 
@@ -297,13 +317,13 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	public Vector reduce(final Vector x) {
 		return reduce(x, null);
 	}
-	
+
 	public Vector reduce(final Vector x, final ExecutorService executor) {
 		final double[] _x = doubleArrayPool.borrowArray(visibleNodes + 1);
 		final double[] _h = doubleArrayPool.borrowArray(hiddenNodes + 1);
 		try {
 			toArrayAddingBias(_x, x, visibleNodes + 1);
-	
+
 			switch (hiddenUnitType) {
 				case Linear:
 					computeHiddenValueWithBias(_h, _x, executor, Runtime.getRuntime().availableProcessors());
@@ -312,7 +332,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 					computeHiddenProbabilityWithBias(_h, _x, executor, Runtime.getRuntime().availableProcessors());
 					break;
 			}
-	
+
 			return DenseArrayVector.wrap(Arrays.copyOfRange(_h, 1, hiddenNodes + 1));
 		} finally {
 			doubleArrayPool.returnArray(_x);
@@ -324,15 +344,15 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	public Vector reconstruct(final Vector h) {
 		return reconstruct(h, null);
 	}
-	
+
 	public Vector reconstruct(final Vector h, final ExecutorService executor) {
 		final double[] _h = doubleArrayPool.borrowArray(hiddenNodes + 1);
 		final double[] _x = doubleArrayPool.borrowArray(visibleNodes + 1);
 		try {
 			toArrayAddingBias(_h, h, hiddenNodes + 1);
-	
+
 			computeVisibleProbabilityWithBias(_x, _h, executor, Runtime.getRuntime().availableProcessors());
-	
+
 			return DenseArrayVector.wrap(Arrays.copyOfRange(_x, 1, visibleNodes + 1));
 		} finally {
 			doubleArrayPool.returnArray(_x);
@@ -351,12 +371,42 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	public int visibleNodes() {
 		return visibleNodes;
 	}
-	
+
 	public int hiddenNodes() {
 		return hiddenNodes;
 	}
 
 	public void setHiddenUnitType(final UnitType unitType) {
 		this.hiddenUnitType = unitType;
+	}
+
+	public ByteBuffer serialize() {
+		final ByteBuffer _buf = ByteBuffer.allocateDirect(4 * 3 + 8 * 3 + 8 * (hiddenNodes + 1) * (visibleNodes + 1));
+
+		final ByteBuffer buf = _buf.duplicate();
+		buf.putInt(hiddenUnitType.ordinal());
+		buf.putInt(visibleNodes);
+		buf.putInt(hiddenNodes);
+		buf.putDouble(momentum);
+		buf.putDouble(learningRate);
+		buf.putDouble(weightDecay);
+		for (int j = 0; j < hiddenNodes + 1; ++j)
+			for (int i = 0; i < visibleNodes + 1; ++i)
+				buf.putDouble(weights[j][i]);
+
+		return _buf;
+	}
+
+	public void load(final ByteBuffer _buf) {
+		final ByteBuffer buf = _buf.duplicate();
+		hiddenUnitType = UnitType.values()[buf.getInt()];
+		visibleNodes = buf.getInt();
+		hiddenNodes = buf.getInt();
+		momentum = buf.getDouble();
+		learningRate = buf.getDouble();
+		weightDecay = buf.getDouble();
+		for (int j = 0; j < hiddenNodes; ++j)
+			for (int i = 0; i < visibleNodes; ++i)
+				weights[j][i] = buf.getDouble();
 	}
 }
