@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SequencialIdMapper<T> implements Serializable {
+public class SequentialIdMapper<T> implements Serializable, IdMapper<T> {
 	private static final long serialVersionUID = -1079355763961449263L;
 	
 	private final ConcurrentHashMap<T, Integer> objectId = new ConcurrentHashMap<T, Integer>();
@@ -21,15 +21,19 @@ public class SequencialIdMapper<T> implements Serializable {
 	private final int beginId;
 	private int nextId;
 	
-	public SequencialIdMapper() {
+	public SequentialIdMapper() {
 		this(0);
 	}
 	
-	public SequencialIdMapper(final int beginId) {
+	public SequentialIdMapper(final int beginId) {
 		this.beginId = beginId;
 		this.nextId = beginId;
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.thisptr.util.IdMapper#size()
+	 */
+	@Override
 	public int size() {
 		read.lock();
 		try {
@@ -39,6 +43,10 @@ public class SequencialIdMapper<T> implements Serializable {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.thisptr.util.IdMapper#reverse(int)
+	 */
+	@Override
 	public T reverse(final int id) {
 		read.lock();
 		try {
@@ -48,6 +56,10 @@ public class SequencialIdMapper<T> implements Serializable {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.thisptr.util.IdMapper#get(T)
+	 */
+	@Override
 	public int get(final T obj) {
 		final Integer id = objectId.get(obj);
 		if (id == null)
@@ -69,6 +81,10 @@ public class SequencialIdMapper<T> implements Serializable {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.thisptr.util.IdMapper#map(T)
+	 */
+	@Override
 	public int map(final T obj) {
 		final Integer id = objectId.get(obj);
 		if (id != null)
@@ -76,6 +92,10 @@ public class SequencialIdMapper<T> implements Serializable {
 		return mapIfAbsent(obj);
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.thisptr.util.IdMapper#keySet()
+	 */
+	@Override
 	public Set<T> keySet() {
 		return objectId.keySet();
 	}

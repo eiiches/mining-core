@@ -3,48 +3,55 @@ package net.thisptr.encoder;
 import java.util.List;
 
 import net.thisptr.math.vector.SparseMapVector;
-import net.thisptr.math.vector.SparseVector;
 import net.thisptr.tokenizer.Tokenizer;
-import net.thisptr.util.SequencialIdMapper;
+import net.thisptr.util.IdMapper;
+import net.thisptr.util.SequentialIdMapper;
 
 public class TextEncoder {
 	private final boolean wordCount;
 	private final boolean normalize;
 	private final Tokenizer tokenizer;
-
-	private final SequencialIdMapper<String> wordId = new SequencialIdMapper<String>();
+	private final IdMapper<String> wordIdMapper;
 
 	public TextEncoder(final Tokenizer tokenizer) {
-		this(tokenizer, true, false);
+		this(null, tokenizer, true, false);
 	}
 
-	public TextEncoder(final Tokenizer tokenizer, final boolean wordCount, final boolean normalize) {
+	public TextEncoder(final IdMapper<String> wordIdMapper, final Tokenizer tokenizer) {
+		this(wordIdMapper, tokenizer, true, false);
+	}
+
+	public TextEncoder(final IdMapper<String> wordIdMapper, final Tokenizer tokenizer, final boolean wordCount, final boolean normalize) {
 		this.tokenizer = tokenizer;
 		this.wordCount = wordCount;
 		this.normalize = normalize;
+
+		this.wordIdMapper = wordIdMapper != null
+				? wordIdMapper
+				: new SequentialIdMapper<String>();
 	}
 
 	public int size() {
-		return wordId.size();
+		return wordIdMapper.size();
 	}
 
 	public String getWord(final int id) {
-		return wordId.reverse(id);
+		return wordIdMapper.reverse(id);
 	}
 
 	public Integer getWordId(final String word) {
-		return wordId.get(word);
+		return wordIdMapper.get(word);
 	}
 
 	private int[] convertTokensToIds(final List<String> tokens) {
 		final int[] ids = new int[tokens.size()];
 		int index = 0;
 		for (final String token : tokens)
-			ids[index++] = wordId.map(token);
+			ids[index++] = wordIdMapper.map(token);
 		return ids;
 	}
 
-	public SparseVector encode(final List<String> tokens) {
+	public SparseMapVector encode(final List<String> tokens) {
 		final SparseMapVector result = new SparseMapVector();
 		final int[] ids = convertTokensToIds(tokens);
 		final double incr = normalize ? 1.0 / ids.length : 1.0;
@@ -58,7 +65,7 @@ public class TextEncoder {
 		return result;
 	}
 
-	public SparseVector encode(final String text) {
+	public SparseMapVector encode(final String text) {
 		return encode(tokenizer.tokenize(text));
 	}
 }

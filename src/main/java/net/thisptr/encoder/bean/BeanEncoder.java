@@ -19,7 +19,8 @@ import net.thisptr.lang.tuple.Pair;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.SparseMapVector;
 import net.thisptr.math.vector.Vector;
-import net.thisptr.util.SequencialIdMapper;
+import net.thisptr.util.IdMapper;
+import net.thisptr.util.SequentialIdMapper;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -146,7 +147,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 	}
 
 	private final Map<String, Attribute> attributes;
-	private final SequencialIdMapper<Pair<String, Object>> idMapper = new SequencialIdMapper<Pair<String, Object>>();
+	private final IdMapper<Pair<String, Object>> idMapper = new SequentialIdMapper<Pair<String, Object>>();
 	private final boolean sparse;
 	
 	public BeanEncoder(final Class<T> klass, final boolean sparse) {
