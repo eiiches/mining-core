@@ -30,6 +30,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	public static final double DEFAULT_WEIGHT_DECAY = 0.001;
 	public static final double DEFAULT_MOMENTUM = 0.5;
 	public static final UnitType DEFAULT_HIDDEN_UNIT_TYPE = UnitType.Logistic;
+	public static final double DEFAULT_DROP_RATE = 0.5;
 
 	public static final double INITIAL_WEIGHT_DEVIATION = 0.1;
 
@@ -40,6 +41,11 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	 * The learning rate of RBM.
 	 */
 	private double learningRate = DEFAULT_LEARNING_RATE;
+
+	/**
+	 * Drop some part of the hidden nodes randomly. This is known as dropout.
+	 */
+	private double dropRate = DEFAULT_DROP_RATE;
 
 	/**
 	 * In each iteration, this value times the value of weight is subtracted to penalize large weights.
@@ -96,13 +102,14 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	private BooleanArrayPool booleanArrayPool = new BooleanArrayPool();
 
 	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes) {
-		this(visibleNodes, hiddenNodes, DEFAULT_LEARNING_RATE);
+		this(visibleNodes, hiddenNodes, DEFAULT_LEARNING_RATE, DEFAULT_DROP_RATE);
 	}
 
-	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes, final double learningRate) {
+	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes, final double learningRate, final double dropRate) {
 		this.visibleNodes = visibleNodes;
 		this.hiddenNodes = hiddenNodes;
 		this.learningRate = learningRate;
+		this.dropRate = dropRate;
 		this.weights = new double[hiddenNodes + 1][visibleNodes + 1];
 
 		final GaussianDistribution initializer = new GaussianDistribution(0.0, INITIAL_WEIGHT_DEVIATION);
@@ -231,6 +238,23 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		}
 	}
 
+	private void dropNodesWithBias(final double[] h, final boolean[] drop, final double value) {
+		for (int j = 0; j < drop.length; ++j)
+			if (drop[j])
+				h[j] = value;
+	}
+
+	private void dropNodesWithBias(final double[][] hs, final boolean[] drop, final double value) {
+		for (int n = 0; n < hs.length; ++n)
+			dropNodesWithBias(hs[n], drop, value);
+	}
+
+	private void buildDropVector(final boolean[] drop) {
+		drop[0] = false; // never drop bias node
+		for (int j = 1; j < hiddenNodes + 1; ++j)
+			drop[j] = uniformDistribution.next() < dropRate;
+	}
+
 	private void trainWithBias(final double[][] x0, final ExecutorService executor, final int hintNumThreads) {
 		final int batchSize = x0.length;
 		final double[][] ph0 = doubleArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
@@ -238,13 +262,21 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		final double[][] px1 = doubleArrayPool.borrowArrays(visibleNodes + 1, batchSize);
 		final boolean[][] h0 = booleanArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
 		final double[][] tmp = doubleArrayPool.borrowArrays(visibleNodes + 1, hiddenNodes + 1);
+
+		final boolean[] dropv = booleanArrayPool.borrowArray(hiddenNodes + 1);
+		buildDropVector(dropv);
+
 		try {
 			switch (hiddenUnitType) {
 				case Linear:
 					computeHiddenValueWithBias(ph0, x0, executor, hintNumThreads);
+					dropNodesWithBias(ph0, dropv, 0);
 					applyNoiseWithBias(ph0, normalDistribution);
+
 					computeVisibleProbabilityWithBias(px1, ph0, executor, hintNumThreads);
+
 					computeHiddenValueWithBias(ph1, px1, executor, hintNumThreads);
+					dropNodesWithBias(ph1, dropv, 0);
 					break;
 				case Logistic:
 					// 3.1 Updating the hidden states.
@@ -252,6 +284,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 					// themselves. If the probabilities are used, each hidden unit can communicate a real-value to the
 					// visible units during the reconstruction." [1]
 					computeHiddenProbabilityWithBias(ph0, x0, executor, hintNumThreads);
+					dropNodesWithBias(ph0, dropv, 0.5);
 					activateWithBias(h0, ph0);
 
 					// 3.2 Updating the visible states.
@@ -261,6 +294,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 					// 3.1 Updating the hidden states
 					// "When using CDn , only the final update of the hidden units should use the probability." [1]
 					computeHiddenProbabilityWithBias(ph1, px1, executor, hintNumThreads);
+					dropNodesWithBias(ph1, dropv, 0.5);
 					break;
 				default:
 					throw new IllegalArgumentException("The type of hidden unit is not supported: " + hiddenUnitType);
@@ -284,6 +318,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 							final double invBatchSize = 1.0 / batchSize;
 
 							for (int j = colsplit.begin(); j < cend; ++j) {
+								// FIXME: Should I update disabled hidden nodes?
 								for (int i = rowsplit.begin(); i < rend; ++i) {
 									double positive = 0, negative = 0;
 									for (int n = 0; n < _batchSize; ++n) {
@@ -310,6 +345,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 			doubleArrayPool.returnArrays(px1);
 			booleanArrayPool.returnArrays(h0);
 			doubleArrayPool.returnArrays(tmp);
+			booleanArrayPool.returnArray(dropv);
 		}
 	}
 
@@ -321,6 +357,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	public Vector reduce(final Vector x, final ExecutorService executor) {
 		final double[] _x = doubleArrayPool.borrowArray(visibleNodes + 1);
 		final double[] _h = doubleArrayPool.borrowArray(hiddenNodes + 1);
+
 		try {
 			toArrayAddingBias(_x, x, visibleNodes + 1);
 
