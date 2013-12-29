@@ -8,7 +8,7 @@ import net.thisptr.math.vector.Vector;
 
 public final class Instances {
 	private Instances() { }
-	
+
 	public static <InstanceType extends Instance<? extends Vector>> int getDimension(final List<InstanceType> instances) {
 		int result = 0;
 		for (final InstanceType instance : instances) {
@@ -19,14 +19,39 @@ public final class Instances {
 		return result;
 	}
 
-	public static <OperatorArgType, OperatorResultType, InputVectorType extends OperatorArgType, LabelType> List<LabeledInstance<OperatorResultType, LabelType>> transform(final List<LabeledInstance<InputVectorType, LabelType>> instances, final Lambda1<OperatorResultType, OperatorArgType> operator) {
-		final List<LabeledInstance<OperatorResultType, LabelType>> result = new ArrayList<>();
-		for (final LabeledInstance<InputVectorType, LabelType> instance : instances)
+	public static <
+		OperatorArgType,
+		OperatorResultType,
+		InstanceVectorType extends OperatorArgType,
+		InstanceLabelType,
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceLabelType>
+	>
+	List<LabeledInstance<OperatorResultType, InstanceLabelType>> transform(final List<InstanceType> instances, final Lambda1<OperatorResultType, OperatorArgType> operator) {
+		final List<LabeledInstance<OperatorResultType, InstanceLabelType>> result = new ArrayList<>();
+		for (final LabeledInstance<InstanceVectorType, InstanceLabelType> instance : instances)
 			result.add(transform(instance, operator));
 		return result;
 	}
 
-	public static <OperatorArgType, OperatorResultType, InputVectorType extends OperatorArgType, LabelType> LabeledInstance<OperatorResultType, LabelType> transform(final LabeledInstance<InputVectorType, LabelType> instance, final Lambda1<OperatorResultType, OperatorArgType> operator) {
-		return new LabeledInstance<OperatorResultType, LabelType>(instance.getId(), operator.invoke(instance.getVector()), instance.getLabel());
+	public static <
+		OperatorArgType,
+		OperatorResultType,
+		InstanceVectorType extends OperatorArgType,
+		InstanceLabelType,
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceLabelType>
+	>
+	LabeledInstance<OperatorResultType, InstanceLabelType> transform(final InstanceType instance, final Lambda1<OperatorResultType, OperatorArgType> operator) {
+		return new LabeledInstance<OperatorResultType, InstanceLabelType>(instance.getId(), operator.invoke(instance.getVector()), instance.getLabel());
+	}
+
+	public static <
+		InstanceVectorType,
+		InstanceType extends Instance<InstanceVectorType>
+	>
+	List<InstanceVectorType> toVectors(final List<InstanceType> instances) {
+		final List<InstanceVectorType> result = new ArrayList<>();
+		for (final InstanceType instance : instances)
+			result.add(instance.getVector());
+		return result;
 	}
 }
