@@ -66,7 +66,12 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Ve
 	}
 	
 	@Override
-	public final void train(final LabeledInstance<? extends Vector, ? extends Boolean> instance) {
+	public final <
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceLabelType>,
+		InstanceVectorType extends Vector,
+		InstanceLabelType extends Boolean
+	>
+	void train(InstanceType instance) {
 		final Vector x = instance.getVector();
 		final int y = instance.getLabel() ? 1 : -1;
 		

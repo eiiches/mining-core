@@ -17,22 +17,22 @@ import org.slf4j.LoggerFactory;
 
 public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 	private final Logger log = LoggerFactory.getLogger(BinaryLogisticRegression.class);
-	
+
 	public static final int DEFAULT_MAX_ITERATION = 1000;
 	public static final double DEFAULT_L1REGULARIZER = 0.1;
 	public static final double DEFAULT_CONVERGENCE_CRITERIA = 0.00001;
-	
+
 	private double l1Regularizer;
 	private double convergenceCriteria;
 	private int maxIteration;
-	
+
 	private double[] w;
 	private int dim;
 
 	public BinaryLogisticRegression() {
 		this(DEFAULT_L1REGULARIZER);
 	}
-	
+
 	public BinaryLogisticRegression(final double l1Regularizer) {
 		this(l1Regularizer, DEFAULT_CONVERGENCE_CRITERIA);
 	}
@@ -57,7 +57,11 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 	}
 
 	@Override
-	public void train(final List<? extends LabeledInstance<? extends Vector, Boolean>> instances) {
+	public <
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>,
+		InstanceVectorType extends Vector,
+		InstanceClassType extends Boolean
+	> void train(final List<InstanceType> instances) {
 		dim = Instances.getDimension(instances);
 
 		final Function f = new Function() {
@@ -69,7 +73,7 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 			@Override
 			public double f(final double[] w) {
 				double sum = 0.0;
-				for (final LabeledInstance<? extends Vector, Boolean> instance : instances) {
+				for (final InstanceType instance : instances) {
 					final boolean y = instance.getLabel();
 					final Vector x = instance.getVector();
 					final double p = calcPy1(x, w);
@@ -82,11 +86,11 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 				}
 				return -sum;
 			}
-	
+
 			@Override
 			public double[] df(final double[] w) {
 				final double[] result = new double[dim + 1];
-				for (final LabeledInstance<? extends Vector, Boolean> instance : instances) {
+				for (final InstanceType instance : instances) {
 					final double y = instance.getLabel() ? 1.0 : 0.0;
 					final Vector x = instance.getVector();
 					final double p = calcPy1(x, w);
@@ -104,17 +108,17 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 				return result;
 			}
 		};
-		
+
 		// do not regularize the intercept term
 		final boolean[] mask = new boolean[dim + 1];
 		mask[0] = false;
 		for (int i = 1; i < mask.length; ++i)
 			mask[i] = true;
-		
+
 		final FunctionMinimizer minimizer = new L1RegularizedLBFGS(f, l1Regularizer, null, 30, mask);
-		
+
 		log.debug(String.format("Initial: f(x) = %.2f", minimizer.function().f(minimizer.current())));
-		
+
 		// run optimization
 		try {
 			int loop = 0;
@@ -135,11 +139,11 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 			// FIXME: For now, just ignore exceptions.
 			log.warn(e.getMessage());
 		}
-		
+
 		log.debug(String.format("Converged: f(x) = %.2f", minimizer.function().f(w)));
 		log.debug(String.format("# of non-zero elements in w: %d (c = %.2f)", ArrayOp.nonzero(w, 1.0e-10), l1Regularizer));
 	}
-	
+
 	@Override
 	public Boolean classify(final Vector x) {
 		if (w == null)

@@ -3,5 +3,10 @@ package net.thisptr.classifier;
 import net.thisptr.structure.instance.LabeledInstance;
 
 public interface OnlineLearner<VectorType, LabelType> extends Classifier<VectorType, LabelType> {
-	void train(final LabeledInstance<? extends VectorType, ? extends LabelType> instance);
+	<
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceLabelType>,
+		InstanceVectorType extends VectorType,
+		InstanceLabelType extends LabelType
+	>
+	void train(final InstanceType instance);
 }
