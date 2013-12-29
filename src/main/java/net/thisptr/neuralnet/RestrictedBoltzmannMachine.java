@@ -401,10 +401,6 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		return weights;
 	}
 
-	public double learningRate() {
-		return learningRate;
-	}
-
 	public void setDropRate(double dropRate) {
 		this.dropRate = dropRate;
 	}
@@ -427,6 +423,14 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 	public UnitType getHiddenUnitType() {
 		return hiddenUnitType;
+	}
+
+	public void setLearningRate(final double learningRate) {
+		this.learningRate = learningRate;
+	}
+
+	public double getLearningRate() {
+		return learningRate;
 	}
 
 	public ByteBuffer serialize() {
