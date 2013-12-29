@@ -1,5 +1,7 @@
 package net.thisptr.math.distribution;
 
+import java.util.Random;
+
 import net.thisptr.math.SpecialFunctions;
 
 /**
@@ -58,6 +60,10 @@ public class GaussianDistribution implements Distribution {
 	}
 	
 	public double standardSample() {
+		return new Random().nextGaussian();
+	}
+
+	public double standardSampleSlow() {
 		// Run Box-Muller's method, using a trick described in Numerical Recipes to
 		// eliminate the use of rather slow trigonometric functions.
 		double v1, v2, r2;

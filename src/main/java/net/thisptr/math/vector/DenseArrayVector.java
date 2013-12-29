@@ -26,6 +26,13 @@ public class DenseArrayVector extends DenseVector {
 		array = v;
 	}
 	
+	public DenseArrayVector(boolean[] x0) {
+		array = new double[x0.length];
+		for (int i = 0; i < x0.length; ++i)
+			if (x0[i])
+				array[i] = 1;
+	}
+
 	public double[] raw() {
 		return array;
 	}

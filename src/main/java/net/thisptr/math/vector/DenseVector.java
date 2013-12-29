@@ -6,7 +6,8 @@ public abstract class DenseVector implements Vector {
 		final StringBuilder sb = new StringBuilder("[");
 		String sep = "";
 		for (int i = 0; i < size(); ++i) {
-			sb.append(String.format("%s%.10f", sep, get(i)));
+			final double value = get(i);
+			sb.append(String.format("%s%10f", sep, value));
 			sep = ",";
 		}
 		sb.append("]");
