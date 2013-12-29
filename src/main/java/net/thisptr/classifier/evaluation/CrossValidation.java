@@ -8,9 +8,19 @@ import net.thisptr.classifier.Classifier;
 import net.thisptr.structure.instance.LabeledInstance;
 
 public abstract class CrossValidation<VectorType, ClassType> {
-	protected abstract Classifier<? super VectorType, ClassType> build(final List<? extends LabeledInstance<? extends VectorType, ClassType>> learnset);
-	
-	public <InstanceType extends LabeledInstance<? extends VectorType, ClassType>> ConfusionMatrix<ClassType> fold(final Iterable<InstanceType> dataset0, final int n) {
+	protected abstract <
+		InstanceVectorType extends VectorType,
+		InstanceClassType extends ClassType,
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>
+	>
+	Classifier<VectorType, ClassType> build(final List<InstanceType> learnset);
+
+	public <
+		InstanceVectorType extends VectorType,
+		InstanceClassType extends ClassType,
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>
+	>
+	ConfusionMatrix<ClassType> fold(final Iterable<InstanceType> dataset0, final int n) {
 		final ConfusionMatrix<ClassType> cv = new ConfusionMatrix<ClassType>();
 		final List<InstanceType> dataset = new ArrayList<InstanceType>();
 		for (final InstanceType instance : dataset0)
@@ -30,7 +40,7 @@ public abstract class CrossValidation<VectorType, ClassType> {
 				}
 				learnset.add(dataset.get(i));
 			}
-			final Classifier<? super VectorType, ClassType> classifier = build(learnset);
+			final Classifier<VectorType, ClassType> classifier = build(learnset);
 			for (final InstanceType d : testset) {
 				final ClassType classified = classifier.classify(d.getVector());
 				cv.add(d.getLabel(), classified);
@@ -38,8 +48,13 @@ public abstract class CrossValidation<VectorType, ClassType> {
 		}
 		return cv;
 	}
-	
-	public <InstanceType extends LabeledInstance<? extends VectorType, ClassType>> ConfusionMatrix<ClassType> loocv(final Iterable<InstanceType> dataset0) {
+
+	public <
+		InstanceVectorType extends VectorType,
+		InstanceClassType extends ClassType,
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>
+	>
+	ConfusionMatrix<ClassType> loocv(final Iterable<InstanceType> dataset0) {
 		final List<InstanceType> list = new ArrayList<InstanceType>();
 		for (final InstanceType instance : dataset0)
 			list.add(instance);
