@@ -1,5 +1,9 @@
 package net.thisptr.structure.instance;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,5 +57,28 @@ public final class Instances {
 		for (final InstanceType instance : instances)
 			result.add(instance.getVector());
 		return result;
+	}
+
+	public static <
+		InstanceVectorType extends Vector,
+		InstanceLabelType,
+		InstanceType extends LabeledInstance<InstanceVectorType, InstanceLabelType>
+	>
+	void writeTable(final List<InstanceType> instances, final File file) throws IOException {
+		final int dim = Instances.getDimension(instances);
+		try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			for (final InstanceType instance : instances) {
+				final StringBuilder builder = new StringBuilder();
+				for (int i = 0; i < dim; ++i) {
+					builder.append("\t");
+					if (i < instance.getVector().size()) {
+						builder.append(instance.getVector().get(i));
+					} else {
+						builder.append("0");
+					}
+				}
+				writer.write(String.format("%s\t%s%s%n", instance.getId(), instance.getLabel(), builder.toString()));
+			}
+		}
 	}
 }
