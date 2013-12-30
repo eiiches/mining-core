@@ -1,19 +1,23 @@
 package net.thisptr.structure.instance;
 
-public class Instance<VectorType> {
+public class Instance<IdType, VectorType> {
 	private final VectorType vector;
-	private final long id;
+	private final IdType id;
+
 	public Instance(final VectorType vector) {
-		this(-1, vector);
+		this(null, vector);
 	}
-	public Instance(final long id, final VectorType vector) {
+
+	public Instance(final IdType id, final VectorType vector) {
 		this.id = id;
 		this.vector = vector;
 	}
+
 	public VectorType getVector() {
 		return vector;
 	}
-	public long getId() {
+
+	public IdType getId() {
 		return id;
 	}
 }

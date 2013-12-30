@@ -29,15 +29,15 @@ public class BinaryLogisticRegressionTest {
 		final GaussianDistribution class1 = new GaussianDistribution(0, 0.5);
 		final GaussianDistribution class2 = new GaussianDistribution(1, 0.5);
 
-		final List<LabeledInstance<SparseMapVector, Boolean>> instances = new ArrayList<LabeledInstance<SparseMapVector, Boolean>>();
-		for (int i = 0; i < 100; ++i) instances.add(new LabeledInstance<SparseMapVector, Boolean>(createRandomVector(class1, dim), true));
-		for (int i = 0; i < 100; ++i) instances.add(new LabeledInstance<SparseMapVector, Boolean>(createRandomVector(class2, dim), false));
+		final List<LabeledInstance<Long, SparseMapVector, Boolean>> instances = new ArrayList<LabeledInstance<Long, SparseMapVector, Boolean>>();
+		for (int i = 0; i < 100; ++i) instances.add(new LabeledInstance<Long, SparseMapVector, Boolean>(createRandomVector(class1, dim), true));
+		for (int i = 0; i < 100; ++i) instances.add(new LabeledInstance<Long, SparseMapVector, Boolean>(createRandomVector(class2, dim), false));
 
 		final BinaryLogisticRegression classifier = new BinaryLogisticRegression();
 		classifier.train(instances);
 
 		final ConfusionMatrix<Boolean> confusion = new ConfusionMatrix<Boolean>();
-		for (final LabeledInstance<SparseMapVector, Boolean> instance : instances)
+		for (final LabeledInstance<Long, SparseMapVector, Boolean> instance : instances)
 			confusion.add(instance.getLabel(), classifier.classify(instance.getVector()));
 
 		final double accuracy = confusion.getAccuracy();

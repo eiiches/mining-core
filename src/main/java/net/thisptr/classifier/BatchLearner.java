@@ -6,7 +6,8 @@ import net.thisptr.structure.instance.LabeledInstance;
 
 public interface BatchLearner<VectorType, ClassType> extends Classifier<VectorType, ClassType> {
 	<
-		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>,
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceClassType>,
+		InstanceIdType,
 		InstanceVectorType extends VectorType,
 		InstanceClassType extends ClassType
 	>

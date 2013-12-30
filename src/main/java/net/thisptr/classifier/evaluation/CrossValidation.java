@@ -9,16 +9,18 @@ import net.thisptr.structure.instance.LabeledInstance;
 
 public abstract class CrossValidation<VectorType, ClassType> {
 	protected abstract <
+		InstanceIdType,
 		InstanceVectorType extends VectorType,
 		InstanceClassType extends ClassType,
-		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceClassType>
 	>
 	Classifier<VectorType, ClassType> build(final List<InstanceType> learnset);
 
 	public <
+		InstanceIdType,
 		InstanceVectorType extends VectorType,
 		InstanceClassType extends ClassType,
-		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceClassType>
 	>
 	ConfusionMatrix<ClassType> fold(final Iterable<InstanceType> dataset0, final int n) {
 		final ConfusionMatrix<ClassType> cv = new ConfusionMatrix<ClassType>();
@@ -50,9 +52,10 @@ public abstract class CrossValidation<VectorType, ClassType> {
 	}
 
 	public <
+		InstanceIdType,
 		InstanceVectorType extends VectorType,
 		InstanceClassType extends ClassType,
-		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceClassType>
 	>
 	ConfusionMatrix<ClassType> loocv(final Iterable<InstanceType> dataset0) {
 		final List<InstanceType> list = new ArrayList<InstanceType>();

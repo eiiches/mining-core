@@ -11,9 +11,10 @@ public class Learners {
 
 	public static <
 		LearnerType extends OnlineLearner<VectorType, LabelType>,
+		InstanceIdType,
 		InstanceVectorType extends VectorType,
 		InstanceLabelType extends LabelType,
-		InstanceType extends LabeledInstance<InstanceVectorType, InstanceLabelType>,
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceLabelType>,
 		VectorType,
 		LabelType
 	>
@@ -29,9 +30,10 @@ public class Learners {
 
 	public static <
 		LearnerType extends BatchLearner<VectorType, LabelType>,
+		InstanceIdType,
 		InstanceVectorType extends VectorType,
 		InstanceLabelType extends LabelType,
-		InstanceType extends LabeledInstance<InstanceVectorType, InstanceLabelType>,
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceLabelType>,
 		VectorType,
 		LabelType
 	>

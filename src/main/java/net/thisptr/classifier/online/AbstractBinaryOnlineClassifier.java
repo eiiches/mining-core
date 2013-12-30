@@ -67,7 +67,8 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Ve
 	
 	@Override
 	public final <
-		InstanceType extends LabeledInstance<InstanceVectorType, InstanceLabelType>,
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceLabelType>,
+		InstanceIdType,
 		InstanceVectorType extends Vector,
 		InstanceLabelType extends Boolean
 	>

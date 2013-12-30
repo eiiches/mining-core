@@ -22,12 +22,12 @@ public abstract class AbstractAccuracyTest {
 	private static Logger log = LoggerFactory.getLogger(AbstractAccuracyTest.class);
 	
 	protected static class Fixture {
-		protected static LabeledInstance<SparseMapVector, Boolean> toInstance(final double x1, final double x2, final boolean y) {
-			return new LabeledInstance<SparseMapVector, Boolean>(new SparseMapVector(new double[] { x1, x2 }), y);
+		protected static LabeledInstance<Long, SparseMapVector, Boolean> toInstance(final double x1, final double x2, final boolean y) {
+			return new LabeledInstance<Long, SparseMapVector, Boolean>(new SparseMapVector(new double[] { x1, x2 }), y);
 		}
 		public int nIterations = 10;
 		public double expectedAccuracy = 0.9;
-		public List<LabeledInstance<SparseMapVector, Boolean>> instances;
+		public List<LabeledInstance<Long, SparseMapVector, Boolean>> instances;
 	}
 	
 	@DataPoint
@@ -52,12 +52,12 @@ public abstract class AbstractAccuracyTest {
 	public void testAccuracy(final OnlineLearner<SparseMapVector, Boolean> sut, final Fixture fixture) {
 		for (int i = 0; i < fixture.nIterations; ++i) {
 			log.debug(String.format("Iteration %d:", i + 1));
-			for (final LabeledInstance<SparseMapVector, Boolean> instance : fixture.instances)
+			for (final LabeledInstance<Long, SparseMapVector, Boolean> instance : fixture.instances)
 				sut.train(instance);
 		}
 
 		final ConfusionMatrix<Boolean> cm = new ConfusionMatrix<Boolean>();
-		for (final LabeledInstance<SparseMapVector, Boolean> instance : fixture.instances) {
+		for (final LabeledInstance<Long, SparseMapVector, Boolean> instance : fixture.instances) {
 			final Boolean predicted = sut.classify(instance.getVector());
 			final Boolean actual = instance.getLabel();
 			cm.add(actual, predicted);

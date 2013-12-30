@@ -47,7 +47,8 @@ public class BinaryNaiveBayes implements BatchLearner<Vector, Boolean> {
 
 	@Override
 	public <
-		InstanceType extends LabeledInstance<InstanceVectorType, InstanceClassType>,
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceClassType>,
+		InstanceIdType,
 		InstanceVectorType extends Vector,
 		InstanceClassType extends Boolean
 	> void train(List<InstanceType> instances) {

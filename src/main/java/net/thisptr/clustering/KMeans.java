@@ -17,10 +17,10 @@ public class KMeans {
 		 */
 		private double[] centroid;
 		
-		private List<Instance<Vector>> instances;
+		private List<Instance<Long, Vector>> instances;
 	}
 	
-	public List<List<Instance<Vector>>> run(final List<Instance<Vector>> instances, final int nCluster) {
+	public List<List<Instance<Long, Vector>>> run(final List<Instance<Long, Vector>> instances, final int nCluster) {
 		return null;
 	}
 }
