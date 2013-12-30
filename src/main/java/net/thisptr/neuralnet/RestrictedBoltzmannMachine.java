@@ -152,6 +152,8 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 			h.walk(new Visitor() {
 				@Override
 				public void visit(int index, double value) {
+					if (index + 1 >= result.length)
+						return; // feature was not present in training.
 					result[index + 1] = value;
 				}
 			});
