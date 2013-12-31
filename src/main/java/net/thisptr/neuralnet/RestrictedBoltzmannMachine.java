@@ -31,6 +31,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	public static final double DEFAULT_MOMENTUM = 0.5;
 	public static final UnitType DEFAULT_HIDDEN_UNIT_TYPE = UnitType.Logistic;
 	public static final double DEFAULT_DROP_RATE = 0.5;
+	public static final int DEFAULT_GIBBS_STEPS = 1;
 
 	public static final double INITIAL_WEIGHT_DEVIATION = 0.1;
 
@@ -56,6 +57,11 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	 * In each iteration, this value times the previous update is added to each weight for faster training.
 	 */
 	private double momentum = DEFAULT_MOMENTUM;
+
+	/**
+	 * The number of Gibbs steps to perform to collect statistics.
+	 */
+	private int gibbsSteps = DEFAULT_GIBBS_STEPS;
 
 	/**
 	 * The number of visible nodes without the bias.
@@ -260,10 +266,11 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	private void trainWithBias(final double[][] x0, final ExecutorService executor, final int hintNumThreads) {
 		final int batchSize = x0.length;
 		final double[][] ph0 = doubleArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
-		final double[][] ph1 = doubleArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
 		final double[][] px1 = doubleArrayPool.borrowArrays(visibleNodes + 1, batchSize);
 		final boolean[][] h0 = booleanArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
-		final double[][] tmp = doubleArrayPool.borrowArrays(visibleNodes + 1, hiddenNodes + 1);
+
+		double[][] ph1_m = doubleArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
+		double[][] ph1_s = doubleArrayPool.borrowArrays(hiddenNodes + 1, batchSize);
 
 		final boolean[] dropv = booleanArrayPool.borrowArray(hiddenNodes + 1);
 		buildDropVector(dropv);
@@ -277,9 +284,10 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 					computeVisibleProbabilityWithBias(px1, ph0, executor, hintNumThreads);
 
-					computeHiddenValueWithBias(ph1, px1, executor, hintNumThreads);
-					dropNodesWithBias(ph1, dropv, 0);
+					computeHiddenValueWithBias(ph1_m, px1, executor, hintNumThreads);
+					dropNodesWithBias(ph1_m, dropv, 0);
 					break;
+
 				case Logistic:
 					// 3.1 Updating the hidden states.
 					// "It is very important to make these hidden states binary, rather than using the probabilities
@@ -287,22 +295,43 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 					// visible units during the reconstruction." [1]
 					computeHiddenProbabilityWithBias(ph0, x0, executor, hintNumThreads);
 					dropNodesWithBias(ph0, dropv, 0.5);
-					activateWithBias(h0, ph0);
 
-					// 3.2 Updating the visible states.
-					// "However, it is common to use the probability, pi , instead of sampling a binary value." [1]
-					computeVisibleProbabilityWithBias(px1, h0, executor, hintNumThreads);
+					double[][] p_ph0 = ph0;
+					double[][] p_ph1 = ph1_m;
 
-					// 3.1 Updating the hidden states
-					// "When using CDn , only the final update of the hidden units should use the probability." [1]
-					computeHiddenProbabilityWithBias(ph1, px1, executor, hintNumThreads);
-					dropNodesWithBias(ph1, dropv, 0.5);
+					for (int i = 0; i < gibbsSteps; ++i) {
+						// 3.2 Updating the visible states.
+						// "However, it is common to use the probability, pi , instead of sampling a binary value." [1]
+						activateWithBias(h0, p_ph0);
+						computeVisibleProbabilityWithBias(px1, h0, executor, hintNumThreads);
+
+						// 3.1 Updating the hidden states
+						// "When using CDn , only the final update of the hidden units should use the probability." [1]
+						computeHiddenProbabilityWithBias(p_ph1, px1, executor, hintNumThreads);
+						dropNodesWithBias(p_ph1, dropv, 0.5);
+
+						if (i == 0) {
+							p_ph0 = p_ph1;
+							p_ph1 = ph1_s;
+						} else {
+							// swap
+							final double[][] tmp = p_ph0;
+							p_ph0 = p_ph1;
+							p_ph1 = tmp;
+						}
+					}
+
+					ph1_m = p_ph0;
+					ph1_s = p_ph1;
+
 					break;
+
 				default:
 					throw new IllegalArgumentException("The type of hidden unit is not supported: " + hiddenUnitType);
 			}
 
 			// update the weights
+			final double[][] ph1 = ph1_m;
 			final List<Runnable> tasks = new ArrayList<>();
 			for (final Range rowsplit : new Range(0, visibleNodes + 1).split(hintNumThreads)) {
 				for (final Range colsplit : new Range(0, hiddenNodes + 1).split(hintNumThreads)) {
@@ -343,10 +372,10 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 			}
 		} finally {
 			doubleArrayPool.returnArrays(ph0);
-			doubleArrayPool.returnArrays(ph1);
+			doubleArrayPool.returnArrays(ph1_m);
+			doubleArrayPool.returnArrays(ph1_s);
 			doubleArrayPool.returnArrays(px1);
 			booleanArrayPool.returnArrays(h0);
-			doubleArrayPool.returnArrays(tmp);
 			booleanArrayPool.returnArray(dropv);
 		}
 	}
@@ -433,6 +462,14 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 	public double getLearningRate() {
 		return learningRate;
+	}
+
+	public void setGibbsSteps(final int gibbsSteps) {
+		this.gibbsSteps = gibbsSteps;
+	}
+
+	public int getGibbsSteps() {
+		return gibbsSteps;
 	}
 
 	public ByteBuffer serialize() {
