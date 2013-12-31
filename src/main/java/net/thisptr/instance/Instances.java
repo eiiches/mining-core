@@ -1,4 +1,4 @@
-package net.thisptr.structure.instance;
+package net.thisptr.instance;
 
 import java.io.BufferedWriter;
 import java.io.File;

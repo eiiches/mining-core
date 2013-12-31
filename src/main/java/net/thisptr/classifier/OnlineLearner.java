@@ -1,6 +1,6 @@
 package net.thisptr.classifier;
 
-import net.thisptr.structure.instance.LabeledInstance;
+import net.thisptr.instance.LabeledInstance;
 
 public interface OnlineLearner<VectorType, LabelType> extends Classifier<VectorType, LabelType> {
 	<

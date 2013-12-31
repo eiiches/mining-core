@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.thisptr.classifier.evaluation.ConfusionMatrix;
+import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.distribution.Distribution;
 import net.thisptr.math.distribution.GaussianDistribution;
 import net.thisptr.math.vector.SparseMapVector;
-import net.thisptr.structure.instance.LabeledInstance;
 
 import org.junit.Ignore;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package net.thisptr.structure.instance;
+package net.thisptr.instance;
 
 public class LabeledInstance<IdType, VectorType, LabelType> extends Instance<IdType, VectorType> {
 	private final LabelType label;

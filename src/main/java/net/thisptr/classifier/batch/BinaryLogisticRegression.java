@@ -3,14 +3,14 @@ package net.thisptr.classifier.batch;
 import java.util.List;
 
 import net.thisptr.classifier.BatchLearner;
+import net.thisptr.instance.Instances;
+import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.operator.ArrayOp;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
 import net.thisptr.optimizer.Function;
 import net.thisptr.optimizer.FunctionMinimizer;
 import net.thisptr.optimizer.gradient.L1RegularizedLBFGS;
-import net.thisptr.structure.instance.Instances;
-import net.thisptr.structure.instance.LabeledInstance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

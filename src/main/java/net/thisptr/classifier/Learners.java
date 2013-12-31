@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.thisptr.structure.instance.LabeledInstance;
+import net.thisptr.instance.LabeledInstance;
 
 public class Learners {
 	private Learners() {}

@@ -3,10 +3,10 @@ package net.thisptr.classifier.online;
 import java.util.Arrays;
 
 import net.thisptr.classifier.OnlineLearner;
+import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.operator.VectorOp;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
-import net.thisptr.structure.instance.LabeledInstance;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;

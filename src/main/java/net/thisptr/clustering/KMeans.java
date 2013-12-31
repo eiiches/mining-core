@@ -2,8 +2,8 @@ package net.thisptr.clustering;
 
 import java.util.List;
 
+import net.thisptr.instance.Instance;
 import net.thisptr.math.vector.Vector;
-import net.thisptr.structure.instance.Instance;
 
 public class KMeans {
 	public static class Cluster {

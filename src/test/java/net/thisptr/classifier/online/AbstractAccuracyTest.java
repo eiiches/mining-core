@@ -7,8 +7,8 @@ import java.util.List;
 
 import net.thisptr.classifier.OnlineLearner;
 import net.thisptr.classifier.evaluation.ConfusionMatrix;
+import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.vector.SparseMapVector;
-import net.thisptr.structure.instance.LabeledInstance;
 
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;

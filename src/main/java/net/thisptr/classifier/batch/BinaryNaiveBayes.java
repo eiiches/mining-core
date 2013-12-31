@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import net.thisptr.classifier.BatchLearner;
+import net.thisptr.instance.Instances;
+import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.vector.Vector;
-import net.thisptr.structure.instance.Instances;
-import net.thisptr.structure.instance.LabeledInstance;
 
 public class BinaryNaiveBayes implements BatchLearner<Vector, Boolean> {
 	
