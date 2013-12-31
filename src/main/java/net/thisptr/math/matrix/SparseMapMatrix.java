@@ -24,7 +24,7 @@ public class SparseMapMatrix extends SparseMatrix {
 	public void set(final int row, final int col, final double value) {
 		SparseMapVector rowVector = data.get(row);
 		if (rowVector == null) {
-			rowVector = new SparseMapVector();
+			rowVector = new SparseMapVector(col);
 			data.put(row, rowVector);
 		}
 		rowVector.set(col, value);

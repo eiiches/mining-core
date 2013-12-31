@@ -51,9 +51,17 @@ public class TextEncoder {
 		return ids;
 	}
 
+	private static int max(final int[] values) {
+		int max = -1;
+		for (int i = 0; i < values.length; ++i)
+			if (max < values[i])
+				max = values[i];
+		return max;
+	}
+
 	public SparseMapVector encode(final List<String> tokens) {
-		final SparseMapVector result = new SparseMapVector();
 		final int[] ids = convertTokensToIds(tokens);
+		final SparseMapVector result = new SparseMapVector(max(ids) + 1);
 		final double incr = normalize ? 1.0 / ids.length : 1.0;
 		if (wordCount) {
 			for (final int id : ids)

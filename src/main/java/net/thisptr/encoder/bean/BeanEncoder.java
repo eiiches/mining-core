@@ -178,13 +178,15 @@ public class BeanEncoder<T> implements Encoder<T> {
 		@Override
 		public void setValue(final Object obj, final double value) {
 			final int id = idMapper.map(Pair.make(fieldName, obj));
+			if (id < vector.size())
+				vector.resize(id + 1);
 			vector.set(id, value);
 		}
 		
 		@Override
 		public double getValue(final Object obj) {
 			final int id = idMapper.get(Pair.make(fieldName, obj));
-			if (id < 0)
+			if (id < 0 || id >= vector.size())
 				return 0.0;
 			return vector.get(id);
 		}
@@ -192,7 +194,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 
 	@Override
 	public Vector encode(final T record) {
-		final Vector result = new SparseMapVector();
+		final Vector result = new SparseMapVector(0);
 		for (final Attribute attribute : attributes.values()) {
 			try {
 				final Object value = attribute.getAccessor().getValue(record);

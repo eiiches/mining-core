@@ -14,6 +14,7 @@ public class DenseByteBufferVector extends DenseVector {
 
 	/**
 	 * The new vector may not be initialized to zero.
+	 * 
 	 * @param size
 	 */
 	public DenseByteBufferVector(final int size) {
@@ -45,6 +46,11 @@ public class DenseByteBufferVector extends DenseVector {
 	@Override
 	public int capacity() {
 		return dbuf.remaining();
+	}
+
+	@Override
+	public void resize(final int size) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

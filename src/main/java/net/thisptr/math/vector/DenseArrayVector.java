@@ -5,27 +5,27 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class DenseArrayVector extends DenseVector {
-	private final double[] array;
-	
+	private double[] array;
+
 	public DenseArrayVector(final Vector src) {
 		final int size = src.size();
 		array = new double[size];
 		for (final Vector.Element e : src)
 			array[e.index()] = e.value();
 	}
-	
-	public DenseArrayVector(final int dimension) {
-		array = new double[dimension];
+
+	public DenseArrayVector(final int size) {
+		array = new double[size];
 	}
 
 	public DenseArrayVector(final double[] values) {
 		array = Arrays.copyOf(values, values.length);
 	}
-	
+
 	private DenseArrayVector(final double[] v, final boolean dummy) {
 		array = v;
 	}
-	
+
 	public DenseArrayVector(boolean[] x0) {
 		array = new double[x0.length];
 		for (int i = 0; i < x0.length; ++i)
@@ -40,22 +40,29 @@ public class DenseArrayVector extends DenseVector {
 	public static DenseArrayVector wrap(final double[] v) {
 		return new DenseArrayVector(v, true);
 	}
-	
+
 	@Override
 	public double get(final int index) {
 		return array[index];
 	}
-	
+
 	@Override
 	public void set(final int index, final double value) {
 		array[index] = value;
 	}
-	
+
 	@Override
 	public int size() {
 		return array.length;
 	}
-	
+
+	@Override
+	public void resize(final int size) {
+		final double[] newarray = new double[size];
+		System.arraycopy(this.array, 0, newarray, 0, Math.min(this.array.length, size));
+		this.array = newarray;
+	}
+
 	@Override
 	public int capacity() {
 		return array.length;
@@ -67,14 +74,14 @@ public class DenseArrayVector extends DenseVector {
 			if (array[i] != 0.0)
 				visitor.visit(i, array[i]);
 	}
-	
+
 	public class DenseArrayVectorElement implements Element {
 		private final int index;
-		
+
 		public DenseArrayVectorElement(final int index) {
 			this.index = index;
 		}
-		
+
 		@Override
 		public int index() {
 			return index;
@@ -91,7 +98,7 @@ public class DenseArrayVector extends DenseVector {
 		return new Iterator<Element>() {
 			private int index = -1;
 			private int pindex = -1;
-			
+
 			private int proceed(final int index) {
 				int i = index;
 				for (++i; i < array.length; ++i) {
@@ -100,7 +107,7 @@ public class DenseArrayVector extends DenseVector {
 				}
 				return i;
 			}
-			
+
 			@Override
 			public boolean hasNext() {
 				if (index < 0)
