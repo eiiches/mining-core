@@ -1,6 +1,7 @@
 package net.thisptr.math.vector;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.util.Iterator;
 
@@ -18,7 +19,7 @@ public class DenseByteBufferVector extends DenseVector {
 	 * @param size
 	 */
 	public DenseByteBufferVector(final int size) {
-		this.buf = ByteBuffer.allocateDirect(size * DOUBLE_BYTES);
+		this.buf = ByteBuffer.allocateDirect(size * DOUBLE_BYTES).order(ByteOrder.nativeOrder());
 		this.dbuf = buf.asDoubleBuffer();
 	}
 
@@ -28,7 +29,7 @@ public class DenseByteBufferVector extends DenseVector {
 	}
 
 	public DenseByteBufferVector(final Vector v) {
-		buf = ByteBuffer.allocateDirect(v.size() * 8);
+		buf = ByteBuffer.allocateDirect(v.size() * 8).order(ByteOrder.nativeOrder());
 		dbuf = buf.asDoubleBuffer();
 		v.walk(new Vector.Visitor() {
 			@Override
