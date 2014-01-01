@@ -1,6 +1,5 @@
 package net.thisptr.math.operator;
 
-import net.thisptr.lang.NotImplementedException;
 import net.thisptr.math.matrix.Matrix;
 import net.thisptr.math.vector.Vector;
 
@@ -28,20 +27,26 @@ public class DefaultMathOperator implements MathOperator {
 		assert result.rows() == x.rows();
 		assert x.columns() == y.rows();
 
-		for (int j = 0; j < result.columns(); ++j)
-			assignMultiply(result.column(j), x, y.column(j));
+		for (int i = 0; i < result.rows(); ++i) {
+			for (int j = 0; j < result.columns(); ++j) {
+				double t = 0.0;
+				for (int k = 0; k < x.columns(); ++k)
+					t += x.get(i, k) * y.get(k, j);
+				result.set(i, j, t);
+			}
+		}
 	}
 
 	@Override
 	public void assignZero(final Vector v) {
-		for (int i = 0 ; i < v.size(); ++i)
+		for (int i = 0; i < v.size(); ++i)
 			v.set(i, 0.0);
 	}
 
 	@Override
 	public void assignZero(final Matrix m) {
-		for (int i = 0 ; i < m.rows(); ++i)
-			for (int j = 0 ; j < m.columns(); ++j)
+		for (int i = 0; i < m.rows(); ++i)
+			for (int j = 0; j < m.columns(); ++j)
 				m.set(i, j, 0.0);
 	}
 
@@ -57,7 +62,18 @@ public class DefaultMathOperator implements MathOperator {
 
 	@Override
 	public void addMultiply(final Matrix self, final Matrix x, final Matrix y, final double s) {
-		throw new NotImplementedException();
+		assert self.columns() == y.columns();
+		assert self.rows() == x.rows();
+		assert x.columns() == y.rows();
+
+		for (int i = 0; i < self.rows(); ++i) {
+			for (int j = 0; j < self.columns(); ++j) {
+				double t = 0.0;
+				for (int k = 0; k < x.columns(); ++k)
+					t += x.get(i, k) * y.get(k, j);
+				self.set(i, j, t * s + self.get(i, j));
+			}
+		}
 	}
 
 	@Override
@@ -69,7 +85,7 @@ public class DefaultMathOperator implements MathOperator {
 			for (int j = 0; j < self.columns(); ++j)
 				self.set(i, j, self.get(i, j) + x.get(i, j) * s);
 	}
-	
+
 	@Override
 	public void add(Matrix self, Matrix x) {
 		assert self.columns() == x.columns();
@@ -79,7 +95,7 @@ public class DefaultMathOperator implements MathOperator {
 			for (int j = 0; j < self.columns(); ++j)
 				self.set(i, j, self.get(i, j) + x.get(i, j));
 	}
-	
+
 	@Override
 	public void copyElements(final Vector dest, final int destIndex, final Vector src, final int srcIndex, final int count) {
 		for (int i = 0; i < count; ++i)
