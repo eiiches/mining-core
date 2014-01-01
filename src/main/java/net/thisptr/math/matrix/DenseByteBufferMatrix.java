@@ -85,7 +85,7 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 		if (rowMajor) {
 			final ByteBuffer _buf = buf.duplicate().order(buf.order());
 			_buf.position(index[row] * DOUBLE_BYTES);
-			_buf.limit(columns * DOUBLE_BYTES);
+			_buf.limit((index[row] + columns) * DOUBLE_BYTES);
 			return new DenseByteBufferVector(_buf);
 		} else {
 			throw new NotImplementedException();
