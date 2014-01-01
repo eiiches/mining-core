@@ -23,6 +23,12 @@ public class DenseByteBufferVector extends DenseVector {
 		this.dbuf = buf.asDoubleBuffer();
 	}
 
+	public DenseByteBufferVector(final double[] values) {
+		this(values.length);
+		for (int i = 0; i < values.length; ++i)
+			set(i, values[i]);
+	}
+
 	public DenseByteBufferVector(final ByteBuffer buf) {
 		this.buf = buf.duplicate().order(buf.order());
 		this.dbuf = buf.asDoubleBuffer();

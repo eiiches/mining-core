@@ -23,6 +23,13 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 	private DenseByteBufferMatrix() {
 	}
 
+	public DenseByteBufferMatrix(final double[][] values) {
+		this(values.length, values[0].length);
+		for (int i = 0; i < rows; ++i)
+			for (int j = 0; j < columns; ++j)
+				set(i, j, values[i][j]);
+	}
+
 	public DenseByteBufferMatrix(final int rows, final int columns) {
 		this.rows = rows;
 		this.columns = columns;
@@ -118,7 +125,7 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 	public ByteBuffer raw() {
 		return buf;
 	}
-	
+
 	public boolean rowMajor() {
 		return rowMajor;
 	}
