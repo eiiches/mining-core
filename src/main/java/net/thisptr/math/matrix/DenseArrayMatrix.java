@@ -66,4 +66,8 @@ public class DenseArrayMatrix extends DenseMatrix {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
+
+	public double[][] raw() {
+		return data;
+	}
 }
