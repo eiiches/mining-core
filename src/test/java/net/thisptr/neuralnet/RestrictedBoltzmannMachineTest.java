@@ -14,7 +14,6 @@ import net.thisptr.math.vector.Vector;
 import net.thisptr.math.vector.formatter.DefaultVectorFormatter;
 import net.thisptr.neuralnet.RestrictedBoltzmannMachine.UnitType;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class RestrictedBoltzmannMachineTest {
@@ -55,7 +54,6 @@ public class RestrictedBoltzmannMachineTest {
 	}
 
 	@Test
-	@Ignore
 	public void test() {
 		final long start = System.currentTimeMillis();
 
