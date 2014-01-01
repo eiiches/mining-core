@@ -43,6 +43,13 @@ public interface Matrix extends Iterable<Element> {
 	 * @return Vector
 	 */
 	Vector column(int column);
+	
+	/**
+	 * Returns the transposed view of the matrix.
+	 * 
+	 * @return Matrix
+	 */
+	Matrix transpose();
 
 	void resize(int rows, int columns);
 

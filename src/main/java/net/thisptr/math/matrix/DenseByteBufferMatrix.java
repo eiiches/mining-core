@@ -15,9 +15,13 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 	private ByteBuffer buf;
 	private DoubleBuffer dbuf;
 	private int[] index;
+	private boolean rowMajor = true;
 
 	private int rows;
 	private int columns;
+
+	private DenseByteBufferMatrix() {
+	}
 
 	public DenseByteBufferMatrix(final int rows, final int columns) {
 		this.rows = rows;
@@ -27,6 +31,18 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 		this.index = new int[rows];
 		for (int i = 0; i < rows; ++i)
 			index[i] = i * columns;
+	}
+
+	@Override
+	public Matrix transpose() {
+		final DenseByteBufferMatrix result = new DenseByteBufferMatrix();
+		result.buf = buf;
+		result.dbuf = dbuf;
+		result.index = index;
+		result.rowMajor = !rowMajor;
+		result.rows = columns;
+		result.columns = rows;
+		return result;
 	}
 
 	@Override
@@ -41,25 +57,44 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 
 	@Override
 	public double get(final int row, final int column) {
-		return dbuf.get(index[row] + column);
+		if (rowMajor) {
+			return dbuf.get(index[row] + column);
+		} else {
+			return dbuf.get(index[column] + row);
+		}
 	}
 
 	@Override
 	public void set(int row, int column, double value) {
-		dbuf.put(index[row] + column, value);
+		if (rowMajor) {
+			dbuf.put(index[row] + column, value);
+		} else {
+			dbuf.put(index[column] + row, value);
+		}
 	}
 
 	@Override
 	public Vector row(final int row) {
-		final ByteBuffer _buf = buf.duplicate();
-		_buf.position(index[row] * DOUBLE_BYTES);
-		_buf.limit(columns * DOUBLE_BYTES);
-		return new DenseByteBufferVector(_buf);
+		if (rowMajor) {
+			final ByteBuffer _buf = buf.duplicate();
+			_buf.position(index[row] * DOUBLE_BYTES);
+			_buf.limit(columns * DOUBLE_BYTES);
+			return new DenseByteBufferVector(_buf);
+		} else {
+			throw new NotImplementedException();
+		}
 	}
 
 	@Override
 	public Vector column(final int column) {
-		throw new NotImplementedException();
+		if (rowMajor) {
+			throw new NotImplementedException();
+		} else {
+			final ByteBuffer _buf = buf.duplicate();
+			_buf.position(index[column] * DOUBLE_BYTES);
+			_buf.limit(rows * DOUBLE_BYTES);
+			return new DenseByteBufferVector(_buf);
+		}
 	}
 
 	@Override
@@ -82,5 +117,9 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 
 	public ByteBuffer raw() {
 		return buf;
+	}
+	
+	public boolean rowMajor() {
+		return rowMajor;
 	}
 }

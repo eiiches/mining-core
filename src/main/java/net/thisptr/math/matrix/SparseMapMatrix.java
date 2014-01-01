@@ -49,6 +49,12 @@ public class SparseMapMatrix extends SparseMatrix {
 	}
 
 	@Override
+	public Matrix transpose() {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public void resize(int rows, int columns) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
