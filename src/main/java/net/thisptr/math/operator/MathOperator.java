@@ -28,4 +28,8 @@ public interface MathOperator {
 	 * @return a value of the dot product
 	 */
 	double dot(Vector v1, Vector v2);
+
+	void assignZero(Vector v);
+
+	void assignZero(Matrix v);
 }

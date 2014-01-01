@@ -30,4 +30,17 @@ public class DefaultMathOperator implements MathOperator {
 		for (int j = 0; j < result.columns(); ++j)
 			assignMultiply(result.column(j), x, y.column(j));
 	}
+	
+	@Override
+	public void assignZero(final Vector v) {
+		for (int i = 0 ; i < v.size(); ++i)
+			v.set(i, 0.0);
+	}
+	
+	@Override
+	public void assignZero(final Matrix m) {
+		for (int i = 0 ; i < m.rows(); ++i)
+			for (int j = 0 ; j < m.columns(); ++j)
+				m.set(i, j, 0.0);
+	}
 }
