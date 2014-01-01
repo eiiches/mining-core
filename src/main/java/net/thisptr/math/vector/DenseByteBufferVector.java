@@ -24,7 +24,7 @@ public class DenseByteBufferVector extends DenseVector {
 	}
 
 	public DenseByteBufferVector(final ByteBuffer buf) {
-		this.buf = buf.duplicate();
+		this.buf = buf.duplicate().order(buf.order());
 		this.dbuf = buf.asDoubleBuffer();
 	}
 

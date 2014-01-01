@@ -76,7 +76,7 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 	@Override
 	public Vector row(final int row) {
 		if (rowMajor) {
-			final ByteBuffer _buf = buf.duplicate();
+			final ByteBuffer _buf = buf.duplicate().order(buf.order());
 			_buf.position(index[row] * DOUBLE_BYTES);
 			_buf.limit(columns * DOUBLE_BYTES);
 			return new DenseByteBufferVector(_buf);
@@ -90,7 +90,7 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 		if (rowMajor) {
 			throw new NotImplementedException();
 		} else {
-			final ByteBuffer _buf = buf.duplicate();
+			final ByteBuffer _buf = buf.duplicate().order(buf.order());
 			_buf.position(index[column] * DOUBLE_BYTES);
 			_buf.limit(rows * DOUBLE_BYTES);
 			return new DenseByteBufferVector(_buf);
