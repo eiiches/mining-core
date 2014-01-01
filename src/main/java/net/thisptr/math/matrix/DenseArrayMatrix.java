@@ -12,31 +12,51 @@ public class DenseArrayMatrix extends DenseMatrix {
 	private int rows;
 	private int columns;
 
+	private boolean rowMajor = true;
+
 	public DenseArrayMatrix(final int rows, final int columns) {
 		this.data = new double[rows][columns];
 		this.rows = rows;
 		this.columns = columns;
 	}
 
+	private DenseArrayMatrix() {
+	}
+
 	@Override
 	public double get(final int row, final int column) {
-		return data[row][column];
+		if (rowMajor) {
+			return data[row][column];
+		} else {
+			return data[column][row];
+		}
 	}
 
 	@Override
 	public void set(final int row, final int column, final double value) {
-		data[row][column] = value;
+		if (rowMajor) {
+			data[row][column] = value;
+		} else {
+			data[column][row] = value;
+		}
 	}
 
 	@Override
 	public Vector row(final int row) {
-		return DenseArrayVector.wrap(data[row]);
+		if (rowMajor) {
+			return DenseArrayVector.wrap(data[row]);
+		} else {
+			throw new NotImplementedException();
+		}
 	}
 
 	@Override
 	public Vector column(final int column) {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
+		if (rowMajor) {
+			throw new NotImplementedException();
+		} else {
+			return DenseArrayVector.wrap(data[column]);
+		}
 	}
 
 	@Override
@@ -51,8 +71,12 @@ public class DenseArrayMatrix extends DenseMatrix {
 
 	@Override
 	public Matrix transpose() {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
+		final DenseArrayMatrix result = new DenseArrayMatrix();
+		result.data = data;
+		result.rows = columns;
+		result.columns = rows;
+		result.rowMajor = !rowMajor;
+		return result;
 	}
 
 	@Override
@@ -75,5 +99,9 @@ public class DenseArrayMatrix extends DenseMatrix {
 
 	public double[][] raw() {
 		return data;
+	}
+
+	public boolean rowMajor() {
+		return rowMajor;
 	}
 }
