@@ -79,4 +79,10 @@ public class DefaultMathOperator implements MathOperator {
 			for (int j = 0; j < self.columns(); ++j)
 				self.set(i, j, self.get(i, j) + x.get(i, j));
 	}
+	
+	@Override
+	public void copyElements(final Vector dest, final int destIndex, final Vector src, final int srcIndex, final int count) {
+		for (int i = 0; i < count; ++i)
+			dest.set(destIndex + i, src.get(srcIndex + i));
+	}
 }

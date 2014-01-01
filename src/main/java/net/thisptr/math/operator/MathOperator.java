@@ -64,4 +64,6 @@ public interface MathOperator {
 	 * @param x
 	 */
 	void add(Matrix self, Matrix x);
+
+	void copyElements(Vector dest, int destIndex, Vector src, int srcIndex, int count);
 }
