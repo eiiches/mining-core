@@ -14,6 +14,7 @@ import net.thisptr.math.vector.Vector;
 import net.thisptr.math.vector.formatter.DefaultVectorFormatter;
 import net.thisptr.neuralnet.RestrictedBoltzmannMachine.UnitType;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RestrictedBoltzmannMachineTest {
@@ -54,6 +55,7 @@ public class RestrictedBoltzmannMachineTest {
 	}
 
 	@Test
+	@Ignore
 	public void test() {
 		final long start = System.currentTimeMillis();
 
@@ -84,17 +86,17 @@ public class RestrictedBoltzmannMachineTest {
 					sut3.train(sut2.reduce(sut1.reduce(in)));
 
 			// weights
-			for (final double[] arra : sut1.weights())
-				System.out.println(DenseArrayVector.wrap(arra));
-			System.out.println();
-
-			for (final double[] arra : sut2.weights())
-				System.out.println(DenseArrayVector.wrap(arra));
-			System.out.println();
-
-			for (final double[] arra : sut3.weights())
-				System.out.println(DenseArrayVector.wrap(arra));
-			System.out.println();
+//			for (final double[] arra : sut1.weights())
+//				System.out.println(DenseArrayVector.wrap(arra));
+//			System.out.println();
+//
+//			for (final double[] arra : sut2.weights())
+//				System.out.println(DenseArrayVector.wrap(arra));
+//			System.out.println();
+//
+//			for (final double[] arra : sut3.weights())
+//				System.out.println(DenseArrayVector.wrap(arra));
+//			System.out.println();
 
 			final List<Vector> ins = new ArrayList<>();
 			ins.addAll(inputVectors);
