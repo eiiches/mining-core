@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import net.thisptr.lang.tuple.Pair;
 import net.thisptr.math.distribution.GaussianDistribution;
@@ -181,29 +180,24 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 			applyLogisticSigmoid(h.row(n));
 	}
 
-	private void computeHiddenProbabilityWithBias(final Matrix h, final Matrix x, final ExecutorService executor, final int hintNumThreads) {
+	private void computeHiddenProbabilityWithBias(final Matrix h, final Matrix x) {
 		mathOperator.assignMultiply(h, x, weights.transpose());
 		applyLogisticSigmoid(h);
 		for (int n = 0; n < h.rows(); ++n)
 			h.set(n, 0, 1.0);
 	}
 
-	private void computeVisibleProbabilityWithBias(final Matrix x, final Matrix h, final ExecutorService executor, final int hintNumThreads) {
+	private void computeVisibleProbabilityWithBias(final Matrix x, final Matrix h) {
 		mathOperator.assignMultiply(x, h, weights);
 		applyLogisticSigmoid(x);
 		for (int n = 0; n < x.rows(); ++n)
 			x.set(n, 0, 1.0);
 	}
 
-	private void computeHiddenValueWithBias(final Matrix h, final Matrix x, final ExecutorService executor, final int hintNumThreads) {
+	private void computeHiddenValueWithBias(final Matrix h, final Matrix x) {
 		mathOperator.assignMultiply(h, x, weights.transpose());
 		for (int n = 0; n < h.rows(); ++n)
 			h.set(n, 0, 1.0);
-	}
-
-	@Override
-	public void train(final Vector px0) {
-		train(px0, null);
 	}
 
 	public static class MatrixPool {
@@ -238,11 +232,12 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 	private MatrixPool matrixPool;
 
-	public void train(final Vector px0, final ExecutorService executor) {
+	@Override
+	public void train(final Vector px0) {
 		final Matrix x0 = matrixPool.acquire(1, visibleNodes + 1);
 		try {
 			toArrayAddingBias(x0.row(0), px0, visibleNodes + 1);
-			trainWithBias(x0, executor, Runtime.getRuntime().availableProcessors());
+			trainWithBias(x0);
 		} finally {
 			matrixPool.release(x0);
 		}
@@ -250,15 +245,11 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 	@Override
 	public void train(final List<Vector> examples) {
-		train(examples, null);
-	}
-
-	public void train(final List<Vector> examples, final ExecutorService executor) {
 		final Matrix _examples = matrixPool.acquire(examples.size(), visibleNodes + 1);
 		try {
 			for (int i = 0; i < examples.size(); ++i)
 				toArrayAddingBias(_examples.row(i), examples.get(i), visibleNodes + 1);
-			trainWithBias(_examples, executor, Runtime.getRuntime().availableProcessors());
+			trainWithBias(_examples);
 		} finally {
 			matrixPool.release(_examples);
 		}
@@ -281,7 +272,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 			drop[j] = uniformDistribution.next() < dropRate;
 	}
 
-	private void trainWithBias(final Matrix x0, final ExecutorService executor, final int hintNumThreads) {
+	private void trainWithBias(final Matrix x0) {
 		final int batchSize = x0.rows();
 		final Matrix ph0 = matrixPool.acquire(batchSize, hiddenNodes + 1);
 		final Matrix px1 = matrixPool.acquire(batchSize, visibleNodes + 1);
@@ -296,13 +287,13 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		try {
 			switch (hiddenUnitType) {
 				case Linear:
-					computeHiddenValueWithBias(ph0, x0, executor, hintNumThreads);
+					computeHiddenValueWithBias(ph0, x0);
 					dropNodesWithBias(ph0, dropv, 0);
 					applyNoiseWithBias(ph0, normalDistribution);
 
-					computeVisibleProbabilityWithBias(px1, ph0, executor, hintNumThreads);
+					computeVisibleProbabilityWithBias(px1, ph0);
 
-					computeHiddenValueWithBias(ph1_m, px1, executor, hintNumThreads);
+					computeHiddenValueWithBias(ph1_m, px1);
 					dropNodesWithBias(ph1_m, dropv, 0);
 					break;
 
@@ -311,7 +302,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 					// "It is very important to make these hidden states binary, rather than using the probabilities
 					// themselves. If the probabilities are used, each hidden unit can communicate a real-value to the
 					// visible units during the reconstruction." [1]
-					computeHiddenProbabilityWithBias(ph0, x0, executor, hintNumThreads);
+					computeHiddenProbabilityWithBias(ph0, x0);
 					dropNodesWithBias(ph0, dropv, 0.5);
 
 					Matrix p_ph0 = ph0;
@@ -321,11 +312,11 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 						// 3.2 Updating the visible states.
 						// "However, it is common to use the probability, pi , instead of sampling a binary value." [1]
 						activateWithBias(h0, p_ph0);
-						computeVisibleProbabilityWithBias(px1, h0, executor, hintNumThreads);
+						computeVisibleProbabilityWithBias(px1, h0);
 
 						// 3.1 Updating the hidden states
 						// "When using CDn , only the final update of the hidden units should use the probability." [1]
-						computeHiddenProbabilityWithBias(p_ph1, px1, executor, hintNumThreads);
+						computeHiddenProbabilityWithBias(p_ph1, px1);
 						dropNodesWithBias(p_ph1, dropv, 0.5);
 
 						if (i == 0) {
@@ -363,10 +354,6 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 	@Override
 	public Vector reduce(final Vector x) {
-		return reduce(x, null);
-	}
-
-	public Vector reduce(final Vector x, final ExecutorService executor) {
 		final Matrix _x = matrixPool.acquire(1, visibleNodes + 1);
 		final Matrix _h = matrixPool.acquire(1, hiddenNodes + 1);
 
@@ -375,10 +362,10 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 			switch (hiddenUnitType) {
 				case Linear:
-					computeHiddenValueWithBias(_h, _x, executor, Runtime.getRuntime().availableProcessors());
+					computeHiddenValueWithBias(_h, _x);
 					break;
 				case Logistic:
-					computeHiddenProbabilityWithBias(_h, _x, executor, Runtime.getRuntime().availableProcessors());
+					computeHiddenProbabilityWithBias(_h, _x);
 					break;
 			}
 
@@ -392,16 +379,12 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 	@Override
 	public Vector reconstruct(final Vector h) {
-		return reconstruct(h, null);
-	}
-
-	public Vector reconstruct(final Vector h, final ExecutorService executor) {
 		final Matrix _x = matrixPool.acquire(1, visibleNodes + 1);
 		final Matrix _h = matrixPool.acquire(1, hiddenNodes + 1);
 		try {
 			toArrayAddingBias(_h.row(0), h, hiddenNodes + 1);
 
-			computeVisibleProbabilityWithBias(_x, _h, executor, Runtime.getRuntime().availableProcessors());
+			computeVisibleProbabilityWithBias(_x, _h);
 
 			final Vector result = mathFactory.newDenseVector(visibleNodes);
 			mathOperator.copyElements(result, 0, _x.row(0), 1, visibleNodes);
