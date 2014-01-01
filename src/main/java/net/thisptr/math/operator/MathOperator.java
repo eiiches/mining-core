@@ -57,4 +57,11 @@ public interface MathOperator {
 	 * @param s
 	 */
 	void addMultiply(Matrix self, Matrix x, Matrix y, double s);
+	
+	/**
+	 * self += x
+	 * @param self
+	 * @param x
+	 */
+	void add(Matrix self, Matrix x);
 }

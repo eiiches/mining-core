@@ -69,4 +69,14 @@ public class DefaultMathOperator implements MathOperator {
 			for (int j = 0; j < self.columns(); ++j)
 				self.set(i, j, self.get(i, j) + x.get(i, j) * s);
 	}
+	
+	@Override
+	public void add(Matrix self, Matrix x) {
+		assert self.columns() == x.columns();
+		assert self.rows() == x.rows();
+
+		for (int i = 0; i < self.rows(); ++i)
+			for (int j = 0; j < self.columns(); ++j)
+				self.set(i, j, self.get(i, j) + x.get(i, j));
+	}
 }
