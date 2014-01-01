@@ -1,5 +1,6 @@
 package net.thisptr.math.operator;
 
+import net.thisptr.lang.NotImplementedException;
 import net.thisptr.math.matrix.Matrix;
 import net.thisptr.math.vector.Vector;
 
@@ -30,17 +31,42 @@ public class DefaultMathOperator implements MathOperator {
 		for (int j = 0; j < result.columns(); ++j)
 			assignMultiply(result.column(j), x, y.column(j));
 	}
-	
+
 	@Override
 	public void assignZero(final Vector v) {
 		for (int i = 0 ; i < v.size(); ++i)
 			v.set(i, 0.0);
 	}
-	
+
 	@Override
 	public void assignZero(final Matrix m) {
 		for (int i = 0 ; i < m.rows(); ++i)
 			for (int j = 0 ; j < m.columns(); ++j)
 				m.set(i, j, 0.0);
+	}
+
+	@Override
+	public void assignMultiply(final Matrix result, final Matrix x, final double s) {
+		assert result.columns() == x.columns();
+		assert result.rows() == x.rows();
+
+		for (int i = 0; i < result.rows(); ++i)
+			for (int j = 0; j < result.columns(); ++j)
+				result.set(i, j, x.get(i, j) * s);
+	}
+
+	@Override
+	public void addMultiply(final Matrix self, final Matrix x, final Matrix y, final double s) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void addMultiply(final Matrix self, final Matrix x, final double s) {
+		assert self.columns() == x.columns();
+		assert self.rows() == x.rows();
+
+		for (int i = 0; i < self.rows(); ++i)
+			for (int j = 0; j < self.columns(); ++j)
+				self.set(i, j, self.get(i, j) + x.get(i, j) * s);
 	}
 }

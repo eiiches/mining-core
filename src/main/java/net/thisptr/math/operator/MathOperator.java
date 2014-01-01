@@ -21,6 +21,14 @@ public interface MathOperator {
 	void assignMultiply(Matrix result, Matrix x, Matrix y);
 
 	/**
+	 * result = x * s
+	 * @param result
+	 * @param x
+	 * @param s
+	 */
+	void assignMultiply(Matrix result, Matrix x, double s);
+
+	/**
 	 * Returns a dot product (inner product) of v1 and v2.
 	 * 
 	 * @param v1 a column vector
@@ -32,4 +40,21 @@ public interface MathOperator {
 	void assignZero(Vector v);
 
 	void assignZero(Matrix v);
+
+	/**
+	 * self += x * s
+	 * @param self
+	 * @param x
+	 * @param s
+	 */
+	void addMultiply(Matrix self, Matrix x, double s);
+
+	/**
+	 * self += x * y * s
+	 * @param self
+	 * @param x
+	 * @param y
+	 * @param s
+	 */
+	void addMultiply(Matrix self, Matrix x, Matrix y, double s);
 }
