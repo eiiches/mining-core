@@ -1,6 +1,5 @@
 package net.thisptr.math.matrix;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,10 +9,18 @@ import net.thisptr.math.vector.SparseMapVector;
 import net.thisptr.math.vector.Vector;
 
 public class SparseMapMatrix extends SparseMatrix {
-	private final Map<Integer, SparseMapVector> data = new HashMap<Integer, SparseMapVector>();
-	
+	private Map<Integer, SparseMapVector> data = new HashMap<Integer, SparseMapVector>();
+	private int rows;
+	private int columns;
+
+	public SparseMapMatrix(final int rows, final int cols) {
+		this.rows = rows;
+		this.columns = cols;
+	}
+
 	@Override
 	public double get(final int row, final int col) {
+		// FIXME: check bounds
 		final SparseMapVector rowVector = data.get(row);
 		if (rowVector == null)
 			return 0.0;
@@ -22,6 +29,7 @@ public class SparseMapMatrix extends SparseMatrix {
 
 	@Override
 	public void set(final int row, final int col, final double value) {
+		// FIXME: check bounds
 		SparseMapVector rowVector = data.get(row);
 		if (rowVector == null) {
 			rowVector = new SparseMapVector(col);
@@ -31,26 +39,31 @@ public class SparseMapMatrix extends SparseMatrix {
 	}
 
 	@Override
-	public int rowSize() {
-		if (data.isEmpty())
-			return 0;
-		return Collections.max(data.keySet()) + 1;
+	public int rows() {
+		return rows;
 	}
 
 	@Override
-	public int rowCapacity() {
-		return Integer.MAX_VALUE;
+	public int columns() {
+		return columns;
 	}
 
 	@Override
-	public int colSize() {
+	public void resize(int rows, int columns) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public int colCapacity() {
-		return Integer.MAX_VALUE;
+	public Vector column(int column) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Vector row(int row) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
 	}
 
 	@Override

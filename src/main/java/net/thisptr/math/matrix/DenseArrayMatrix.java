@@ -4,46 +4,53 @@ import java.util.Iterator;
 
 import net.thisptr.lang.NotImplementedException;
 import net.thisptr.math.vector.DenseArrayVector;
+import net.thisptr.math.vector.Vector;
 
 public class DenseArrayMatrix extends DenseMatrix {
-	private final DenseArrayVector[] data;
-	
-	public DenseArrayMatrix(final int nrow, final int ncol) {
-		data = new DenseArrayVector[nrow];
-		for (int row = 0; row < nrow; ++row)
-			data[row] = new DenseArrayVector(ncol);
-	}
-	
-	@Override
-	public double get(final int row, final int col) {
-		return data[row].get(col);
+	private double[][] data;
+
+	private int rows;
+	private int columns;
+
+	public DenseArrayMatrix(final int rows, final int columns) {
+		this.data = new double[rows][columns];
+		this.rows = rows;
+		this.columns = columns;
 	}
 
 	@Override
-	public void set(final int row, final int col, final double value) {
-		data[row].set(col, value);
+	public double get(final int row, final int column) {
+		return data[row][column];
 	}
 
 	@Override
-	public int rowSize() {
+	public void set(final int row, final int column, final double value) {
+		data[row][column] = value;
+	}
+
+	@Override
+	public Vector row(final int row) {
+		return DenseArrayVector.wrap(data[row]);
+	}
+
+	@Override
+	public Vector column(final int column) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public int rowCapacity() {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
+	public int rows() {
+		return rows;
 	}
 
 	@Override
-	public int colSize() {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
+	public int columns() {
+		return columns;
 	}
 
 	@Override
-	public int colCapacity() {
+	public void resize(int rows, int columns) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}

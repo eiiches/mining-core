@@ -1,5 +1,6 @@
 package net.thisptr.math.operator;
 
+import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
 
 public final class VectorOp {
@@ -46,5 +47,11 @@ public final class VectorOp {
 	 */
 	public static double l2norm(final Vector x) {
 		return Math.sqrt(l2norm2(x));
+	}
+
+	public static double dot(DenseArrayVector v1, DenseArrayVector v2) {
+		final double[] b1 = v1.raw();
+		final double[] b2 = v2.raw();
+		return ArrayOp.dot(b1, b2);
 	}
 }
