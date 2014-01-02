@@ -125,8 +125,8 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		this.weights = mathFactory.newDenseMatrix(hiddenNodes + 1, visibleNodes + 1);
 
 		final GaussianDistribution initializer = new GaussianDistribution(0.0, INITIAL_WEIGHT_DEVIATION);
-		for (int i = 0; i < visibleNodes + 1; ++i)
-			for (int j = 0; j < hiddenNodes + 1; ++j)
+		for (int j = 0; j < hiddenNodes + 1; ++j)
+			for (int i = 0; i < visibleNodes + 1; ++i)
 				this.weights.set(j, i, initializer.sample());
 		this.weights.set(0, 0, 0.0); // this value is unused
 		this.update = mathFactory.newDenseMatrix(hiddenNodes + 1, visibleNodes + 1);
@@ -222,7 +222,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	}
 
 	private void dropNodesWithBias(final Vector h, final boolean[] drop, final double value) {
-		for (int j = 0; j < drop.length; ++j)
+		for (int j = 1; j < drop.length; ++j)
 			if (drop[j])
 				h.set(j, value);
 	}
