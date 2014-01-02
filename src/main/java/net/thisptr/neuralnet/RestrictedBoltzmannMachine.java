@@ -404,6 +404,22 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		return gibbsSteps;
 	}
 
+	public double getMomentum() {
+		return momentum;
+	}
+
+	public void setMomentum(double momentum) {
+		this.momentum = momentum;
+	}
+
+	public double getWeightDecay() {
+		return weightDecay;
+	}
+
+	public void setWeightDecay(double weightDecay) {
+		this.weightDecay = weightDecay;
+	}
+
 	public ByteBuffer serialize() {
 		final ByteBuffer _buf = ByteBuffer.allocateDirect(4 * 3 + 8 * 3 + 8 * (hiddenNodes + 1) * (visibleNodes + 1));
 
