@@ -1,12 +1,8 @@
 package net.thisptr.neuralnet;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import net.thisptr.lang.tuple.Pair;
 import net.thisptr.math.distribution.GaussianDistribution;
 import net.thisptr.math.distribution.UniformDistribution;
 import net.thisptr.math.factory.DefaultMathFactory;
@@ -120,7 +116,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes, final double learningRate, final double dropRate, final MathFactory mathFactory) {
 		this.mathFactory = mathFactory;
 		this.mathOperator = mathFactory.newMathOperator();
-		this.matrixPool =  new MatrixPool(mathFactory);
+		this.matrixPool = new MatrixPool(mathFactory);
 
 		this.visibleNodes = visibleNodes;
 		this.hiddenNodes = hiddenNodes;
@@ -198,36 +194,6 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		mathOperator.assignMultiply(h, x, weights.transpose());
 		for (int n = 0; n < h.rows(); ++n)
 			h.set(n, 0, 1.0);
-	}
-
-	public static class MatrixPool {
-		private MathFactory factory;
-		private Map<Pair<Integer, Integer>, LinkedList<Matrix>> pool = new HashMap<>();
-
-		public MatrixPool(final MathFactory factory) {
-			this.factory = factory;
-		}
-
-		public Matrix acquire(final int rows, final int columns) {
-			final LinkedList<Matrix> freeList = pool.get(Pair.make(rows, columns));
-			if (freeList == null || freeList.isEmpty())
-				return factory.newDenseMatrix(rows, columns);
-			return freeList.pop();
-		}
-
-		public void release(final Matrix m) {
-			LinkedList<Matrix> freeList = pool.get(Pair.make(m.rows(), m.columns()));
-			if (freeList == null) {
-				freeList = new LinkedList<Matrix>();
-				pool.put(Pair.make(m.rows(), m.columns()), freeList);
-			}
-			freeList.add(m);
-		}
-
-		public void release(final Matrix... ms) {
-			for (final Matrix m : ms)
-				release(m);
-		}
 	}
 
 	private MatrixPool matrixPool;
