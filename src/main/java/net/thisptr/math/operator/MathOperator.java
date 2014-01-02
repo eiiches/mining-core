@@ -57,7 +57,7 @@ public interface MathOperator {
 	 * @param s
 	 */
 	void addMultiply(Matrix self, Matrix x, Matrix y, double s);
-	
+
 	/**
 	 * self += x
 	 * @param self
@@ -66,4 +66,8 @@ public interface MathOperator {
 	void add(Matrix self, Matrix x);
 
 	void copyElements(Vector dest, int destIndex, Vector src, int srcIndex, int count);
+
+	double l1Norm(Matrix m);
+
+	double l2Norm(Matrix m);
 }

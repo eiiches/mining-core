@@ -101,4 +101,24 @@ public class DefaultMathOperator implements MathOperator {
 		for (int i = 0; i < count; ++i)
 			dest.set(destIndex + i, src.get(srcIndex + i));
 	}
+
+	@Override
+	public double l1Norm(Matrix m) {
+		double sum = 0.0;
+		for (int i = 0; i < m.rows(); ++i)
+			for (int j = 0; j < m.columns(); ++j)
+				sum += Math.abs(m.get(i, j));
+		return sum;
+	}
+
+	@Override
+	public double l2Norm(Matrix m) {
+		double sum = 0.0;
+		for (int i = 0; i < m.rows(); ++i)
+			for (int j = 0; j < m.columns(); ++j) {
+				final double v = m.get(i, j);
+				sum += v * v;
+			}
+		return Math.sqrt(sum);
+	}
 }
