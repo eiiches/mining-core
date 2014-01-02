@@ -148,7 +148,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 	private static void applyNoiseWithBias(final Vector x, final CachedSampler sampler) {
 		for (int i = 1; i < x.size(); ++i)
-			x.set(i, sampler.next());
+			x.set(i, x.get(i) + sampler.next());
 	}
 
 	private static void applyNoiseWithBias(final Matrix x, final CachedSampler sampler) {
