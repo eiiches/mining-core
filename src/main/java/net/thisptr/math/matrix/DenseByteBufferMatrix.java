@@ -99,7 +99,7 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 		} else {
 			final ByteBuffer _buf = buf.duplicate().order(buf.order());
 			_buf.position(index[column] * DOUBLE_BYTES);
-			_buf.limit(rows * DOUBLE_BYTES);
+			_buf.limit((index[column] + rows) * DOUBLE_BYTES);
 			return new DenseByteBufferVector(_buf);
 		}
 	}
