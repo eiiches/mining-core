@@ -24,8 +24,8 @@ If you use maven, add the following snippet for your pom.
 </dependency>
 ```
 
-Implemented Data Structure and Algorithm
-----------------------------------------
+Implemented Data Structures and Algorithms
+------------------------------------------
 
 ### Math
 
@@ -50,10 +50,10 @@ Implemented Data Structure and Algorithm
 
 - Online Learning
   - Perceptron
-  - Passive Aggressive
-  - Confidence Weighted
-  - AROW
-  - Soft-Confidence Weighted
+  - Passive Aggressive (PA-I, PA-II)
+  - Confidence Weighted Learning (CW)
+  - Adaptive Regularization of Weight Vectors (AROW)
+  - Soft-Confidence Weighted Learning (SCW)
 
 - Batch Learning
   - Logistic Regression
@@ -75,7 +75,7 @@ Implemented Data Structure and Algorithm
 ### Hashing
 
 - MurMurHash
-- Locality Sensitive Hashing
+- Locality Sensitive Hashing (LSH)
   - SimHash
 
 ### Graph
@@ -88,7 +88,7 @@ Implemented Data Structure and Algorithm
   - Wu-Manber
 
 - Suffix Arrays
-  - SAIS, linear time suffix array construction algorithm
+  - SAIS, a linear time suffix array construction algorithm
   - Maximal substring extraction
 
 - Burrows Wheeler Transform
