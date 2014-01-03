@@ -45,10 +45,12 @@ public class DenseByteBufferMatrixTest {
 		final Matrix m = new DenseByteBufferMatrix(M(V(2, 3), V(5, 7)));
 
 		final Vector r0 = m.row(0);
+		assertEquals(2, r0.size());
 		assertEquals(2, r0.get(0), eps);
 		assertEquals(3, r0.get(1), eps);
 
 		final Vector r1 = m.row(1);
+		assertEquals(2, r1.size());
 		assertEquals(5, r1.get(0), eps);
 		assertEquals(7, r1.get(1), eps);
 	}
@@ -58,10 +60,12 @@ public class DenseByteBufferMatrixTest {
 		final Matrix m = new DenseByteBufferMatrix(M(V(2, 3), V(5, 7)));
 
 		final Vector c0 = m.transpose().column(0);
+		assertEquals(2, c0.size());
 		assertEquals(2, c0.get(0), eps);
 		assertEquals(3, c0.get(1), eps);
 
 		final Vector c1 = m.transpose().column(1);
+		assertEquals(2, c1.size());
 		assertEquals(5, c1.get(0), eps);
 		assertEquals(7, c1.get(1), eps);
 	}
