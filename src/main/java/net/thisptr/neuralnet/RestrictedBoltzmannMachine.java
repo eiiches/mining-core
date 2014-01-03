@@ -152,9 +152,13 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 			applyNoiseWithBias(x.row(n), sampler);
 	}
 
+	/**
+	 * This function expects result is all 0.
+	 * @param result
+	 * @param h
+	 * @param lengthIncludingBias
+	 */
 	private void toArrayAddingBias(final Vector result, final Vector h, final int lengthIncludingBias) {
-		mathOperator.assignZero(result);
-
 		h.walk(new Visitor() {
 			@Override
 			public void visit(int index, double value) {
@@ -201,6 +205,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	@Override
 	public void train(final Vector px0) {
 		final Matrix x0 = matrixPool.acquire(1, visibleNodes + 1);
+		mathOperator.assignZero(x0);
 		try {
 			toArrayAddingBias(x0.row(0), px0, visibleNodes + 1);
 			trainWithBias(x0);
@@ -212,6 +217,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	@Override
 	public void train(final List<Vector> examples) {
 		final Matrix _examples = matrixPool.acquire(examples.size(), visibleNodes + 1);
+		mathOperator.assignZero(_examples);
 		try {
 			for (int i = 0; i < examples.size(); ++i)
 				toArrayAddingBias(_examples.row(i), examples.get(i), visibleNodes + 1);
@@ -324,6 +330,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		final Matrix _h = matrixPool.acquire(1, hiddenNodes + 1);
 
 		try {
+			mathOperator.assignZero(_x);
 			toArrayAddingBias(_x.row(0), x, visibleNodes + 1);
 
 			switch (hiddenUnitType) {
@@ -348,6 +355,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		final Matrix _x = matrixPool.acquire(1, visibleNodes + 1);
 		final Matrix _h = matrixPool.acquire(1, hiddenNodes + 1);
 		try {
+			mathOperator.assignZero(_h);
 			toArrayAddingBias(_h.row(0), h, hiddenNodes + 1);
 
 			computeVisibleProbabilityWithBias(_x, _h);
