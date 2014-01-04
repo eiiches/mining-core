@@ -67,17 +67,17 @@ public class RestrictedBoltzmannMachineTest {
 		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		try {
 			// train
-			final RestrictedBoltzmannMachine sut1 = new RestrictedBoltzmannMachine(DIM_L0, DIM_L1, 0.03, 0.5);
+			final RestrictedBoltzmannMachine sut1 = new RestrictedBoltzmannMachine(DIM_L0, DIM_L1);
 			for (int i = 0; i < MAX_ITERATIONS; ++i)
 				for (final Vector inputVector : inputVectors)
 					sut1.train(inputVector);
 
-			final RestrictedBoltzmannMachine sut2 = new RestrictedBoltzmannMachine(DIM_L1, DIM_L2, 0.03, 0.5);
+			final RestrictedBoltzmannMachine sut2 = new RestrictedBoltzmannMachine(DIM_L1, DIM_L2);
 			for (int i = 0; i < MAX_ITERATIONS; ++i)
 				for (final Vector in : inputVectors)
 					sut2.train(sut1.reduce(in));
 
-			final RestrictedBoltzmannMachine sut3 = new RestrictedBoltzmannMachine(DIM_L2, DIM_L3, 0.03, 0.5);
+			final RestrictedBoltzmannMachine sut3 = new RestrictedBoltzmannMachine(DIM_L2, DIM_L3);
 			sut3.setHiddenUnitType(UnitType.Linear);
 			for (int i = 0; i < MAX_ITERATIONS; ++i)
 				for (final Vector in : inputVectors)

@@ -29,7 +29,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	public static final double DEFAULT_DROP_RATE = 0.5;
 	public static final int DEFAULT_GIBBS_STEPS = 1;
 
-	public static final double INITIAL_WEIGHT_DEVIATION = 0.1;
+	public static final double DEFAULT_INITIAL_WEIGHT_DEVIATION = 0.1;
 
 	private static final CachedSampler uniformDistribution = new CachedSampler(65536, new UniformDistribution(0.0, 1.0));
 	private static final CachedSampler normalDistribution = new CachedSampler(65536, new GaussianDistribution(0.0, 1.0));
@@ -106,30 +106,43 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	private MathOperator mathOperator;
 
 	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes) {
-		this(visibleNodes, hiddenNodes, DEFAULT_LEARNING_RATE, DEFAULT_DROP_RATE);
+		this(visibleNodes, hiddenNodes, DEFAULT_INITIAL_WEIGHT_DEVIATION, null, null);
 	}
 
-	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes, final double learningRate, final double dropRate) {
-		this(visibleNodes, hiddenNodes, learningRate, dropRate, new DefaultMathFactory());
+	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes, final double initialWeightDeviation, final Vector initialVisibleBiases, final Vector initialHiddenBiases) {
+		this(visibleNodes, hiddenNodes, initialWeightDeviation, initialVisibleBiases, initialHiddenBiases, null);
 	}
 
-	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes, final double learningRate, final double dropRate, final MathFactory mathFactory) {
-		this.mathFactory = mathFactory;
-		this.mathOperator = mathFactory.newMathOperator();
-		this.matrixPool = new MatrixPool(mathFactory);
+	public RestrictedBoltzmannMachine(final int visibleNodes, final int hiddenNodes, final double initialWeightDeviation, final Vector initialVisibleBiases, final Vector initialHiddenBiases, final MathFactory mathFactory) {
+		this.mathFactory = mathFactory != null
+				? mathFactory
+				: new DefaultMathFactory();
+		this.mathOperator = this.mathFactory.newMathOperator();
+		this.matrixPool = new MatrixPool(this.mathFactory);
 
 		this.visibleNodes = visibleNodes;
 		this.hiddenNodes = hiddenNodes;
-		this.learningRate = learningRate;
-		this.dropRate = dropRate;
-		this.weights = mathFactory.newDenseMatrix(hiddenNodes + 1, visibleNodes + 1);
 
-		final GaussianDistribution initializer = new GaussianDistribution(0.0, INITIAL_WEIGHT_DEVIATION);
-		for (int j = 0; j < hiddenNodes + 1; ++j)
-			for (int i = 0; i < visibleNodes + 1; ++i)
-				this.weights.set(j, i, initializer.sample());
+		this.update = this.mathFactory.newDenseMatrix(hiddenNodes + 1, visibleNodes + 1);
+		this.weights = this.mathFactory.newDenseMatrix(hiddenNodes + 1, visibleNodes + 1);
+		initializeWeights(initialWeightDeviation, initialVisibleBiases, initialHiddenBiases);
+	}
+
+	private void initializeWeights(final double initialWeightDeviation, final Vector initialVisibleBiases, final Vector initialHiddenBiases) {
 		this.weights.set(0, 0, 0.0); // this value is unused
-		this.update = mathFactory.newDenseMatrix(hiddenNodes + 1, visibleNodes + 1);
+
+		final GaussianDistribution initializer = new GaussianDistribution(0.0, initialWeightDeviation);
+		for (int j = 1; j < hiddenNodes + 1; ++j)
+			for (int i = 1; i < visibleNodes + 1; ++i)
+				this.weights.set(j, i, initializer.sample());
+
+		if (initialHiddenBiases != null)
+			for (int j = 0; j < hiddenNodes; ++j)
+				this.weights.set(j + 1, 0, initialHiddenBiases.get(j));
+
+		if (initialVisibleBiases != null)
+			for (int i = 0; i < visibleNodes; ++i)
+				this.weights.set(0, i + 1, initialVisibleBiases.get(i));
 	}
 
 	private void activateWithBias(final Vector h, final Vector ph) {
