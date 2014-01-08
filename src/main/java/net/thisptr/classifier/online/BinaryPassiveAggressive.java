@@ -79,7 +79,7 @@ public class BinaryPassiveAggressive extends AbstractBinaryOnlineClassifier {
 		if (y * wx <= 1.0) {
 			final double tau = calcUpdateFactor(x, y, wx);
 			w[0] += tau * y;
-			x.walk(new Vector.Visitor() {
+			x.walk(new Vector.VectorVisitor() {
 				public void visit(final int index, final double value) {
 					w[index + 1] += tau * y * value;
 				}

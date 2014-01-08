@@ -46,7 +46,7 @@ public class BinaryPerceptron extends AbstractBinaryOnlineClassifier {
 		
 		if (y * wx <= 0.0) {
 			w[0] += learningRate * y;
-			x.walk(new Vector.Visitor() {
+			x.walk(new Vector.VectorVisitor() {
 				public void visit(final int index, final double value) {
 					w[index + 1] += learningRate * y * value;
 				}

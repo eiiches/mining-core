@@ -1,10 +1,11 @@
 package net.thisptr.math.vector;
 
-import java.util.Iterator;
+import net.thisptr.math.matrix.Matrix;
 
-import net.thisptr.math.vector.Vector.Element;
-
-public interface Vector extends Iterable<Element> {
+/**
+ * A column Vector.
+ */
+public interface Vector extends Matrix {
 	int size();
 	int capacity();
 	void resize(int size);
@@ -28,16 +29,9 @@ public interface Vector extends Iterable<Element> {
 	 * Visit each non-zero element in this vector. Note that the order of visits is not specified.
 	 * @param visitor
 	 */
-	void walk(final Visitor visitor);
+	void walk(final VectorVisitor visitor);
 
-	public interface Visitor {
+	public interface VectorVisitor {
 		void visit(final int index, final double value);
 	}
-
-	public interface Element {
-		int index();
-		double value();
-	}
-
-	Iterator<Element> iterator();
 }

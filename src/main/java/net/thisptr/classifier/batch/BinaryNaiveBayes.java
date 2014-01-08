@@ -32,7 +32,7 @@ public class BinaryNaiveBayes implements BatchLearner<Vector, Boolean> {
 				Arrays.fill(this.values, smoothingValue);
 		}
 		public void add(final Vector v) {
-			v.walk(new Vector.Visitor() {
+			v.walk(new Vector.VectorVisitor() {
 				@Override
 				public void visit(final int index, final double value) {
 					values[index] += value;
@@ -75,7 +75,7 @@ public class BinaryNaiveBayes implements BatchLearner<Vector, Boolean> {
 		for (final Map.Entry<Boolean, ClassCount> count : classes.entrySet()) {
 			final double[] p = new double[1];
 			final double[] values = count.getValue().getValues();
-			x.walk(new Vector.Visitor() {
+			x.walk(new Vector.VectorVisitor() {
 				@Override
 				public void visit(final int index, final double value) {
 					if (index < values.length)

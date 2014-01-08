@@ -1,6 +1,6 @@
 package net.thisptr.math.vector;
 
-public abstract class DenseVector implements Vector {
+public abstract class DenseVector extends AbstractVector {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("[");

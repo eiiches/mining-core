@@ -10,7 +10,7 @@ import net.thisptr.math.factory.MathFactory;
 import net.thisptr.math.matrix.Matrix;
 import net.thisptr.math.operator.MathOperator;
 import net.thisptr.math.vector.Vector;
-import net.thisptr.math.vector.Vector.Visitor;
+import net.thisptr.math.vector.Vector.VectorVisitor;
 
 /**
  * An implementation of Restricted Boltzmann Machine.
@@ -172,7 +172,7 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 	 * @param lengthIncludingBias
 	 */
 	private void toArrayAddingBias(final Vector result, final Vector h, final int lengthIncludingBias) {
-		h.walk(new Visitor() {
+		h.walk(new VectorVisitor() {
 			@Override
 			public void visit(int index, double value) {
 				if (index + 1 >= result.size())

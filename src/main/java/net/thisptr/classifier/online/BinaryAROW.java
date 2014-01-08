@@ -54,7 +54,7 @@ public class BinaryAROW extends AbstractBinaryOnlineClassifier {
 	private double calcV(final Vector x) {
 		// just a reference wrapper
 		final double[] result = new double[] { sigma[0] };
-		x.walk(new Vector.Visitor() {
+		x.walk(new Vector.VectorVisitor() {
 			public void visit(final int index, final double value) {
 				result[0] += sigma[index + 1] * value * value;
 			}
@@ -75,7 +75,7 @@ public class BinaryAROW extends AbstractBinaryOnlineClassifier {
 			
 			w[0] += alpha * y * sigma[0];
 			sigma[0] = 1 / (1 / sigma[0] + 1 / r);
-			x.walk(new Vector.Visitor() {
+			x.walk(new Vector.VectorVisitor() {
 				public void visit(final int index, final double value) {
 					w[index + 1] += alpha * y * sigma[index + 1] * value;
 					sigma[index + 1] = 1 / (1 / sigma[index + 1] + value * value / r);

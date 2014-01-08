@@ -52,7 +52,7 @@ public class DefaultVectorFormatter implements VectorFormatter {
 	public String format(final Vector v) {
 		final StringBuilder builder = new StringBuilder("[");
 		if (sparseOutput) {
-			v.walk(new Vector.Visitor() {
+			v.walk(new Vector.VectorVisitor() {
 				private boolean isFirst = true;
 				@Override
 				public void visit(final int index, final double value) {
