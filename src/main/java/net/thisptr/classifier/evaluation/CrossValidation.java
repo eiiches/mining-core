@@ -1,6 +1,7 @@
 package net.thisptr.classifier.evaluation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +16,32 @@ public abstract class CrossValidation<VectorType, ClassType> {
 		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceClassType>
 	>
 	Classifier<VectorType, ClassType> build(final List<InstanceType> learnset);
+
+	public <
+		InstanceIdType,
+		InstanceVectorType extends VectorType,
+		InstanceClassType extends ClassType,
+		InstanceType extends LabeledInstance<InstanceIdType, InstanceVectorType, InstanceClassType>
+	>
+	ConfusionMatrix<ClassType> random(final Collection<InstanceType> instances, final int trainingSamples, final int repeatCount) {
+		final ConfusionMatrix<ClassType> cm = new ConfusionMatrix<>();
+		final List<InstanceType> dataset = new ArrayList<>(instances);
+
+		for (int i = 0; i < repeatCount; ++i) {
+			Collections.shuffle(dataset);
+
+			final List<InstanceType> trainset = dataset.subList(0, trainingSamples);
+			final List<InstanceType> testset = dataset.subList(trainingSamples, dataset.size());
+
+			final Classifier<VectorType, ClassType> classifier = build(trainset);
+			for (final InstanceType test : testset) {
+				final ClassType classified = classifier.classify(test.getVector());
+				cm.add(test.getLabel(), classified);
+			}
+		}
+
+		return cm;
+	}
 
 	public <
 		InstanceIdType,
