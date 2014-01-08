@@ -1,7 +1,5 @@
 package net.thisptr.math.matrix;
 
-import java.util.Iterator;
-
 import net.thisptr.lang.NotImplementedException;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
@@ -87,12 +85,6 @@ public class DenseArrayMatrix extends DenseMatrix {
 
 	@Override
 	public void walk(final Visitor visitor) {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public Iterator<Element> iterator() {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}

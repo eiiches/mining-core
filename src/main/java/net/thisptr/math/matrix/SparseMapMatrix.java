@@ -1,7 +1,6 @@
 package net.thisptr.math.matrix;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import net.thisptr.lang.NotImplementedException;
@@ -82,11 +81,5 @@ public class SparseMapMatrix extends SparseMatrix {
 				}
 			});
 		}
-	}
-
-	@Override
-	public Iterator<Element> iterator() {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
 	}
 }

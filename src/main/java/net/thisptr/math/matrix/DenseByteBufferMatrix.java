@@ -3,7 +3,6 @@ package net.thisptr.math.matrix;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
-import java.util.Iterator;
 
 import net.thisptr.lang.NotImplementedException;
 import net.thisptr.math.vector.DenseByteBufferVector;
@@ -112,12 +111,6 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 
 	@Override
 	public void walk(Visitor visitor) {
-		// TODO Auto-generated method stub
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public Iterator<Element> iterator() {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}

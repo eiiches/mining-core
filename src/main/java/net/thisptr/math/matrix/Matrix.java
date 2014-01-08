@@ -1,11 +1,8 @@
 package net.thisptr.math.matrix;
 
-import java.util.Iterator;
-
-import net.thisptr.math.matrix.Matrix.Element;
 import net.thisptr.math.vector.Vector;
 
-public interface Matrix extends Iterable<Element> {
+public interface Matrix {
 	int rows();
 
 	int columns();
@@ -58,14 +55,4 @@ public interface Matrix extends Iterable<Element> {
 	}
 
 	void walk(final Visitor visitor);
-
-	public interface Element {
-		int rowIndex();
-
-		int colIndex();
-
-		double value();
-	}
-
-	Iterator<Element> iterator();
 }
