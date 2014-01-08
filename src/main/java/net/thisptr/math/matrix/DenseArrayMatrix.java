@@ -84,7 +84,7 @@ public class DenseArrayMatrix extends DenseMatrix {
 	}
 
 	@Override
-	public void walk(final Visitor visitor) {
+	public void walk(final MatrixVisitor visitor) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}

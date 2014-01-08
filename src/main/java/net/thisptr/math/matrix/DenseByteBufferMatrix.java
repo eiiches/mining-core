@@ -110,7 +110,7 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 	}
 
 	@Override
-	public void walk(Visitor visitor) {
+	public void walk(MatrixVisitor visitor) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
