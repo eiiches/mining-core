@@ -21,6 +21,14 @@ public interface MathOperator {
 	void assignMultiply(Matrix result, Matrix x, Matrix y);
 
 	/**
+	 * result = x * y
+	 * @param result a matrix
+	 * @param x a matrix
+	 * @param y a matrix
+	 */
+	void assignMultiply(Matrix result, Matrix x, Matrix y, double s);
+
+	/**
 	 * result = x * s
 	 * @param result
 	 * @param x
