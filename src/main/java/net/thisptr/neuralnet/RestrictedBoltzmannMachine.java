@@ -193,6 +193,20 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 			applyLogisticSigmoid(h.row(n));
 	}
 
+	private void computeDropOutHiddenProbabilityWithBias(final Matrix h, final Matrix x) {
+		// clear bias in x
+		for (int n = 0; n < x.rows(); ++n)
+			x.set(n, 0, 0.0);
+		// multiply without bias
+		mathOperator.assignMultiply(h, x, weights.transpose(), 1 - dropRate);
+		// apply logistic adding bias
+		for (int n = 0; n < h.rows(); ++n) {
+			h.set(n, 0, 1.0);
+			for (int j = 1; j < h.columns(); ++j)
+				h.set(n, j, FastLogisticFunction.logistic(h.get(n, j) + weights.get(j, 0)));
+		}
+	}
+
 	private void computeHiddenProbabilityWithBias(final Matrix h, final Matrix x) {
 		mathOperator.assignMultiply(h, x, weights.transpose());
 		applyLogisticSigmoid(h);
@@ -205,6 +219,20 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 		applyLogisticSigmoid(x);
 		for (int n = 0; n < x.rows(); ++n)
 			x.set(n, 0, 1.0);
+	}
+
+	private void computeDropOutHiddenValueWithBias(final Matrix h, final Matrix x) {
+		// clear bias in x
+		for (int n = 0; n < x.rows(); ++n)
+			x.set(n, 0, 0.0);
+		// multiply without bias
+		mathOperator.assignMultiply(h, x, weights.transpose());
+		// apply bias
+		for (int n = 0; n < h.rows(); ++n) {
+			h.set(n, 0, 1.0);
+			for (int j = 1; j < h.columns(); ++j)
+				h.set(n, j, h.get(n, j) + weights.get(j, 0));
+		}
 	}
 
 	private void computeHiddenValueWithBias(final Matrix h, final Matrix x) {
@@ -348,10 +376,10 @@ public class RestrictedBoltzmannMachine implements DimensionReduction, Unsupervi
 
 			switch (hiddenUnitType) {
 				case Linear:
-					computeHiddenValueWithBias(_h, _x);
+					computeDropOutHiddenValueWithBias(_h, _x);
 					break;
 				case Logistic:
-					computeHiddenProbabilityWithBias(_h, _x);
+					computeDropOutHiddenProbabilityWithBias(_h, _x);
 					break;
 			}
 
