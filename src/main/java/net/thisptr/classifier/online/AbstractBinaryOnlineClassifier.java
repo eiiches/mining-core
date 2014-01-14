@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 import net.thisptr.classifier.OnlineLearner;
 import net.thisptr.instance.LabeledInstance;
-import net.thisptr.math.operator.VectorOp;
+import net.thisptr.math.operator.DefaultMathOperator;
+import net.thisptr.math.operator.MathOperator;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
 import net.thisptr.math.vector.VectorVisitor;
@@ -17,7 +18,9 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Ve
 	private static Logger log = LoggerFactory.getLogger(AbstractBinaryOnlineClassifier.class);
 
 	public static final int DEFAULT_INITIAL_CAPACITY = 16;
-	
+
+	protected MathOperator mathOperator;
+
 	public AbstractBinaryOnlineClassifier() {
 		this(DEFAULT_INITIAL_CAPACITY);
 	}
@@ -25,6 +28,7 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Ve
 	public AbstractBinaryOnlineClassifier(final int initialCapacity) {
 		this.n = 0;
 		this.w = new double[initialCapacity];
+		this.mathOperator = new DefaultMathOperator();
 	}
 	
 	/**
@@ -44,8 +48,17 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Ve
 	 * @return
 	 */
 	protected double calcWx(final Vector x) {
-		// Passing yOffset = 1 and then adding w[0] is for the intercept term.
-		return VectorOp.dot(x, w, 1, n) + w[0];
+		return x.walk(new VectorVisitor() {
+			private double sum = 0;
+			@Override
+			public void visit(int index, double value) {
+				if (index < n)
+					sum += w[index + 1] * value;
+			}
+			public double finish() {
+				return sum;
+			}
+		}) + w[0]; // for bias
 	}
 	
 	@Override

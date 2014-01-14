@@ -1,9 +1,5 @@
 package net.thisptr.classifier.online;
 
-import java.util.Map;
-
-import net.thisptr.math.operator.VectorOp;
-import net.thisptr.math.vector.SparseMapVector;
 import net.thisptr.math.vector.Vector;
 import net.thisptr.math.vector.VectorVisitor;
 
@@ -58,7 +54,7 @@ public class BinaryPassiveAggressive extends AbstractBinaryOnlineClassifier {
 	
 	private double calcUpdateFactor(final Vector x, final int y, final double wx) {
 		// adding 1 is for an intercept term, avoiding the case x2 == 0.
-		final double x2 = VectorOp.l2norm2(x) + 1;
+		final double x2 = Math.pow(mathOperator.l2Norm(x), 2) + 1;
 		final double loss = Math.max(0.0, 1 - y * wx);
 
 		switch (mode) {
