@@ -45,16 +45,21 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 	}
 
 	private static double calcPy1(final Vector x, final double[] w) {
-		final double[] wx = new double[] { w[0] };
-		x.walk(new VectorVisitor() {
+		final double wx = x.walk(new VectorVisitor() {
+			private double sum = 0.0;
+			@Override
 			public void visit(final int index, final double value) {
 				// Run boundary check because when we may run into unseed component in x,
 				// the dimension of x can (almost always) be larger than the learning data.
 				if (w.length > index + 1)
-					wx[0] += value * w[index + 1];
+					sum += value * w[index + 1];
 			}
-		});
-		return 1.0 / (1 + Math.exp(-wx[0]));
+			@Override
+			public double finish() {
+				return sum;
+			}
+		}) + w[0];
+		return 1.0 / (1 + Math.exp(-wx));
 	}
 
 	@Override

@@ -52,13 +52,17 @@ public class BinaryConfidenceWeighted extends AbstractBinaryOnlineClassifier {
 	}
 	
 	private double calcV(final Vector x) {
-		final double[] result = new double[] { sigma[0] };
-		x.walk(new VectorVisitor() {
+		return x.walk(new VectorVisitor() {
+			private double result = 0.0;
+			@Override
 			public void visit(final int index, final double value) {
-				result[0] += sigma[index + 1] * value * value;
+				result += sigma[index + 1] * value * value;
+			}
+			@Override
+			public double finish() {
+				return result;
 			}
 		});
-		return result[0];
 	}
 	
 	/**

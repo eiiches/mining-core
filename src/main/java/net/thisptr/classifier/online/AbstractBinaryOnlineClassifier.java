@@ -55,6 +55,7 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Ve
 				if (index < n)
 					sum += w[index + 1] * value;
 			}
+			@Override
 			public double finish() {
 				return sum;
 			}
