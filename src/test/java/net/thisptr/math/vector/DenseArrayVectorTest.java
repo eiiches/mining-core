@@ -68,7 +68,7 @@ public class DenseArrayVectorTest {
 	public void testWalk() {
 		// Vector#accept() does not specify the order they visit.
 		final List<Pair<Integer, Double>> actual = new ArrayList<>();
-		sut.walk(new Vector.VectorVisitor() {
+		sut.walk(new VectorVisitor() {
 			public void visit(final int index, final double value) {
 				actual.add(Pair.make(index, value));
 			}

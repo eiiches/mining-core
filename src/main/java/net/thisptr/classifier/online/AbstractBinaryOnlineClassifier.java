@@ -7,6 +7,7 @@ import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.operator.VectorOp;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorVisitor;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;

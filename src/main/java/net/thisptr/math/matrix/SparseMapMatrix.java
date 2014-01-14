@@ -6,6 +6,7 @@ import java.util.Map;
 import net.thisptr.lang.NotImplementedException;
 import net.thisptr.math.vector.SparseMapVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorVisitor;
 
 public class SparseMapMatrix extends SparseMatrix {
 	private Map<Integer, SparseMapVector> data = new HashMap<Integer, SparseMapVector>();
@@ -74,7 +75,7 @@ public class SparseMapMatrix extends SparseMatrix {
 	@Override
 	public void walk(final MatrixVisitor visitor) {
 		for (final Map.Entry<Integer, SparseMapVector> row : data.entrySet()) {
-			row.getValue().walk(new Vector.VectorVisitor() {
+			row.getValue().walk(new VectorVisitor() {
 				@Override
 				public void visit(final int index, final double value) {
 					visitor.visit(row.getKey(), index, value);

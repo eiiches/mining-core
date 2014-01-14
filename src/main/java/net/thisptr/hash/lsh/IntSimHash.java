@@ -4,6 +4,7 @@ import java.util.Map;
 
 import net.thisptr.hash.IntMurmurHash;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorVisitor;
 
 public class IntSimHash {
 	private static final int SIZE = Integer.SIZE;
@@ -35,7 +36,7 @@ public class IntSimHash {
 	
 	public int hash(final Vector vector) {
 		final double[] v = new double[SIZE];
-		vector.walk(new Vector.VectorVisitor() {
+		vector.walk(new VectorVisitor() {
 			public void visit(final int index, final double value) {
 				update(v, IntMurmurHash.hash(index), value);
 			}

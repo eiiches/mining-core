@@ -1,6 +1,7 @@
 package net.thisptr.math.vector.formatter;
 
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorVisitor;
 
 public class DefaultVectorFormatter implements VectorFormatter {
 	private boolean sparseOutput;
@@ -52,7 +53,7 @@ public class DefaultVectorFormatter implements VectorFormatter {
 	public String format(final Vector v) {
 		final StringBuilder builder = new StringBuilder("[");
 		if (sparseOutput) {
-			v.walk(new Vector.VectorVisitor() {
+			v.walk(new VectorVisitor() {
 				private boolean isFirst = true;
 				@Override
 				public void visit(final int index, final double value) {

@@ -28,10 +28,7 @@ public interface Vector extends Matrix {
 	/**
 	 * Visit each non-zero element in this vector. Note that the order of visits is not specified.
 	 * @param visitor
+	 * @return a value returned from {@link VectorVisitor#finish()}
 	 */
-	void walk(final VectorVisitor visitor);
-
-	public interface VectorVisitor {
-		void visit(final int index, final double value);
-	}
+	double walk(final VectorVisitor visitor);
 }

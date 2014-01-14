@@ -4,6 +4,7 @@ import java.util.Map;
 
 import net.thisptr.hash.LongMurmurHash;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorVisitor;
 
 public class LongSimHash {
 	private static final int SIZE = Long.SIZE;
@@ -35,7 +36,7 @@ public class LongSimHash {
 	
 	public long hash(final Vector vector) {
 		final double[] v = new double[SIZE];
-		vector.walk(new Vector.VectorVisitor() {
+		vector.walk(new VectorVisitor() {
 			public void visit(final int index, final double value) {
 				update(v, LongMurmurHash.hash(index), value);
 			}

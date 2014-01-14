@@ -61,9 +61,10 @@ public class SparseMapVector extends SparseVector {
 	}
 
 	@Override
-	public void walk(final VectorVisitor visitor) {
+	public double walk(final VectorVisitor visitor) {
 		for (final Int2DoubleMap.Entry e : map.int2DoubleEntrySet())
 			visitor.visit(e.getIntKey(), e.getDoubleValue());
+		return visitor.finish();
 	}
 
 	public Int2DoubleMap raw() {

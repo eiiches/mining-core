@@ -10,7 +10,7 @@ import net.thisptr.math.factory.MathFactory;
 import net.thisptr.math.matrix.Matrix;
 import net.thisptr.math.operator.MathOperator;
 import net.thisptr.math.vector.Vector;
-import net.thisptr.math.vector.Vector.VectorVisitor;
+import net.thisptr.math.vector.VectorVisitor;
 
 /**
  * An implementation of Restricted Boltzmann Machine.

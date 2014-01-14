@@ -9,6 +9,7 @@ import net.thisptr.classifier.BatchLearner;
 import net.thisptr.instance.Instances;
 import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorVisitor;
 
 public class BinaryNaiveBayes implements BatchLearner<Vector, Boolean> {
 	
@@ -32,7 +33,7 @@ public class BinaryNaiveBayes implements BatchLearner<Vector, Boolean> {
 				Arrays.fill(this.values, smoothingValue);
 		}
 		public void add(final Vector v) {
-			v.walk(new Vector.VectorVisitor() {
+			v.walk(new VectorVisitor() {
 				@Override
 				public void visit(final int index, final double value) {
 					values[index] += value;
@@ -75,7 +76,7 @@ public class BinaryNaiveBayes implements BatchLearner<Vector, Boolean> {
 		for (final Map.Entry<Boolean, ClassCount> count : classes.entrySet()) {
 			final double[] p = new double[1];
 			final double[] values = count.getValue().getValues();
-			x.walk(new Vector.VectorVisitor() {
+			x.walk(new VectorVisitor() {
 				@Override
 				public void visit(final int index, final double value) {
 					if (index < values.length)

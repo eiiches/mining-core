@@ -8,6 +8,7 @@ import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.operator.ArrayOp;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorVisitor;
 import net.thisptr.optimizer.Function;
 import net.thisptr.optimizer.FunctionMinimizer;
 import net.thisptr.optimizer.gradient.L1RegularizedLBFGS;
@@ -45,7 +46,7 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 
 	private static double calcPy1(final Vector x, final double[] w) {
 		final double[] wx = new double[] { w[0] };
-		x.walk(new Vector.VectorVisitor() {
+		x.walk(new VectorVisitor() {
 			public void visit(final int index, final double value) {
 				// Run boundary check because when we may run into unseed component in x,
 				// the dimension of x can (almost always) be larger than the learning data.
@@ -98,7 +99,7 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 					result[0] += y - p;
 //					for (int i = 0; i < dim; ++i)
 //						result[i + 1] += (y - p) * x.get(i);
-					x.walk(new Vector.VectorVisitor() {
+					x.walk(new VectorVisitor() {
 						public void visit(final int index, final double value) {
 							result[index + 1] += (y - p) * value;
 //							result[v.getIndex() + 1] += -2 * (2 * c * y - c - y + 1) * p * v.getValue() + 2 * c * y * v.getValue();

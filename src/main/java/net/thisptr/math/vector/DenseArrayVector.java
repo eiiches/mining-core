@@ -71,9 +71,10 @@ public class DenseArrayVector extends DenseVector {
 	}
 
 	@Override
-	public void walk(final VectorVisitor visitor) {
+	public double walk(final VectorVisitor visitor) {
 		for (int i = 0; i < array.length; ++i)
 			if (array[i] != 0.0)
 				visitor.visit(i, array[i]);
+		return visitor.finish();
 	}
 }

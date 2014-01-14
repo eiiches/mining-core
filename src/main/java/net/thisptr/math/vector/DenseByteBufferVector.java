@@ -34,7 +34,7 @@ public class DenseByteBufferVector extends DenseVector {
 	public DenseByteBufferVector(final Vector v) {
 		buf = ByteBuffer.allocateDirect(v.size() * 8).order(ByteOrder.nativeOrder());
 		dbuf = buf.asDoubleBuffer();
-		v.walk(new Vector.VectorVisitor() {
+		v.walk(new VectorVisitor() {
 			@Override
 			public void visit(int index, double value) {
 				dbuf.put(index, value);
@@ -68,13 +68,14 @@ public class DenseByteBufferVector extends DenseVector {
 	}
 
 	@Override
-	public void walk(final VectorVisitor visitor) {
+	public double walk(final VectorVisitor visitor) {
 		final int size = size();
 		for (int i = 0; i < size; ++i) {
 			final double v = dbuf.get(i);
 			if (v != 0.0)
 				visitor.visit(i, dbuf.get(i));
 		}
+		return visitor.finish();
 	}
 
 	public ByteBuffer raw() {

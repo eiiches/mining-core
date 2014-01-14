@@ -2,6 +2,7 @@ package net.thisptr.math.operator;
 
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorVisitor;
 
 public final class VectorOp {
 	private VectorOp() { }
@@ -16,7 +17,7 @@ public final class VectorOp {
 	 */
 	public static double dot(final Vector x, final double[] y, final int yOffset, final int yLength) {
 		final double[] result = new double[1];
-		x.walk(new Vector.VectorVisitor() {
+		x.walk(new VectorVisitor() {
 			public void visit(final int index, final double value) {
 				if (0 <= index && index < yLength)
 					result[0] += y[index + yOffset] * value;
@@ -32,7 +33,7 @@ public final class VectorOp {
 	 */
 	public static double l2norm2(final Vector x) {
 		final double[] result = new double[1];
-		x.walk(new Vector.VectorVisitor() {
+		x.walk(new VectorVisitor() {
 			public void visit(final int index, final double value) {
 				result[0] += value * value;
 			}
