@@ -105,7 +105,7 @@ public class DefaultMathOperator implements MathOperator {
 	}
 
 	@Override
-	public void add(Matrix self, Matrix x) {
+	public void add(final Matrix self, final Matrix x) {
 		assert self.columns() == x.columns();
 		assert self.rows() == x.rows();
 
@@ -121,7 +121,7 @@ public class DefaultMathOperator implements MathOperator {
 	}
 
 	@Override
-	public double l1Norm(Matrix m) {
+	public double l1Norm(final Matrix m) {
 		double sum = 0.0;
 		for (int i = 0; i < m.rows(); ++i)
 			for (int j = 0; j < m.columns(); ++j)
@@ -130,7 +130,7 @@ public class DefaultMathOperator implements MathOperator {
 	}
 
 	@Override
-	public double l2Norm(Matrix m) {
+	public double l2Norm(final Matrix m) {
 		double sum = 0.0;
 		for (int i = 0; i < m.rows(); ++i)
 			for (int j = 0; j < m.columns(); ++j) {
