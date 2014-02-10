@@ -18,7 +18,7 @@ public class DenseArrayVectorTest {
 
 	@Before
 	public void setUp() {
-		sut = new DenseArrayVector(new double[] { 0.0, 1.0, 0.0, 2.0 });
+		sut = new DenseArrayVector(4, VectorShape.Column, new double[] { 0.0, 1.0, 0.0, 2.0 });
 	}
 	
 	private static void sortElements(final List<Pair<Integer, Double>> elements) {

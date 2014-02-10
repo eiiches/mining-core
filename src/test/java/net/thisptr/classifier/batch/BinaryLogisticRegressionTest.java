@@ -10,6 +10,7 @@ import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.distribution.Distribution;
 import net.thisptr.math.distribution.GaussianDistribution;
 import net.thisptr.math.vector.SparseMapVector;
+import net.thisptr.math.vector.VectorShape;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class BinaryLogisticRegressionTest {
 		double[] result = new double[dimension];
 		for (int i = 0; i < dimension; ++i)
 			result[i] = distribution.sample();
-		return new SparseMapVector(result);
+		return new SparseMapVector(result.length, VectorShape.Column, result);
 	}
 
 	@Ignore

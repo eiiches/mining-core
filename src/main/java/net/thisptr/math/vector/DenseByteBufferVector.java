@@ -1,60 +1,77 @@
 package net.thisptr.math.vector;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.DoubleBuffer;
 
-public class DenseByteBufferVector extends DenseVector {
-	private static final int DOUBLE_BYTES = Double.SIZE / 8;
+import net.thisptr.math.matrix.DenseByteBufferMatrix;
 
-	private DoubleBuffer dbuf;
-	private ByteBuffer buf;
+public class DenseByteBufferVector extends DenseByteBufferMatrix implements Vector {
+	private VectorShape shape;
+	private int size;
 
-	/**
-	 * The new vector may not be initialized to zero.
-	 * 
-	 * @param size
-	 */
 	public DenseByteBufferVector(final int size) {
-		this.buf = ByteBuffer.allocateDirect(size * DOUBLE_BYTES).order(ByteOrder.nativeOrder());
-		this.dbuf = buf.asDoubleBuffer();
+		this(size, VectorShape.Column);
 	}
 
-	public DenseByteBufferVector(final double[] values) {
-		this(values.length);
-		for (int i = 0; i < values.length; ++i)
-			set(i, values[i]);
+	public DenseByteBufferVector(final int size, final VectorShape shape) {
+		super(shape == VectorShape.Column ? size : 1, shape == VectorShape.Row ? size : 1);
+		this.shape = shape;
+		this.size = size;
+		for (int i = 0; i < size; ++i)
+			set(i, 0.0);
 	}
 
-	public DenseByteBufferVector(final ByteBuffer buf) {
-		this.buf = buf.duplicate().order(buf.order());
-		this.dbuf = buf.asDoubleBuffer();
+	private DenseByteBufferVector(final int size, final VectorShape shape, final ByteBuffer buf) {
+		super(buf, shape == VectorShape.Column ? size : 1, shape == VectorShape.Row ? size : 1);
+		this.shape = shape;
+		this.size = size;
+	}
+
+	public DenseByteBufferVector(final int size, final VectorShape shape, final double[] initializer) {
+		this(size, shape);
+
+		final int isize = Math.min(initializer.length, size);
+		for (int i = 0; i < isize; ++i)
+			set(i, initializer[i]);
 	}
 
 	public DenseByteBufferVector(final Vector v) {
-		buf = ByteBuffer.allocateDirect(v.size() * 8).order(ByteOrder.nativeOrder());
-		dbuf = buf.asDoubleBuffer();
+		this(v.size(), v.shape());
 		v.walk(new VectorVisitor() {
 			@Override
 			public void visit(int index, double value) {
-				dbuf.put(index, value);
+				DenseByteBufferVector.this.set(index, value);
 			}
 		});
 	}
 
 	@Override
+	public VectorShape shape() {
+		return shape;
+	}
+
+	@Override
 	public int size() {
-		return dbuf.remaining();
+		return size;
 	}
 
 	@Override
 	public int capacity() {
-		return dbuf.remaining();
+		return size();
 	}
 
 	@Override
 	public void resize(final int size) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void resize(int rows, int columns) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector transpose() {
+		return new DenseByteBufferVector(size, shape.transpose(), buf);
 	}
 
 	@Override
@@ -80,5 +97,9 @@ public class DenseByteBufferVector extends DenseVector {
 
 	public ByteBuffer raw() {
 		return buf;
+	}
+
+	public static DenseByteBufferVector wrap(final int size, final VectorShape shape, final ByteBuffer buf) {
+		return new DenseByteBufferVector(size, shape, buf);
 	}
 }

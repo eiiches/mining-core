@@ -8,6 +8,7 @@ import net.thisptr.math.operator.DefaultMathOperator;
 import net.thisptr.math.operator.MathOperator;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorShape;
 import net.thisptr.math.vector.VectorVisitor;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -111,6 +112,6 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Ve
 	protected abstract boolean doUpdate(final Vector x, final int y);
 	
 	public Vector getWeights() {
-		return new DenseArrayVector(w);
+		return new DenseArrayVector(w.length, VectorShape.Column, w);
 	}
 }

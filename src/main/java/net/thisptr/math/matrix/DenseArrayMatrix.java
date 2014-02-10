@@ -3,8 +3,9 @@ package net.thisptr.math.matrix;
 import net.thisptr.lang.NotImplementedException;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorShape;
 
-public class DenseArrayMatrix extends DenseMatrix {
+public class DenseArrayMatrix implements Matrix {
 	private double[][] data;
 
 	private int rows;
@@ -42,7 +43,7 @@ public class DenseArrayMatrix extends DenseMatrix {
 	@Override
 	public Vector row(final int row) {
 		if (rowMajor) {
-			return DenseArrayVector.wrap(data[row]);
+			return DenseArrayVector.wrap(data[row].length, VectorShape.Row, data[row]);
 		} else {
 			throw new NotImplementedException();
 		}
@@ -53,7 +54,7 @@ public class DenseArrayMatrix extends DenseMatrix {
 		if (rowMajor) {
 			throw new NotImplementedException();
 		} else {
-			return DenseArrayVector.wrap(data[column]);
+			return DenseArrayVector.wrap(data[column].length, VectorShape.Column, data[column]);
 		}
 	}
 

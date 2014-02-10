@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorShape;
 import net.thisptr.math.vector.formatter.DefaultVectorFormatter;
 import net.thisptr.neuralnet.RestrictedBoltzmannMachine.UnitType;
 
@@ -18,7 +19,7 @@ import org.junit.Test;
 
 public class RestrictedBoltzmannMachineTest {
 	public static Vector v(final double[] x) {
-		return new DenseArrayVector(x);
+		return DenseArrayVector.wrap(x.length, VectorShape.Column, x);
 	}
 
 	final List<Vector> inputVectors = Arrays.asList(new Vector[] {

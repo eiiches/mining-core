@@ -50,9 +50,5 @@ public interface Matrix {
 
 	void resize(int rows, int columns);
 
-	public interface MatrixVisitor {
-		void visit(int row, int column, double value);
-	}
-
 	void walk(final MatrixVisitor visitor);
 }

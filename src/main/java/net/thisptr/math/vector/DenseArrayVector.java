@@ -1,80 +1,103 @@
 package net.thisptr.math.vector;
 
-import java.util.Arrays;
+public class DenseArrayVector extends AbstractVector {
+	private double[] buf;
+	private VectorShape shape;
+	private int size;
 
-public class DenseArrayVector extends DenseVector {
-	private double[] array;
+	public DenseArrayVector(final int size) {
+		this(size, VectorShape.Column);
+	}
 
-	public DenseArrayVector(final Vector src) {
-		final int size = src.size();
-		array = new double[size];
-		src.walk(new VectorVisitor() {
+	public DenseArrayVector(final int size, final VectorShape shape) {
+		this.buf = new double[size];
+		this.shape = shape;
+		this.size = size;
+	}
+
+	public DenseArrayVector(final int size, final VectorShape shape, final double[] initializer) {
+		this(size, shape);
+		final int isize = Math.min(initializer.length, size);
+		for (int i = 0; i < isize; ++i)
+			this.buf[i] = initializer[i];
+	}
+
+	public DenseArrayVector(final Vector v) {
+		this(v.size(), v.shape());
+		v.walk(new VectorVisitor() {
 			@Override
 			public void visit(int index, double value) {
-				array[index] = value;
+				buf[index] = value;
 			}
 		});
 	}
 
-	public DenseArrayVector(final int size) {
-		array = new double[size];
-	}
-
-	public DenseArrayVector(final double[] values) {
-		array = Arrays.copyOf(values, values.length);
-	}
-
-	private DenseArrayVector(final double[] v, final boolean dummy) {
-		array = v;
-	}
-
-	public DenseArrayVector(boolean[] x0) {
-		array = new double[x0.length];
-		for (int i = 0; i < x0.length; ++i)
-			if (x0[i])
-				array[i] = 1;
+	private DenseArrayVector(final int size, final VectorShape shape, final double[] buf, final boolean dummy) {
+		this.buf = buf;
+		this.shape = shape;
+		this.size = size;
 	}
 
 	public double[] raw() {
-		return array;
+		return buf;
 	}
 
-	public static DenseArrayVector wrap(final double[] v) {
-		return new DenseArrayVector(v, true);
+	public static DenseArrayVector wrap(final int size, final VectorShape shape, final double[] v) {
+		return new DenseArrayVector(size, shape, v, false);
 	}
 
 	@Override
 	public double get(final int index) {
-		return array[index];
+		return buf[index];
 	}
 
 	@Override
 	public void set(final int index, final double value) {
-		array[index] = value;
+		buf[index] = value;
 	}
 
 	@Override
 	public int size() {
-		return array.length;
+		return buf.length;
 	}
 
 	@Override
 	public void resize(final int size) {
 		final double[] newarray = new double[size];
-		System.arraycopy(this.array, 0, newarray, 0, Math.min(this.array.length, size));
-		this.array = newarray;
+		System.arraycopy(this.buf, 0, newarray, 0, Math.min(this.buf.length, size));
+		this.buf = newarray;
 	}
 
 	@Override
 	public int capacity() {
-		return array.length;
+		return buf.length;
 	}
 
 	@Override
 	public double walk(final VectorVisitor visitor) {
-		for (int i = 0; i < array.length; ++i)
-			if (array[i] != 0.0)
-				visitor.visit(i, array[i]);
+		for (int i = 0; i < buf.length; ++i)
+			if (buf[i] != 0.0)
+				visitor.visit(i, buf[i]);
 		return visitor.finish();
+	}
+
+	@Override
+	public VectorShape shape() {
+		return shape;
+	}
+
+	@Override
+	public Vector transpose() {
+		return wrap(size, shape.transpose(), buf);
+	}
+
+	@Override
+	public Vector column(int column) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Vector row(int row) {
+		throw new UnsupportedOperationException();
 	}
 }

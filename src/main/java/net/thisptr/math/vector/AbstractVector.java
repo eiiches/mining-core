@@ -1,68 +1,99 @@
 package net.thisptr.math.vector;
 
-import net.thisptr.lang.NotImplementedException;
+import net.thisptr.math.matrix.MatrixVisitor;
 
 public abstract class AbstractVector implements Vector {
-	private void validateAccess(final int row, final int column) {
-		if (column != 0)
-			throw new IndexOutOfBoundsException();
-	}
-
-	@Override
-	public Vector column(int column) {
-		validateAccess(0, column);
-
-		return this;
-	}
-
-	@Override
-	public Vector row(int row) {
-		throw new NotImplementedException();
-	}
-
 	@Override
 	public double get(int row, int column) {
-		validateAccess(row, column);
-
-		return get(row);
+		switch (shape()) {
+			case Column:
+				if (column != 0)
+					throw new IndexOutOfBoundsException();
+				return get(row);
+			case Row:
+				if (row != 0)
+					throw new IndexOutOfBoundsException();
+				return get(column);
+		}
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public void set(int row, int column, double value) {
-		validateAccess(row, column);
-
-		set(row, value);
+		switch (shape()) {
+			case Column:
+				if (column != 0)
+					throw new IndexOutOfBoundsException();
+				set(row, value);
+				break;
+			case Row:
+				if (row != 0)
+					throw new IndexOutOfBoundsException();
+				set(column, value);
+				break;
+		}
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public void resize(int rows, int columns) {
-		if (columns != 1)
-			throw new IllegalArgumentException("Vector cannot extend columns");
-		resize(rows);
-	}
-
-	@Override
-	public Vector transpose() {
-		throw new NotImplementedException();
+		switch (shape()) {
+			case Column:
+				if (columns != 1)
+					throw new IllegalArgumentException();
+				resize(rows);
+				break;
+			case Row:
+				if (rows != 1)
+					throw new IllegalArgumentException();
+				resize(columns);
+				break;
+		}
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public int columns() {
-		return 1;
+		switch (shape()) {
+			case Column:
+				return 1;
+			case Row:
+				return size();
+		}
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public int rows() {
-		return size();
+		switch (shape()) {
+			case Column:
+				return size();
+			case Row:
+				return 1;
+		}
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public void walk(final MatrixVisitor visitor) {
-		walk(new VectorVisitor() {
-			@Override
-			public void visit(int index, double value) {
-				visitor.visit(index, 0, value);
-			}
-		});
+		switch (shape()) {
+			case Column:
+				walk(new VectorVisitor() {
+					@Override
+					public void visit(int index, double value) {
+						visitor.visit(index, 0, value);
+					}
+				});
+				break;
+			case Row:
+				walk(new VectorVisitor() {
+					@Override
+					public void visit(int index, double value) {
+						visitor.visit(0, index, value);
+					}
+				});
+				break;
+		}
+		throw new IllegalStateException();
 	}
 }

@@ -8,7 +8,7 @@ import net.thisptr.math.vector.SparseMapVector;
 import net.thisptr.math.vector.Vector;
 import net.thisptr.math.vector.VectorVisitor;
 
-public class SparseMapMatrix extends SparseMatrix {
+public class SparseMapMatrix implements Matrix {
 	private Map<Integer, SparseMapVector> data = new HashMap<Integer, SparseMapVector>();
 	private int rows;
 	private int columns;

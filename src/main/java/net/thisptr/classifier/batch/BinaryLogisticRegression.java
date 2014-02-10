@@ -8,6 +8,7 @@ import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.operator.ArrayOp;
 import net.thisptr.math.vector.DenseArrayVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorShape;
 import net.thisptr.math.vector.VectorVisitor;
 import net.thisptr.optimizer.Function;
 import net.thisptr.optimizer.FunctionMinimizer;
@@ -160,6 +161,6 @@ public class BinaryLogisticRegression implements BatchLearner<Vector, Boolean> {
 	}
 
 	public DenseArrayVector getWeights() {
-		return new DenseArrayVector(w);
+		return new DenseArrayVector(w.length, VectorShape.Column, w);
 	}
 }

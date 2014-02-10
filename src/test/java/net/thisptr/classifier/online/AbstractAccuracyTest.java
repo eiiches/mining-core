@@ -9,6 +9,7 @@ import net.thisptr.classifier.OnlineLearner;
 import net.thisptr.classifier.evaluation.ConfusionMatrix;
 import net.thisptr.instance.LabeledInstance;
 import net.thisptr.math.vector.SparseMapVector;
+import net.thisptr.math.vector.VectorShape;
 
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
@@ -23,7 +24,7 @@ public abstract class AbstractAccuracyTest {
 	
 	protected static class Fixture {
 		protected static LabeledInstance<Long, SparseMapVector, Boolean> toInstance(final double x1, final double x2, final boolean y) {
-			return new LabeledInstance<Long, SparseMapVector, Boolean>(new SparseMapVector(new double[] { x1, x2 }), y);
+			return new LabeledInstance<Long, SparseMapVector, Boolean>(new SparseMapVector(2, VectorShape.Column, new double[] { x1, x2 }), y);
 		}
 		public int nIterations = 10;
 		public double expectedAccuracy = 0.9;

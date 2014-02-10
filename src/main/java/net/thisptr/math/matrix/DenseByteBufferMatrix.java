@@ -7,12 +7,13 @@ import java.nio.DoubleBuffer;
 import net.thisptr.lang.NotImplementedException;
 import net.thisptr.math.vector.DenseByteBufferVector;
 import net.thisptr.math.vector.Vector;
+import net.thisptr.math.vector.VectorShape;
 
-public class DenseByteBufferMatrix extends DenseMatrix {
+public class DenseByteBufferMatrix implements Matrix {
 	private static final int DOUBLE_BYTES = Double.SIZE / 8;
 
-	private ByteBuffer buf;
-	private DoubleBuffer dbuf;
+	protected ByteBuffer buf;
+	protected DoubleBuffer dbuf;
 	private int[] index;
 	private boolean rowMajor = true;
 
@@ -33,6 +34,16 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 		this.rows = rows;
 		this.columns = columns;
 		this.buf = ByteBuffer.allocateDirect(rows * columns * DOUBLE_BYTES).order(ByteOrder.nativeOrder());
+		this.dbuf = this.buf.asDoubleBuffer();
+		this.index = new int[rows];
+		for (int i = 0; i < rows; ++i)
+			index[i] = i * columns;
+	}
+
+	public DenseByteBufferMatrix(final ByteBuffer buf, final int rows, final int columns) {
+		this.rows = rows;
+		this.columns = columns;
+		this.buf = buf.duplicate().order(buf.order());
 		this.dbuf = this.buf.asDoubleBuffer();
 		this.index = new int[rows];
 		for (int i = 0; i < rows; ++i)
@@ -85,7 +96,7 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 			final ByteBuffer _buf = buf.duplicate().order(buf.order());
 			_buf.position(index[row] * DOUBLE_BYTES);
 			_buf.limit((index[row] + columns) * DOUBLE_BYTES);
-			return new DenseByteBufferVector(_buf);
+			return DenseByteBufferVector.wrap(columns, VectorShape.Row, _buf);
 		} else {
 			throw new NotImplementedException();
 		}
@@ -99,7 +110,7 @@ public class DenseByteBufferMatrix extends DenseMatrix {
 			final ByteBuffer _buf = buf.duplicate().order(buf.order());
 			_buf.position(index[column] * DOUBLE_BYTES);
 			_buf.limit((index[column] + rows) * DOUBLE_BYTES);
-			return new DenseByteBufferVector(_buf);
+			return DenseByteBufferVector.wrap(rows, VectorShape.Column, _buf);
 		}
 	}
 
