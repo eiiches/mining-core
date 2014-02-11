@@ -22,14 +22,15 @@ import net.thisptr.math.vector.Vector;
 import net.thisptr.util.IdMapper;
 import net.thisptr.util.SequentialIdMapper;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 public class BeanEncoder<T> implements Encoder<T> {
 	private static Map<Class<?>, Class<? extends AttributeEncoder<?>>> defaultAttributeEncoders = new HashMap<>();
 	static {
 		// default nominal
 		defaultAttributeEncoders.put(String.class, NominalAttributeEncoder.class);
-		
+
 		// default numerical
 		defaultAttributeEncoders.put(Byte.class, NumericalAttributeEncoder.class);
 		defaultAttributeEncoders.put(Double.class, NumericalAttributeEncoder.class);
@@ -37,7 +38,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 		defaultAttributeEncoders.put(Integer.class, NumericalAttributeEncoder.class);
 		defaultAttributeEncoders.put(Long.class, NumericalAttributeEncoder.class);
 		defaultAttributeEncoders.put(Short.class, NumericalAttributeEncoder.class);
-		
+
 		// default numerical
 		defaultAttributeEncoders.put(byte.class, NumericalAttributeEncoder.class);
 		defaultAttributeEncoders.put(double.class, NumericalAttributeEncoder.class);
@@ -46,37 +47,39 @@ public class BeanEncoder<T> implements Encoder<T> {
 		defaultAttributeEncoders.put(long.class, NumericalAttributeEncoder.class);
 		defaultAttributeEncoders.put(short.class, NumericalAttributeEncoder.class);
 	}
-	
+
 	private static class Accessor {
 		private Field field;
 		private Method getter;
-		
+
 		public Accessor(final Class<?> klass, final String fieldName) {
 			try {
 				this.field = klass.getField(fieldName);
 				try {
 					this.getter = klass.getMethod(fieldNameToGetterName(fieldName));
-				} catch (NoSuchMethodException | SecurityException e1) { }
+				} catch (NoSuchMethodException | SecurityException e1) {
+				}
 			} catch (NoSuchFieldException | SecurityException e) {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		private static String fieldNameToGetterName(final String fieldName) {
-			return "get" + StringUtils.capitalize(fieldName);
+			Preconditions.checkArgument(!Strings.isNullOrEmpty(fieldName), "fieldName");
+			return "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 		}
-		
+
 		public Object getValue(final Object obj) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 			if (this.getter != null)
 				return this.getter.invoke(obj);
 			return this.field.get(obj);
 		}
-		
+
 		@Override
 		public String toString() {
 			return getFieldName();
 		}
-		
+
 		private static <T extends Annotation> T getAnnotation(final Field field, final Method getterMethod, final Class<T> annotationClass) {
 			if (getterMethod != null) {
 				final T annotation = getterMethod.getAnnotation(annotationClass);
@@ -85,7 +88,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 			}
 			return field.getAnnotation(annotationClass);
 		}
-		
+
 		public boolean isIgnored() {
 			final Ignore ignoreAnnotation = getAnnotation(this.field, this.getter, Ignore.class);
 			return ignoreAnnotation != null;
@@ -106,7 +109,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 			final Class<? extends AttributeEncoder<?>> encoderClass = getEncoderClass();
 			if (encoderClass == null)
 				return null;
-			
+
 			try {
 				return encoderClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
@@ -118,11 +121,11 @@ public class BeanEncoder<T> implements Encoder<T> {
 			return field.getName();
 		}
 	}
-	
+
 	private static class Attribute {
 		private final Accessor accessor;
 		private AttributeEncoder<?> encoder;
-		
+
 		public Attribute(final Accessor accessor, final AttributeEncoder<?> encoder) {
 			this.accessor = accessor;
 			this.encoder = encoder;
@@ -139,7 +142,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 		public AttributeEncoder<?> getEncoder() {
 			return encoder;
 		}
-		
+
 		@Override
 		public String toString() {
 			return accessor.toString();
@@ -149,7 +152,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 	private final Map<String, Attribute> attributes;
 	private final IdMapper<Pair<String, Object>> idMapper = new SequentialIdMapper<Pair<String, Object>>();
 	private final boolean sparse;
-	
+
 	public BeanEncoder(final Class<T> klass, final boolean sparse) {
 		this.sparse = sparse;
 		this.attributes = new HashMap<String, Attribute>();
@@ -165,11 +168,11 @@ public class BeanEncoder<T> implements Encoder<T> {
 			}
 		}
 	}
-	
+
 	private class ContextImpl implements Context {
 		private final String fieldName;
 		private Vector vector;
-		
+
 		public ContextImpl(final Accessor accessor, final Vector vector) {
 			this.fieldName = accessor.getFieldName();
 			this.vector = vector;
@@ -182,7 +185,7 @@ public class BeanEncoder<T> implements Encoder<T> {
 				vector.resize(id + 1);
 			vector.set(id, value);
 		}
-		
+
 		@Override
 		public double getValue(final Object obj) {
 			final int id = idMapper.get(Pair.make(fieldName, obj));
@@ -198,12 +201,12 @@ public class BeanEncoder<T> implements Encoder<T> {
 		for (final Attribute attribute : attributes.values()) {
 			try {
 				final Object value = attribute.getAccessor().getValue(record);
-				
+
 				@SuppressWarnings("unchecked")
 				final AttributeEncoder<Object> encoder = (AttributeEncoder<Object>) attribute.getEncoder();
 				if (encoder == null)
 					continue;
-				
+
 				encoder.encode(new ContextImpl(attribute.getAccessor(), result), value);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw new RuntimeException(e);
@@ -213,14 +216,14 @@ public class BeanEncoder<T> implements Encoder<T> {
 			return result;
 		return new DenseArrayVector(result);
 	}
-	
+
 	public void setAttributeEncoder(final String fieldName, final AttributeEncoder<?> encoder) {
 		final Attribute attribute = attributes.get(fieldName);
 		if (attribute == null)
 			throw new RuntimeException(String.format("No such attribute: %s", fieldName));
 		attribute.setEncoder(encoder);
 	}
-	
+
 	public Pair<String, Object> describeVectorIndex(final int id) {
 		if (id < idMapper.size())
 			return idMapper.reverse(id);

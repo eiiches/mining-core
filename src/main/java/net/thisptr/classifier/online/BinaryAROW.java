@@ -5,9 +5,10 @@ import java.util.Arrays;
 import net.thisptr.math.vector.Vector;
 import net.thisptr.math.vector.VectorVisitor;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.primitives.Doubles;
 
 /**
  * An implementation of AROW, as described in, Koby Crammer, et al. Adaptive Regularization of Weight Vectors.
@@ -87,7 +88,7 @@ public class BinaryAROW extends AbstractBinaryOnlineClassifier {
 			});
 			
 			if (log.isDebugEnabled())
-				log.debug(String.format("Variance updated to %s", ArrayUtils.toString(ArrayUtils.subarray(sigma, 0, n + 1))));
+				log.debug(String.format("Variance updated to [%s]", Doubles.join(", ", Arrays.copyOfRange(sigma, 0, n + 1))));
 			return true;
 		}
 		

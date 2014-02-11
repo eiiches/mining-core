@@ -1,9 +1,8 @@
 package net.thisptr.string.misc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 public class MaximalSubstring {
 	private final SuffixTree suffixTree;
@@ -33,7 +32,7 @@ public class MaximalSubstring {
 			if (rank[endIndices[i] - 1] - rank[beginIndices[i]] > 0 && depthValues[i] > 0) {
 				final int beginIndex = suffixArray[beginIndices[i]];
 				final int endIndex = beginIndex + depthValues[i];
-				result.add(new String(ArrayUtils.subarray(text, beginIndex, endIndex)));
+				result.add(new String(Arrays.copyOfRange(text, beginIndex, endIndex)));
 			}
 		
 		return result;

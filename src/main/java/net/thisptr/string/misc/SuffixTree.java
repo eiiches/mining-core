@@ -1,13 +1,12 @@
 package net.thisptr.string.misc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.thisptr.lang.tuple.Pair;
 import net.thisptr.string.suffixarray.SaisSuffixArrayBuilder;
 import net.thisptr.string.suffixarray.SuffixArray;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 public final class SuffixTree {
 	private final char[] text;
@@ -15,7 +14,7 @@ public final class SuffixTree {
 	private final int[] beginIndices;
 	private final int[] endIndices;
 	private final int[] depthValues;
-	
+
 	private SuffixTree(final char[] text, final SuffixArray suffixArray, final int[] beginIndices, final int[] endIndices, final int[] depthValues) {
 		this.text = text;
 		this.suffixArray = suffixArray;
@@ -23,19 +22,19 @@ public final class SuffixTree {
 		this.endIndices = endIndices;
 		this.depthValues = depthValues;
 	}
-	
+
 	public int size() {
 		return suffixArray.length();
 	}
-	
+
 	public char[] getText() {
 		return text;
 	}
-	
+
 	public int[] getSuffixArray() {
 		return suffixArray.intArray();
 	}
-	
+
 	public int[] getBeginIndices() {
 		return beginIndices;
 	}
@@ -47,19 +46,18 @@ public final class SuffixTree {
 	public int[] getDepthValues() {
 		return depthValues;
 	}
-	
+
 	public static SuffixTree build(final char[] text, final SuffixArray suffixArray) {
 		final int n = suffixArray.length();
 		final int[] SA = suffixArray.intArray();
 		final int[] beginIndices = new int[n];
 		final int[] endIndices = new int[n];
 		final int[] depthValues = new int[n];
-		
-		
+
 		final int[] Psi = new int[n];
 		for (int i = 1; i < n; ++i)
 			Psi[SA[i]] = SA[i - 1];
-		
+
 		final int[] PLCP = new int[n];
 		int h = 0;
 		for (int i = 0; i < n; ++i) {
@@ -70,16 +68,16 @@ public final class SuffixTree {
 			if (h > 0)
 				--h;
 		}
-		
+
 		final int[] H = new int[n];
 		for (int i = 0; i < n; ++i)
 			H[i] = PLCP[SA[i]];
 		H[0] = -1;
-		
+
 		List<Pair<Integer, Integer>> S = new ArrayList<Pair<Integer, Integer>>();
 		S.add(Pair.make(-1, -1));
 		int nodeNum = 0;
-		for (int i = 0; ; ++i) {
+		for (int i = 0;; ++i) {
 			Pair<Integer, Integer> cur = Pair.make(i, (i == n) ? -1 : H[i]);
 			Pair<Integer, Integer> cand = S.get(S.size() - 1);
 			while (cand.getSecond() > cur.getSecond()) {
@@ -100,16 +98,16 @@ public final class SuffixTree {
 			S.add(Pair.make(i, n - SA[i] + 1));
 		}
 		return new SuffixTree(text, suffixArray,
-				ArrayUtils.subarray(beginIndices, 0, nodeNum),
-				ArrayUtils.subarray(endIndices, 0, nodeNum),
-				ArrayUtils.subarray(depthValues, 0, nodeNum));
+				Arrays.copyOfRange(beginIndices, 0, nodeNum),
+				Arrays.copyOfRange(endIndices, 0, nodeNum),
+				Arrays.copyOfRange(depthValues, 0, nodeNum));
 	}
-	
+
 	public static SuffixTree build(final char[] text) {
 		final SuffixArray sa = new SaisSuffixArrayBuilder().build(text);
 		return build(text, sa);
 	}
-	
+
 	public static SuffixTree build(final String text) {
 		return build(text.toCharArray());
 	}

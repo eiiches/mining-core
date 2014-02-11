@@ -11,9 +11,10 @@ import net.thisptr.math.vector.Vector;
 import net.thisptr.math.vector.VectorShape;
 import net.thisptr.math.vector.VectorVisitor;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.primitives.Doubles;
 
 public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Vector, Boolean> {
 	private static Logger log = LoggerFactory.getLogger(AbstractBinaryOnlineClassifier.class);
@@ -78,7 +79,7 @@ public abstract class AbstractBinaryOnlineClassifier implements OnlineLearner<Ve
 		final boolean isUpdated = doUpdate(x, y);
 		if (isUpdated)
 			if (log.isDebugEnabled())
-				log.debug(String.format("Weight updated to %s", ArrayUtils.toString(ArrayUtils.subarray(w, 0, n + 1))));
+				log.debug(String.format("Weight updated to [%s]", Doubles.join(", ", Arrays.copyOfRange(w, 0, n + 1))));
 	}
 	
 	@Override

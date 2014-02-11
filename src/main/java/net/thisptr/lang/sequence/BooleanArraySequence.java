@@ -2,8 +2,6 @@ package net.thisptr.lang.sequence;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 public class BooleanArraySequence extends AbstractArraySequence {
 	private boolean[] raw;
 	private int begin;
@@ -45,7 +43,7 @@ public class BooleanArraySequence extends AbstractArraySequence {
 	
 	@Override
 	public String toString() {
-		return Arrays.toString(ArrayUtils.subarray(raw, begin, end));
+		return Arrays.toString(Arrays.copyOfRange(raw, begin, end));
 	}
 
 	@Override

@@ -2,21 +2,19 @@ package net.thisptr.lang.sequence;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 public class DoubleArraySequence extends AbstractArraySequence {
 	private double[] raw;
 	private int begin;
 	private int end;
-	
+
 	public DoubleArraySequence(final int n) {
 		this(new double[n]);
 	}
-	
+
 	public DoubleArraySequence(final double[] raw) {
 		this(raw, 0, raw.length);
 	}
-	
+
 	public DoubleArraySequence(final double[] raw, final int begin, final int end) {
 		assert 0 <= begin && begin <= raw.length;
 		assert 0 <= end && end <= raw.length;
@@ -24,7 +22,7 @@ public class DoubleArraySequence extends AbstractArraySequence {
 		this.begin = begin;
 		this.end = end;
 	}
-	
+
 	@Override
 	public double doubleValue(int index) {
 		return raw[begin + index];
@@ -39,18 +37,18 @@ public class DoubleArraySequence extends AbstractArraySequence {
 	public DoubleArraySequence view(final int begin, final int end) {
 		return new DoubleArraySequence(raw, this.begin + begin, this.begin + end);
 	}
-	
+
 	public int length() {
 		return end - begin;
 	}
-	
+
 	public double[] doubleArray() {
 		return raw;
 	}
-	
+
 	@Override
 	public String toString() {
-		return Arrays.toString(ArrayUtils.subarray(raw, begin, end));
+		return Arrays.toString(Arrays.copyOfRange(raw, begin, end));
 	}
 
 	@Override

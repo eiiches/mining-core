@@ -1,7 +1,8 @@
 package net.thisptr.util;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+
+import com.google.common.base.Strings;
 
 public class ProgressLogging {
 	private Logger log;
@@ -11,7 +12,7 @@ public class ProgressLogging {
 	private int block;
 	private String msg;
 	private int lastLogValue = 0;
-	
+
 	private char fillChar = '#';
 
 	public ProgressLogging(final Logger log, final String msg, final int completeValue, final int logWidth, final int minChangeToLog) {
@@ -23,29 +24,29 @@ public class ProgressLogging {
 		this.block = completeValue / split == 0 ? Integer.MAX_VALUE : completeValue / split;
 		this.msg = msg;
 	}
-	
+
 	public void setProgressChar(final char progressChar) {
 		fillChar = progressChar;
 	}
-	
+
 	public void log(final int value) {
 		if (value - lastLogValue < minChangeToLog)
 			return;
-		
+
 		if (value == completeValue) {
 			complete();
 		} else if (value / block != lastLogValue / block) {
 			final int fill = (int) ((value / (double) completeValue) * logWidth);
 			final int rest = logWidth - fill;
-			log.debug("{}[{}{}]", new Object[] { msg, StringUtils.repeat(fillChar, fill), StringUtils.repeat(' ', rest) });
+			log.debug("{}[{}{}]", new Object[] { msg, Strings.repeat(String.valueOf(fillChar), fill), Strings.repeat(" ", rest) });
 			lastLogValue = value;
 		}
 	}
-	
+
 	public void complete() {
 		// if not already logged completion
 		if (lastLogValue != completeValue) {
-			log.debug("{}[{}]", new Object[] { msg, StringUtils.repeat(fillChar, logWidth) });
+			log.debug("{}[{}]", new Object[] { msg, Strings.repeat(String.valueOf(fillChar), logWidth) });
 			lastLogValue = completeValue;
 		}
 	}

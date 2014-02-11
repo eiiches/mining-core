@@ -2,21 +2,19 @@ package net.thisptr.lang.sequence;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 public class ShortArraySequence extends AbstractArraySequence {
 	private short[] raw;
 	private int begin;
 	private int end;
-	
+
 	public ShortArraySequence(final int n) {
 		this(new short[n]);
 	}
-	
+
 	public ShortArraySequence(final short[] raw) {
 		this(raw, 0, raw.length);
 	}
-	
+
 	public ShortArraySequence(final short[] raw, final int begin, final int end) {
 		assert 0 <= begin && begin <= raw.length;
 		assert 0 <= end && end <= raw.length;
@@ -39,18 +37,18 @@ public class ShortArraySequence extends AbstractArraySequence {
 	public ShortArraySequence view(final int begin, final int end) {
 		return new ShortArraySequence(raw, this.begin + begin, this.begin + end);
 	}
-	
+
 	public int length() {
 		return end - begin;
 	}
-	
+
 	public short[] shortArray() {
 		return raw;
 	}
-	
+
 	@Override
 	public String toString() {
-		return Arrays.toString(ArrayUtils.subarray(raw, begin, end));
+		return Arrays.toString(Arrays.copyOfRange(raw, begin, end));
 	}
 
 	@Override

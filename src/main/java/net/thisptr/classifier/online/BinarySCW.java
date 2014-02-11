@@ -6,9 +6,10 @@ import net.thisptr.math.SpecialFunctions;
 import net.thisptr.math.vector.Vector;
 import net.thisptr.math.vector.VectorVisitor;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.primitives.Doubles;
 
 /**
  * This is an implementation of Soft Confidence-Weighted Learning, as described in, Jialei Wang, et al.
@@ -105,7 +106,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 		});
 		
 		if (log.isDebugEnabled())
-			log.debug("Variance updated to {}", ArrayUtils.toString(ArrayUtils.subarray(sigma, 0, n + 1)));
+			log.debug(String.format("Variance updated to [%s]", Doubles.join(", ", Arrays.copyOfRange(sigma, 0, n + 1))));
 		return true;
 	}
 

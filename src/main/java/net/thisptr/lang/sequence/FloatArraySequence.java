@@ -2,21 +2,19 @@ package net.thisptr.lang.sequence;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 public class FloatArraySequence extends AbstractArraySequence {
 	private float[] raw;
 	private int begin;
 	private int end;
-	
+
 	public FloatArraySequence(final int n) {
 		this(new float[n]);
 	}
-	
+
 	public FloatArraySequence(final float[] raw) {
 		this(raw, 0, raw.length);
 	}
-	
+
 	public FloatArraySequence(final float[] raw, final int begin, final int end) {
 		assert 0 <= begin && begin <= raw.length;
 		assert 0 <= end && end <= raw.length;
@@ -39,18 +37,18 @@ public class FloatArraySequence extends AbstractArraySequence {
 	public FloatArraySequence view(final int begin, final int end) {
 		return new FloatArraySequence(raw, this.begin + begin, this.begin + end);
 	}
-	
+
 	public int length() {
 		return end - begin;
 	}
-	
+
 	public float[] floatArray() {
 		return raw;
 	}
-	
+
 	@Override
 	public String toString() {
-		return Arrays.toString(ArrayUtils.subarray(raw, begin, end));
+		return Arrays.toString(Arrays.copyOfRange(raw, begin, end));
 	}
 
 	@Override
