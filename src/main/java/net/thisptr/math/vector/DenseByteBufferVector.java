@@ -3,6 +3,7 @@ package net.thisptr.math.vector;
 import java.nio.ByteBuffer;
 
 import net.thisptr.math.matrix.DenseByteBufferMatrix;
+import net.thisptr.math.matrix.StorageOrder;
 
 public class DenseByteBufferVector extends DenseByteBufferMatrix implements Vector {
 	private VectorShape shape;
@@ -21,7 +22,7 @@ public class DenseByteBufferVector extends DenseByteBufferMatrix implements Vect
 	}
 
 	private DenseByteBufferVector(final int size, final VectorShape shape, final ByteBuffer buf) {
-		super(buf, shape == VectorShape.Column ? size : 1, shape == VectorShape.Row ? size : 1);
+		super(shape == VectorShape.Column ? size : 1, shape == VectorShape.Row ? size : 1, StorageOrder.RowMajor, buf);
 		this.shape = shape;
 		this.size = size;
 	}

@@ -25,12 +25,12 @@ public abstract class AbstractVector implements Vector {
 				if (column != 0)
 					throw new IndexOutOfBoundsException();
 				set(row, value);
-				break;
+				return;
 			case Row:
 				if (row != 0)
 					throw new IndexOutOfBoundsException();
 				set(column, value);
-				break;
+				return;
 		}
 		throw new IllegalStateException();
 	}
@@ -42,12 +42,12 @@ public abstract class AbstractVector implements Vector {
 				if (columns != 1)
 					throw new IllegalArgumentException();
 				resize(rows);
-				break;
+				return;
 			case Row:
 				if (rows != 1)
 					throw new IllegalArgumentException();
 				resize(columns);
-				break;
+				return;
 		}
 		throw new IllegalStateException();
 	}
@@ -75,24 +75,30 @@ public abstract class AbstractVector implements Vector {
 	}
 
 	@Override
-	public void walk(final MatrixVisitor visitor) {
+	public double walk(final MatrixVisitor visitor) {
 		switch (shape()) {
 			case Column:
-				walk(new VectorVisitor() {
+				return walk(new VectorVisitor() {
 					@Override
 					public void visit(int index, double value) {
 						visitor.visit(index, 0, value);
 					}
+					@Override
+					public double finish() {
+						return visitor.finish();
+					}
 				});
-				break;
 			case Row:
-				walk(new VectorVisitor() {
+				return walk(new VectorVisitor() {
 					@Override
 					public void visit(int index, double value) {
 						visitor.visit(0, index, value);
 					}
+					@Override
+					public double finish() {
+						return visitor.finish();
+					}
 				});
-				break;
 		}
 		throw new IllegalStateException();
 	}

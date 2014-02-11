@@ -41,8 +41,8 @@ public class DenseByteBufferMatrixTest {
 	}
 
 	@Test
-	public void test_Row() {
-		final Matrix m = new DenseByteBufferMatrix(M(V(2, 3), V(5, 7)));
+	public void testRow() {
+		final Matrix m = new DenseByteBufferMatrix(2, 2, StorageOrder.RowMajor, M(V(2, 3), V(5, 7)));
 
 		final Vector r0 = m.row(0);
 		assertEquals(2, r0.size());
@@ -56,8 +56,23 @@ public class DenseByteBufferMatrixTest {
 	}
 
 	@Test
-	public void test_TransposeAndColumn() {
-		final Matrix m = new DenseByteBufferMatrix(M(V(2, 3), V(5, 7)));
+	public void testColumn() {
+		final Matrix m = new DenseByteBufferMatrix(2, 2, StorageOrder.RowMajor, M(V(2, 3), V(5, 7)));
+
+		final Vector c0 = m.column(0);
+		assertEquals(2, c0.size());
+		assertEquals(2, c0.get(0), eps);
+		assertEquals(5, c0.get(1), eps);
+
+		final Vector c1 = m.column(1);
+		assertEquals(2, c1.size());
+		assertEquals(3, c1.get(0), eps);
+		assertEquals(7, c1.get(1), eps);
+	}
+
+	@Test
+	public void testTransposeAndColumn() {
+		final Matrix m = new DenseByteBufferMatrix(2, 2, StorageOrder.RowMajor, M(V(2, 3), V(5, 7)));
 
 		final Vector c0 = m.transpose().column(0);
 		assertEquals(2, c0.size());
@@ -68,5 +83,57 @@ public class DenseByteBufferMatrixTest {
 		assertEquals(2, c1.size());
 		assertEquals(5, c1.get(0), eps);
 		assertEquals(7, c1.get(1), eps);
+	}
+
+	@Test
+	public void testCopyConstruct() {
+		final Matrix m = new DenseByteBufferMatrix(new DenseArrayMatrix(2, 2, M(V(1, 2), V(3, 4))));
+		assertEquals(1, m.get(0, 0), eps);
+		assertEquals(2, m.get(0, 1), eps);
+		assertEquals(3, m.get(1, 0), eps);
+		assertEquals(4, m.get(1, 1), eps);
+	}
+
+	@Test
+	public void testConstruct() {
+		final DenseByteBufferMatrix m = new DenseByteBufferMatrix(2, 1);
+		assertEquals(0, m.get(0, 0), eps);
+		assertEquals(0, m.get(1, 0), eps);
+		assertEquals(StorageOrder.RowMajor, m.storageOrder());
+	}
+
+	@Test
+	public void testConstructWithInitializer() {
+		final Matrix m = new DenseByteBufferMatrix(2, 2, M(V(1, 2), V(3, 4)));
+		assertEquals(1, m.get(0, 0), eps);
+		assertEquals(2, m.get(0, 1), eps);
+		assertEquals(3, m.get(1, 0), eps);
+		assertEquals(4, m.get(1, 1), eps);
+	}
+
+	@Test
+	public void testConstructWithOverSizedInitializer() {
+		final Matrix m = new DenseByteBufferMatrix(2, 1, M(V(1, 2), V(3, 4)));
+		assertEquals(1, m.get(0, 0), eps);
+		assertEquals(3, m.get(1, 0), eps);
+	}
+
+	@Test
+	public void testConstructWithUnderSizedInitializer() {
+		final Matrix m = new DenseByteBufferMatrix(2, 2, M(V(1, 2)));
+		assertEquals(1, m.get(0, 0), eps);
+		assertEquals(2, m.get(0, 1), eps);
+		assertEquals(0, m.get(1, 0), eps);
+		assertEquals(0, m.get(1, 1), eps);
+	}
+
+	@Test
+	public void testWrap() {
+		final DenseByteBufferMatrix m = new DenseByteBufferMatrix(2, 2, M(V(1, 2), V(3, 4)));
+		final DenseByteBufferMatrix mm = DenseByteBufferMatrix.wrap(2, 2, m.storageOrder(), m.raw());
+		assertEquals(1, mm.get(0, 0), eps);
+		assertEquals(2, mm.get(0, 1), eps);
+		assertEquals(3, mm.get(1, 0), eps);
+		assertEquals(4, mm.get(1, 1), eps);
 	}
 }

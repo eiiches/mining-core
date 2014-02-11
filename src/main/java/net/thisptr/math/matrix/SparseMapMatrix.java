@@ -73,7 +73,7 @@ public class SparseMapMatrix implements Matrix {
 	}
 
 	@Override
-	public void walk(final MatrixVisitor visitor) {
+	public double walk(final MatrixVisitor visitor) {
 		for (final Map.Entry<Integer, SparseMapVector> row : data.entrySet()) {
 			row.getValue().walk(new VectorVisitor() {
 				@Override
@@ -82,5 +82,6 @@ public class SparseMapMatrix implements Matrix {
 				}
 			});
 		}
+		return visitor.finish();
 	}
 }
