@@ -87,11 +87,11 @@ Implemented Data Structures and Algorithms
 - Pattern Matching
   - Wu-Manber
 
-- Suffix Arrays
-  - SAIS, a linear time suffix array construction algorithm
-  - Maximal substring extraction
+- ~~Suffix Arrays~~ (moved to ml4j-strings project)
+  - ~~SAIS, a linear time suffix array construction algorithm~~
+  - ~~Maximal substring extraction~~
 
-- Burrows Wheeler Transform
+- ~~Burrows Wheeler Transform~~ (moved to ml4j-strings project)
 
 ### Others
 
