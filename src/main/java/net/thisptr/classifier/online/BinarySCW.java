@@ -18,42 +18,42 @@ import com.google.common.primitives.Doubles;
  */
 public class BinarySCW extends AbstractBinaryOnlineClassifier {
 	private static Logger log = LoggerFactory.getLogger(BinarySCW.class);
-	
+
 	public static final double DEFAULT_C = 0.1;
 	public static final double DEFAULT_ETA = 0.8;
 	public static final double DEFAULT_INITIAL_VARIANCE = 1.0;
 	public static final Mode DEFAULT_MODE = Mode.SCW_I;
-	
+
 	private final Mode mode;
 	private final double c;
-	
+
 	/**
 	 * A confidence parameter. This value must be within a range of (0, 1).
 	 */
 	private final double eta;
-	
+
 	/**
 	 * A inverse gaussian cumulative of eta.
 	 */
 	private final double phi;
-	
+
 	private final double initialVariance;
-	
+
 	public static enum Mode {
 		SCW_I,
 		SCW_II
 	}
-	
+
 	private double[] sigma;
-	
+
 	public BinarySCW() {
 		this(DEFAULT_MODE, DEFAULT_ETA, DEFAULT_C);
 	}
-	
+
 	public BinarySCW(final Mode mode, final double eta, final double c) {
 		this(mode, eta, c, DEFAULT_INITIAL_CAPACITY);
 	}
-	
+
 	public BinarySCW(final Mode mode, final double eta, final double c, final int initialCapacity) {
 		super(initialCapacity);
 		this.mode = mode;
@@ -64,22 +64,26 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 		this.sigma = new double[initialCapacity];
 		Arrays.fill(sigma, initialVariance);
 	}
-	
+
 	@Override
 	protected void doEnsureCapacity(final int newSize) {
 		final int oldSize = sigma.length;
 		sigma = Arrays.copyOf(sigma, newSize);
 		Arrays.fill(sigma, oldSize, newSize, initialVariance);
 	}
-	
+
 	private double calcV(final Vector x) {
-		final double[] result = new double[] { sigma[0] };
-		x.walk(new VectorVisitor() {
+		return x.walk(new VectorVisitor() {
+			private double result = sigma[0];
+			@Override
 			public void visit(final int index, final double value) {
-				result[0] += sigma[index + 1] * value * value;
+				result += sigma[index + 1] * value * value;
+			}
+			@Override
+			public double finish() {
+				return result;
 			}
 		});
-		return result[0];
 	}
 
 	@Override
@@ -88,11 +92,11 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 		final double m = y * calcWx(x);
 		final double v = calcV(x);
 		final double psi = 1 + phi * phi / 2;
-		
+
 		final double alpha = Math.min(c, Math.max(0, 1.0 / (v * zeta) * (-m * psi + Math.sqrt(m * m * Math.pow(phi, 4) / 4 + v * phi * phi * zeta))));
 		if (alpha == 0.0)
 			return false;
-		
+
 		final double u = Math.pow(-alpha * v * phi + Math.sqrt(alpha * alpha * v * v * phi * phi + 4 * v), 2) / 4;
 		final double beta = alpha * phi / (Math.sqrt(u) + v * alpha * phi);
 
@@ -104,7 +108,7 @@ public class BinarySCW extends AbstractBinaryOnlineClassifier {
 				sigma[index + 1] -= beta * sigma[index + 1] * sigma[index + 1] * value * value;
 			}
 		});
-		
+
 		if (log.isDebugEnabled())
 			log.debug(String.format("Variance updated to [%s]", Doubles.join(", ", Arrays.copyOfRange(sigma, 0, n + 1))));
 		return true;
